@@ -1,0 +1,169 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ChevronRight, ChevronDown, FileCode, FileText, Folder, FolderOpen,
+  Layers, Settings2, FilePlus, FolderPlus, Pencil, Trash2,
+} from 'lucide-react';
+
+// ── Tree building ────────────────────────────────────────────────────────────
+// Turn a flat list of workspace-relative paths into a nested folder tree.
+// `.gitkeep` placeholders create the folder node but are not shown as files.
+function buildTree(paths) {
+  const root = { name: '', path: '', dirs: new Map(), files: [] };
+  for (const p of paths) {
+    const parts = p.split('/');
+    let node = root;
+    for (let i = 0; i < parts.length - 1; i++) {
+      const seg = parts[i];
+      if (!node.dirs.has(seg)) {
+        node.dirs.set(seg, { name: seg, path: parts.slice(0, i + 1).join('/'), dirs: new Map(), files: [] });
+      }
+      node = node.dirs.get(seg);
+    }
+    const fileName = parts[parts.length - 1];
+    if (fileName === '.gitkeep') continue;
+    node.files.push({ name: fileName, path: p });
+  }
+  return root;
+}
+
+const ext = (name) => { const i = name.lastIndexOf('.'); return i > 0 ? name.slice(i) : ''; };
+
+const iconFor = (name) => {
+  if (name.endsWith('.css')) return <FileText size={13} className="studio-file-icon" />;
+  if (name === 'index.ts' || name === 'index.jsx') return <Layers size={13} className="studio-file-icon" />;
+  return <FileCode size={13} className="studio-file-icon" />;
+};
+
+// ── Network helpers ──────────────────────────────────────────────────────────
+const post = (url, body) =>
+  fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    .then(r => r.json());
+
+const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework = 'react', refreshKey = 0, onMutate }) => {
+  const [files, setFiles] = useState([]);
+  const [collapsed, setCollapsed] = useState(() => new Set());
+
+  useEffect(() => {
+    fetch(`/api/workspace-files?kit=${framework}`)
+      .then(r => r.json())
+      .then(({ files = [] }) => setFiles(files))
+      .catch(() => {});
+  }, [framework, refreshKey]);
+
+  const tree = useMemo(() => buildTree(files), [files]);
+
+  const toggle = useCallback((path) => {
+    setCollapsed(prev => {
+      const next = new Set(prev);
+      if (next.has(path)) next.delete(path); else next.add(path);
+      return next;
+    });
+  }, []);
+
+  // ── Mutations ──────────────────────────────────────────────────────────────
+  const createFile = useCallback(async (parentDir) => {
+    const name = window.prompt(`New file name${parentDir ? ` in ${parentDir}/` : ''}:`, '');
+    if (!name) return;
+    const filePath = parentDir ? `${parentDir}/${name}` : name;
+    await post('/api/write-file', { path: filePath, content: '', kit: framework });
+    onMutate?.({ type: 'create', path: filePath });
+    onSelect?.(filePath);
+  }, [framework, onMutate, onSelect]);
+
+  const createFolder = useCallback(async (parentDir) => {
+    const name = window.prompt(`New folder name${parentDir ? ` in ${parentDir}/` : ''}:`, '');
+    if (!name) return;
+    const dirPath = parentDir ? `${parentDir}/${name}` : name;
+    await post('/api/create-folder', { path: dirPath, kit: framework });
+    onMutate?.({ type: 'create', path: dirPath });
+  }, [framework, onMutate]);
+
+  const renamePath = useCallback(async (fromPath) => {
+    const segs = fromPath.split('/');
+    const next = window.prompt('Rename to:', segs[segs.length - 1]);
+    if (!next || next === segs[segs.length - 1]) return;
+    const toPath = [...segs.slice(0, -1), next].join('/');
+    const res = await post('/api/rename-path', { from: fromPath, to: toPath, kit: framework });
+    if (res?.error) { window.alert(res.error); return; }
+    onMutate?.({ type: 'rename', path: fromPath, to: toPath });
+  }, [framework, onMutate]);
+
+  const deletePath = useCallback(async (targetPath, isDir) => {
+    if (!window.confirm(`Delete ${isDir ? 'folder' : 'file'} "${targetPath}"?${isDir ? ' All contents will be removed.' : ''}`)) return;
+    await post('/api/delete-path', { path: targetPath, kit: framework });
+    onMutate?.({ type: 'delete', path: targetPath });
+  }, [framework, onMutate]);
+
+  // ── Render ───────────────────────────────────────────────────────────────
+  const renderDir = (node, depth) => {
+    const dirs = [...node.dirs.values()].sort((a, b) => a.name.localeCompare(b.name));
+    const leafFiles = [...node.files].sort((a, b) => a.name.localeCompare(b.name));
+    return (
+      <>
+        {dirs.map(dir => {
+          const isCollapsed = collapsed.has(dir.path);
+          return (
+            <div key={dir.path}>
+              <div
+                className="studio-file-item studio-tree-folder"
+                style={{ paddingLeft: 6 + depth * 12 }}
+                onClick={() => toggle(dir.path)}
+                title={dir.path}
+              >
+                {isCollapsed ? <ChevronRight size={12} className="studio-tree-chev" /> : <ChevronDown size={12} className="studio-tree-chev" />}
+                {isCollapsed ? <Folder size={13} className="studio-file-icon" /> : <FolderOpen size={13} className="studio-file-icon" />}
+                <span className="studio-file-name">{dir.name}</span>
+                <span className="studio-tree-actions">
+                  <button className="studio-tree-action" title="New file" onClick={e => { e.stopPropagation(); createFile(dir.path); }}><FilePlus size={11} /></button>
+                  <button className="studio-tree-action" title="New folder" onClick={e => { e.stopPropagation(); createFolder(dir.path); }}><FolderPlus size={11} /></button>
+                  <button className="studio-tree-action" title="Rename" onClick={e => { e.stopPropagation(); renamePath(dir.path); }}><Pencil size={11} /></button>
+                  <button className="studio-tree-action" title="Delete" onClick={e => { e.stopPropagation(); deletePath(dir.path, true); }}><Trash2 size={11} /></button>
+                </span>
+              </div>
+              {!isCollapsed && renderDir(dir, depth + 1)}
+            </div>
+          );
+        })}
+        {leafFiles.map(file => (
+          <div
+            key={file.path}
+            className={`studio-file-item${selectedFile === file.path ? ' active' : ''}`}
+            style={{ paddingLeft: 6 + depth * 12 + 14 }}
+            onClick={() => onSelect?.(file.path)}
+            title={file.path}
+          >
+            {iconFor(file.name)}
+            <span className="studio-file-name">{file.name}</span>
+            <span className="studio-file-ext">{ext(file.name)}</span>
+            <span className="studio-tree-actions">
+              <button className="studio-tree-action" title="Rename" onClick={e => { e.stopPropagation(); renamePath(file.path); }}><Pencil size={11} /></button>
+              <button className="studio-tree-action" title="Delete" onClick={e => { e.stopPropagation(); deletePath(file.path, false); }}><Trash2 size={11} /></button>
+            </span>
+          </div>
+        ))}
+      </>
+    );
+  };
+
+  return (
+    <aside className="studio-explorer" style={width ? { width } : undefined}>
+      <div className="studio-explorer-header">
+        <span className="studio-explorer-title">Files</span>
+        <div style={{ display: 'flex', gap: 2 }}>
+          <button className="studio-icon-btn" onClick={() => createFile('src')} title="New file in src/"><FilePlus size={14} /></button>
+          <button className="studio-icon-btn" onClick={() => createFolder('src')} title="New folder in src/"><FolderPlus size={14} /></button>
+          {framework === 'react' && (
+            <button className="studio-icon-btn" onClick={onKitSettings} title="Kit Settings"><Settings2 size={14} /></button>
+          )}
+        </div>
+      </div>
+      <div className="studio-explorer-scroll">
+        {files.length === 0
+          ? <div className="studio-tree-empty">No files</div>
+          : renderDir(tree, 0)}
+      </div>
+    </aside>
+  );
+};
+
+export default FileExplorer;
