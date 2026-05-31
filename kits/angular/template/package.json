@@ -5,7 +5,7 @@
   "license": "MIT",
   "sideEffects": false,
   "scripts": {
-    "build": "ng-packagr -p ng-package.json",
+    "build": "ng-packagr -p ng-package.json && node postbuild.mjs",
     "prepack": "npm run build"
   },
   "peerDependencies": {

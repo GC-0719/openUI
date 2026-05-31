@@ -39,15 +39,12 @@ npm run build --prefix kits/angular/template   # runs ng-packagr
 npm publish kits/angular/template/dist --access public
 ```
 
-Consumers import the standalone components:
+Consumers import the standalone components and the kit stylesheet:
 
 ```ts
 import { ButtonComponent, CardComponent } from '@openui/angular';
+import '@openui/angular/styles.css';
 ```
-
-> The kit stylesheet (`kits/angular/template/src/styles/openui.css`) is global
-> and not yet bundled into the package — copy it into your app for now (a
-> packaged `styles.css` entry is a planned follow-up).
 
 ## Publish a user-exported kit (publish-by-name)
 The studio's **Export → ZIP** produces a `package/` folder named from the

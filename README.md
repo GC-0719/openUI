@@ -89,6 +89,7 @@ npm install @openui/angular
 ```
 ```ts
 import { ButtonComponent, CardComponent } from '@openui/angular';
+import '@openui/angular/styles.css';
 ```
 
 ## Export & publish your kit
