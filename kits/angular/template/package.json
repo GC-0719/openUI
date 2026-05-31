@@ -1,27 +1,34 @@
 {
-  "name": "openui-angular",
-  "version": "1.0.0",
-  "private": true,
+  "name": "@openui/angular",
+  "version": "0.1.0",
+  "description": "openUI — a 24-component Angular (standalone) design system kit.",
+  "license": "MIT",
+  "sideEffects": false,
   "scripts": {
-    "start": "ng serve",
-    "build": "ng build"
+    "build": "ng-packagr -p ng-package.json",
+    "prepack": "npm run build"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=18",
+    "@angular/core": ">=18",
+    "@angular/forms": ">=18"
   },
   "dependencies": {
-    "@angular/animations": "^17.0.0",
-    "@angular/common": "^17.0.0",
-    "@angular/compiler": "^17.0.0",
-    "@angular/core": "^17.0.0",
-    "@angular/forms": "^17.0.0",
-    "@angular/platform-browser": "^17.0.0",
-    "@angular/platform-browser-dynamic": "^17.0.0",
-    "@angular/router": "^17.0.0",
-    "rxjs": "^7.8.0",
-    "tslib": "^2.6.0",
-    "zone.js": "^0.14.0"
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
-    "@angular/cli": "^17.0.0",
-    "@angular/compiler-cli": "^17.0.0",
-    "typescript": "^5.2.0"
+    "@angular/compiler": "^21.2.12",
+    "@angular/compiler-cli": "^21.2.12",
+    "ng-packagr": "^21.0.0",
+    "typescript": "5.9"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": ["angular", "ui", "components", "design-system", "openui"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openui/openui.git",
+    "directory": "kits/angular/template"
   }
 }

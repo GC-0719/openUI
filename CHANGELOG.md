@@ -16,6 +16,9 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
   matching a connected backend's schema.
 - **Landing page** for the studio.
 - **`@openui/react`** publishable component package (Vite library build).
+- **`@openui/angular`** publishable component package (ng-packagr / Angular
+  Package Format), plus Angular agent parity (full-app builds + MCP service
+  generation).
 - **Publish-by-name export** — `/api/export` emits a publishable `package/`
   named from your kit name + optional npm scope, and bundles the whole `src/`.
 - MIT license, README, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT, CI.

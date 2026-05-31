@@ -457,11 +457,22 @@ ${compSummary}
 ## Import pattern:
 import { ButtonComponent, CardComponent, BadgeComponent } from '../../components/ui';
 ${barrelCtx}
-## File conventions:
-- New pages → \`src/app/pages/name.component.ts\` (selector: \`app-name\`, standalone)
-- Register in \`src/app/app.component.ts\` imports array + template
+## Project structure (create files anywhere under src/app as needed):
+- Pages → \`src/app/pages/name.component.ts\` (standalone, selector \`app-name\`)
+- Reusable components → \`src/app/components/name.component.ts\` (standalone)
+- Services / data access → \`src/app/services/name.service.ts\` (\`@Injectable({ providedIn: 'root' })\`, inject with \`inject(NameService)\`)
+- Register new pages in \`src/app/app.component.ts\` (imports array + template) so they render in the preview
+- Extract shared logic into services instead of duplicating it across components
 ${activeFilePath ? `\n## Currently open file (edit this for any related request): \`${activeFilePath}\`\n\`\`\`\n${activeFileContent}\n\`\`\`` : ''}
-${mcpContext ? `\n## Backend context (MCP servers):\n${mcpContext}` : ''}${treeCtx}
+${mcpContext ? `
+## Connected backend (MCP servers) — BUILD THE FRONTEND AGAINST THIS:
+${mcpContext}
+
+When a backend is connected:
+- Create an injectable data service at \`src/app/services/api.service.ts\` with one async method per relevant tool/endpoint (use the browser \`fetch\` API) returning the data shapes shown above.
+- Use the EXACT field names and types from the schema and sample data — never invent fields.
+- Build the matching UI bound to those fields, with loading and error states.
+` : ''}${treeCtx}
 Write complete file content. Never truncate.`;
   }
 

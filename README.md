@@ -74,12 +74,21 @@ and the preview iframe renders the running workspace app.
 
 ## Using the kit in your own project
 
+**React:**
 ```bash
 npm install @openui/react
 ```
 ```jsx
 import { Button, Card, Badge } from '@openui/react';
 import '@openui/react/styles.css';
+```
+
+**Angular** (standalone components):
+```bash
+npm install @openui/angular
+```
+```ts
+import { ButtonComponent, CardComponent } from '@openui/angular';
 ```
 
 ## Export & publish your kit

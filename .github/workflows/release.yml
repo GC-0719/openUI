@@ -17,8 +17,14 @@ jobs:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
-      - name: Publish
+      - name: Publish @openui/react
         working-directory: kits/react/template
         run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Build @openui/angular
+        run: npm run build --prefix kits/angular/template
+      - name: Publish @openui/angular
+        run: npm publish kits/angular/template/dist --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

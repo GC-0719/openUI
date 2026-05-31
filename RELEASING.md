@@ -30,6 +30,25 @@ import { Button, Card } from '@openui/react';
 import '@openui/react/styles.css';
 ```
 
+## Publish the bundled `@openui/angular`
+From `kits/angular/template/` (ng-packagr builds an Angular Package Format
+bundle into `dist/`, which is what gets published):
+
+```bash
+npm run build --prefix kits/angular/template   # runs ng-packagr
+npm publish kits/angular/template/dist --access public
+```
+
+Consumers import the standalone components:
+
+```ts
+import { ButtonComponent, CardComponent } from '@openui/angular';
+```
+
+> The kit stylesheet (`kits/angular/template/src/styles/openui.css`) is global
+> and not yet bundled into the package — copy it into your app for now (a
+> packaged `styles.css` entry is a planned follow-up).
+
 ## Publish a user-exported kit (publish-by-name)
 The studio's **Export → ZIP** produces a `package/` folder named from the
 user's kit name and optional npm scope (set in the Export dialog). From the
