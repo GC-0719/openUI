@@ -432,10 +432,10 @@ const Studio = () => {
   // Preview URL — use agent page route when one is active.
   // Angular gets ?t= cache-buster so Vite serves fresh CSS on every save.
   const previewSrc = activeAgentPage
-    ? `/kit-preview.html#/ai/${activeAgentPage}`
+    ? `/preview/kit-preview.html#/ai/${activeAgentPage}`
     : framework === 'angular'
-      ? `/angular-app.html?t=${previewKey}`
-      : '/kit-preview.html';
+      ? `/preview/angular-app.html?t=${previewKey}`
+      : '/preview/kit-preview.html';
 
   const openSettings = useCallback((tab = 'ai') => {
     setAiSettingsTab(tab);

@@ -29,8 +29,8 @@ const ComponentPreview = ({ filePath, previewKey = 0, framework = 'react' }) => 
   }
 
   const src = framework === 'angular'
-    ? `/angular-app.html?preview=${encodeURIComponent(component.name)}&t=${previewKey}`
-    : `/kit-preview.html?preview=${encodeURIComponent(component.name)}#t=${previewKey}`;
+    ? `/preview/angular-app.html?preview=${encodeURIComponent(component.name)}&t=${previewKey}`
+    : `/preview/kit-preview.html?preview=${encodeURIComponent(component.name)}#t=${previewKey}`;
 
   return (
     <iframe

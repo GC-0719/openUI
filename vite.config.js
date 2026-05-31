@@ -568,20 +568,32 @@ const workspaceSandboxPlugin = {
   },
 };
 
-// ── Plugin ────────────────────────────────────────────────────────────────────
+// ── Local dev-server backend ────────────────────────────────────────────────
+// openUI is a LOCAL-FIRST tool: these endpoints (AI proxy, workspace file CRUD,
+// MCP bridge, export) intentionally live in the Vite dev server for zero-setup
+// local use. They are NOT meant for network/production hosting — see SECURITY.md.
+// Guardrails kept here: every fs path goes through resolveIn()/safeKit() (no `..`
+// traversal outside kits/<kit>), zipping happens client-side (JSZip), and the
+// heaviest recursive reads are async so they never block HMR. For a hosted /
+// multi-tenant deployment, split these handlers into a standalone Node service.
 const openuiDevPlugin = {
   name: 'openui-dev',
   configureServer(server) {
     const cwd = process.cwd();
 
-    // Resolve a workspace-relative path safely. Returns the absolute path only if
-    // it stays inside the kit's workspace root; otherwise null (blocks `..` traversal).
-    const resolveWs = (kit, relPath) => {
-      const wsRoot = path.join(cwd, KITS_DIR, kit || 'react', 'workspace');
-      const full = path.resolve(wsRoot, relPath || '');
-      if (full !== wsRoot && !full.startsWith(wsRoot + path.sep)) return null;
+    // ── Path safety ───────────────────────────────────────────────────────────
+    // `kit` must be a known workspace; resolved paths must stay inside
+    // kits/<kit>/<source> (blocks `..` path traversal outside the sandbox).
+    const safeKit = (k) => (k === 'react' || k === 'angular' ? k : null);
+    const resolveIn = (kit, source, relPath) => {
+      if (!safeKit(kit)) return null;
+      if (source !== 'workspace' && source !== 'template') return null;
+      const baseRoot = path.resolve(cwd, KITS_DIR, kit, source);
+      const full = path.resolve(baseRoot, relPath || '');
+      if (full !== baseRoot && !full.startsWith(baseRoot + path.sep)) return null;
       return full;
     };
+    const resolveWs = (kit, relPath) => resolveIn(kit, 'workspace', relPath);
 
     // ── AI completions ────────────────────────────────────────────────────────
     server.middlewares.use('/api/ai', async (req, res) => {
@@ -701,7 +713,8 @@ const openuiDevPlugin = {
         const kit = url.searchParams.get('kit') || 'react';
         const source = url.searchParams.get('source') || 'workspace'; // 'workspace' | 'template'
         if (!filePath) { json(res, 400, { error: 'Missing path' }); return; }
-        const full = path.join(cwd, KITS_DIR, kit, source, filePath);
+        const full = resolveIn(kit, source, filePath);
+        if (!full) { json(res, 400, { error: 'Invalid path' }); return; }
         const content = fs.readFileSync(full, 'utf-8');
         json(res, 200, { content });
       } catch (err) {
@@ -714,7 +727,8 @@ const openuiDevPlugin = {
       if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
       try {
         const { path: filePath, content, kit = 'react' } = JSON.parse(await readBody(req));
-        const full = path.join(cwd, KITS_DIR, kit, 'workspace', filePath);
+        const full = resolveWs(kit, filePath);
+        if (!full) { json(res, 400, { error: 'Invalid path' }); return; }
         fs.mkdirSync(path.dirname(full), { recursive: true });
         fs.writeFileSync(full, content, 'utf-8');
         // Invalidate Vite's transform cache immediately so the next iframe load
@@ -732,7 +746,8 @@ const openuiDevPlugin = {
       if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
       try {
         const { path: filePath, kit = 'react' } = JSON.parse(await readBody(req));
-        const full = path.join(cwd, KITS_DIR, kit, 'workspace', filePath);
+        const full = resolveWs(kit, filePath);
+        if (!full) { json(res, 400, { error: 'Invalid path' }); return; }
         if (fs.existsSync(full)) {
           fs.unlinkSync(full);
           const mods = server.moduleGraph.getModulesByFile(full);
@@ -808,6 +823,7 @@ const openuiDevPlugin = {
       if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
       try {
         const { kit = 'react' } = JSON.parse(await readBody(req) || '{}');
+        if (!safeKit(kit)) { json(res, 400, { error: 'Invalid kit' }); return; }
         const wsPath = path.join(cwd, KITS_DIR, kit, 'workspace');
         const tmplPath = path.join(cwd, KITS_DIR, kit, 'template');
         if (!fs.existsSync(tmplPath)) { json(res, 404, { error: 'Template not found' }); return; }
@@ -881,6 +897,7 @@ const openuiDevPlugin = {
       try {
         const url = new URL(req.url, 'http://localhost');
         const kit = url.searchParams.get('kit') || 'react';
+        if (!safeKit(kit)) { json(res, 400, { error: 'Invalid kit' }); return; }
         const wsRoot = path.join(cwd, KITS_DIR, kit, 'workspace');
         const files = {};
         const EXTS = kit === 'angular'
@@ -943,6 +960,7 @@ const openuiDevPlugin = {
       try {
         const url = new URL(req.url, 'http://localhost');
         const kit = url.searchParams.get('kit') || 'react';
+        if (!safeKit(kit)) { json(res, 400, { error: 'Invalid kit' }); return; }
         const wsRoot = path.join(cwd, KITS_DIR, kit, 'workspace');
         const EXTS = kit === 'angular'
           ? new Set(['.ts', '.css', '.json', '.md', '.html'])
@@ -1194,22 +1212,24 @@ Variants: ${(variants || []).join(', ')}`;
         const files = {};
         const TEXT_EXTS = new Set(['.jsx', '.js', '.css', '.html', '.json', '.md']);
 
-        const readPath = (wsRelPath) => {
+        // Async + yields between I/O so a large export never blocks Vite's
+        // event loop (and thus never freezes HMR / the studio UI).
+        const readPath = async (wsRelPath) => {
           const full = path.join(wsRoot, wsRelPath);
-          if (!fs.existsSync(full)) return;
           const bn = path.basename(full);
           if (bn.startsWith('._') || bn === '.DS_Store' || bn === 'node_modules') return;
-          const stat = fs.statSync(full);
+          let stat;
+          try { stat = await fs.promises.stat(full); } catch { return; }
           if (stat.isDirectory()) {
-            for (const f of fs.readdirSync(full)) readPath(`${wsRelPath}/${f}`);
+            for (const f of await fs.promises.readdir(full)) await readPath(`${wsRelPath}/${f}`);
           } else if (TEXT_EXTS.has(path.extname(full))) {
-            try { files[wsRelPath] = fs.readFileSync(full, 'utf-8'); } catch { /* skip */ }
+            try { files[wsRelPath] = await fs.promises.readFile(full, 'utf-8'); } catch { /* skip */ }
           }
         };
 
         // Read the entire workspace src/ — includes agent-built pages, hooks,
         // lib/services, components, and styles, not just the kit defaults.
-        readPath('src');
+        await readPath('src');
 
         // Bake CSS overrides
         const varRules = Object.entries(cssVars).map(([k, v]) => `  ${k}: ${v};`).join('\n');

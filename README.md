@@ -49,6 +49,13 @@ OPENUI_AI_KEY=sk-ant-... npm run dev      # React studio
 
 Open the printed URL, click **Open the Studio**, and start building.
 
+> **One install is enough.** A single root `npm install` is all you need to run
+> the studio and preview **both** kits — the React and Angular kits compile from
+> the root's dependencies via the studio's Vite dev server. There are no npm
+> workspaces and no separate installs inside `kits/*`. (The per-kit
+> `package.json` files exist only for **publishing** the packages — see
+> [RELEASING.md](RELEASING.md) — and aren't needed to develop or preview.)
+
 > `npm run dev:angular` launches the Angular workspace. `OPENUI_AI_KEY` is
 > optional — you can also paste a key into the in-app AI settings (stored only
 > in your browser's localStorage).
