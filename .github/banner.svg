@@ -27,12 +27,22 @@
   <rect width="1200" height="320" fill="url(#glow)"/>
 
   <!-- Brand row -->
-  <g transform="translate(80 64)">
-    <rect width="56" height="56" rx="15" fill="url(#logo)"/>
-    <text x="28" y="40" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="30" fill="#ffffff" text-anchor="middle">◍</text>
-    <text x="76" y="40" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="30" font-weight="800" fill="#f8f8f8" letter-spacing="-0.5">openUI</text>
-    <rect x="240" y="14" width="118" height="28" rx="14" fill="#6366F1" fill-opacity="0.12" stroke="#6366F1" stroke-opacity="0.3"/>
-    <text x="299" y="33" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#a5b4fc" text-anchor="middle">MIT · v0.1.0</text>
+  <g transform="translate(80 62)">
+    <!-- openUI mark (scaled to 56) -->
+    <g transform="scale(1.75)">
+      <rect width="32" height="32" rx="9" fill="url(#logo)"/>
+      <rect x="6.5" y="9.5" width="19" height="13.5" rx="3.2" fill="#ffffff"/>
+      <rect x="6.5" y="9.5" width="6.6" height="13.5" rx="3.2" fill="#6366F1" fill-opacity="0.14"/>
+      <circle cx="9.8" cy="13.2" r="1.05" fill="#6366F1" fill-opacity="0.7"/>
+      <rect x="15.4" y="13.4" width="7.6" height="1.9" rx="0.95" fill="#6366F1" fill-opacity="0.55"/>
+      <rect x="15.4" y="17.6" width="5" height="1.9" rx="0.95" fill="#6366F1" fill-opacity="0.32"/>
+      <path d="M24.3 3.4l.97 2.33 2.33.97-2.33.97-.97 2.33-.97-2.33L20.03 6.7l2.33-.97z" fill="#ffffff"/>
+    </g>
+    <text x="72" y="40" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="30" letter-spacing="-0.5">
+      <tspan font-weight="500" fill="#e7e7ee">open</tspan><tspan font-weight="800" fill="#a5b4fc">UI</tspan>
+    </text>
+    <rect x="196" y="14" width="118" height="28" rx="14" fill="#6366F1" fill-opacity="0.12" stroke="#6366F1" stroke-opacity="0.3"/>
+    <text x="255" y="33" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#a5b4fc" text-anchor="middle">MIT · v0.1.0</text>
   </g>
 
   <!-- Headline -->

@@ -9,6 +9,7 @@ import ComponentPreview from '../components/studio/ComponentPreview';
 import SpecEditor from '../components/studio/SpecEditor';
 import AuditPanel from '../components/studio/AuditPanel';
 import ErrorBoundary from '../components/studio/ErrorBoundary';
+import { BrandLogo, Wordmark } from '../components/BrandLogo';
 import '../styles/studio.css';
 import '../styles/docs.css';
 
@@ -446,8 +447,8 @@ const Studio = () => {
       {/* ── Top Bar ── */}
       <div className="studio-topbar">
         <Link to="/" className="studio-topbar-brand">
-          <div className="logo-sq">◍</div>
-          <span>openUI</span>
+          <BrandLogo size={24} />
+          <Wordmark size={15} />
         </Link>
         <div className="studio-topbar-sep" />
 
@@ -493,6 +494,10 @@ const Studio = () => {
 
       {/* ── Body ── */}
       <div className="studio-root" style={{ flex: 1, height: 0, cursor: isDragging ? 'col-resize' : undefined, userSelect: isDragging ? 'none' : undefined }}>
+
+        {/* While dragging, this overlay sits above the preview iframe so it can't
+            swallow mousemove/mouseup events and break the resize. */}
+        {isDragging && <div className="studio-drag-overlay" />}
 
         {showExplorer && (
           <>

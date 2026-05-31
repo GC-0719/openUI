@@ -16,6 +16,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useAI } from '../context/AIContext';
+import { BrandLogo, Wordmark } from '../components/BrandLogo';
 import '../styles/home.css';
 
 // Set when the public repo lands (Milestone 4).
@@ -116,8 +117,8 @@ export default function Home() {
       {/* ── Nav ── */}
       <header className="lp-nav">
         <div className="lp-brand">
-          <div className="lp-logo">◍</div>
-          <span className="lp-brand-name">openUI</span>
+          <BrandLogo size={30} />
+          <Wordmark size={19} />
         </div>
         <nav className="lp-nav-links">
           <a href="#features">Features</a>
@@ -292,8 +293,8 @@ export default function Home() {
       {/* ── Footer ── */}
       <footer className="lp-footer">
         <div className="lp-brand">
-          <div className="lp-logo lp-logo-sm">◍</div>
-          <span>openUI</span>
+          <BrandLogo size={22} />
+          <Wordmark size={15} />
         </div>
         <div className="lp-footer-meta">
           <span>MIT License</span>

@@ -168,6 +168,14 @@
   background: rgba(99,102,241,0.45);
 }
 
+/* Captures pointer events during a drag so the preview iframe can't break it. */
+.studio-drag-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  cursor: col-resize;
+}
+
 /* ── File tabs bar (sits below Code/Preview header, replaces path row) ───── */
 .studio-tabs-bar {
   display: flex;
