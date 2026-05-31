@@ -2,20 +2,20 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'l-drawer',
+  selector: 'ou-drawer',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div *ngIf="open" class="l-drawer-overlay" (click)="closeOnOverlay && close.emit()">
+    <div *ngIf="open" class="ou-drawer-overlay" (click)="closeOnOverlay && close.emit()">
       <div
-        [class]="'l-drawer l-drawer-' + position"
+        [class]="'ou-drawer ou-drawer-' + position"
         (click)="$event.stopPropagation()"
       >
-        <div class="l-drawer-header">
-          <span class="l-drawer-title">{{ title }}</span>
-          <button class="l-modal-close" (click)="close.emit()">✕</button>
+        <div class="ou-drawer-header">
+          <span class="ou-drawer-title">{{ title }}</span>
+          <button class="ou-modal-close" (click)="close.emit()">✕</button>
         </div>
-        <div class="l-drawer-body">
+        <div class="ou-drawer-body">
           <ng-content></ng-content>
         </div>
       </div>

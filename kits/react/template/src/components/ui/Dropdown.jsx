@@ -62,7 +62,7 @@ export const Dropdown = ({
     ? createPortal(
         <div
           ref={menuRef}
-          className="l-dropdown-menu animate-fade-in"
+          className="ou-dropdown-menu animate-fade-in"
           style={{
             ...menuStyle,
             background: 'var(--surface)',
@@ -80,13 +80,13 @@ export const Dropdown = ({
 
   return (
     <div
-      className={`l-dropdown ${className}`}
+      className={`ou-dropdown ${className}`}
       style={{ position: 'relative', display: 'inline-block', ...style }}
       {...props}
     >
       <div ref={triggerRef} onClick={() => setIsOpen(o => !o)} style={{ cursor: 'pointer' }}>
         {trigger ?? (
-          <button className="l-btn l-btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button className="ou-btn ou-btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             Options
           </button>
         )}
@@ -98,7 +98,7 @@ export const Dropdown = ({
 
 export const DropdownItem = ({ children, icon: Icon, onClick, danger = false, ...props }) => (
   <div
-    className={`l-dropdown-item ${danger ? 'l-dropdown-item-danger' : ''}`}
+    className={`ou-dropdown-item ${danger ? 'ou-dropdown-item-danger' : ''}`}
     onClick={onClick}
     style={{
       padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '12px',

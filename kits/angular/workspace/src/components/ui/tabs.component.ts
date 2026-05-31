@@ -2,15 +2,15 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'l-tabs',
+  selector: 'ou-tabs',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="l-tabs">
-      <div class="l-tabs-list">
+    <div class="ou-tabs">
+      <div class="ou-tabs-list">
         <button
           *ngFor="let tab of tabs"
-          [class]="'l-tab' + (active === tab ? ' l-tab-active' : '')"
+          [class]="'ou-tab' + (active === tab ? ' ou-tab-active' : '')"
           (click)="active = tab; activeChange.emit(tab)"
         >{{ tab }}</button>
       </div>

@@ -19,7 +19,7 @@ export const ToastProvider = ({ children }) => {
   return (
     <ToastContext.Provider value={{ addToast }}>
       {children}
-      <div className="l-toast-container" style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div className="ou-toast-container" style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {toasts.map((toast) => (
           <Toast key={toast.id} {...toast} onClose={() => removeToast(toast.id)} />
         ))}
@@ -48,7 +48,7 @@ const Toast = ({ title, message, variant = 'info', onClose }) => {
 
   return (
     <div 
-      className={`l-toast l-toast-${variant} animate-slide-in-right`}
+      className={`ou-toast ou-toast-${variant} animate-slide-in-right`}
       style={{
         width: '320px', background: 'var(--surface)', border: '1px solid var(--border)',
         borderRadius: '12px', padding: '16px', display: 'flex', gap: '12px',

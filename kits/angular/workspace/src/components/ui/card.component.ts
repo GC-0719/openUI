@@ -2,11 +2,11 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'l-card',
+  selector: 'ou-card',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div [class]="'l-card' + (hover ? ' l-card-hover' : '') + (glass ? ' l-card-glass' : '')">
+    <div [class]="'ou-card' + (hover ? ' ou-card-hover' : '') + (glass ? ' ou-card-glass' : '')">
       <ng-content></ng-content>
     </div>
   `,

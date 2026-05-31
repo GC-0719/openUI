@@ -11,7 +11,7 @@ export const Tabs = ({
 }) => {
   return (
     <div 
-      className={`l-tabs l-tabs-${variant} ${className}`}
+      className={`ou-tabs ou-tabs-${variant} ${className}`}
       style={{ display: 'flex', gap: '4px', background: 'var(--surface-raised)', padding: '4px', borderRadius: '10px', ...style }}
       {...props}
     >
@@ -19,7 +19,7 @@ export const Tabs = ({
         <button
           key={tab.id}
           onClick={() => onChange(tab.id)}
-          className={`l-tab ${activeTab === tab.id ? 'active' : ''}`}
+          className={`ou-tab ${activeTab === tab.id ? 'active' : ''}`}
           style={{
             padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer',
             fontSize: '13px', fontWeight: '500', transition: 'all 0.2s',

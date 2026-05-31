@@ -3,15 +3,15 @@ import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'l-input',
+  selector: 'ou-input',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => InputComponent), multi: true }],
   template: `
-    <div class="l-input-wrap">
-      <label *ngIf="label" class="l-input-label">{{ label }}</label>
+    <div class="ou-input-wrap">
+      <label *ngIf="label" class="ou-input-label">{{ label }}</label>
       <input
-        [class]="'l-input' + (error ? ' l-input-error' : '')"
+        [class]="'ou-input' + (error ? ' ou-input-error' : '')"
         [type]="type"
         [placeholder]="placeholder"
         [disabled]="disabled"
@@ -19,8 +19,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
         (input)="onInput($event)"
         (blur)="onTouched()"
       />
-      <span *ngIf="error" class="l-input-hint l-input-hint-error">{{ error }}</span>
-      <span *ngIf="hint && !error" class="l-input-hint">{{ hint }}</span>
+      <span *ngIf="error" class="ou-input-hint ou-input-hint-error">{{ error }}</span>
+      <span *ngIf="hint && !error" class="ou-input-hint">{{ hint }}</span>
     </div>
   `,
 })

@@ -2,12 +2,12 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'l-button',
+  selector: 'ou-button',
   standalone: true,
   imports: [CommonModule],
   template: `
     <button
-      [class]="'l-btn l-btn-' + variant + ' l-btn-' + size"
+      [class]="'ou-btn ou-btn-' + variant + ' ou-btn-' + size"
       [disabled]="disabled"
       [attr.type]="type"
     >

@@ -3,16 +3,16 @@ import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: 'l-switch',
+  selector: 'ou-switch',
   standalone: true,
   imports: [CommonModule],
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SwitchComponent), multi: true }],
   template: `
-    <label class="l-switch" (click)="toggle()">
-      <span [class]="'l-switch-track' + (checked ? ' l-switch-on' : '')">
-        <span class="l-switch-thumb"></span>
+    <label class="ou-switch" (click)="toggle()">
+      <span [class]="'ou-switch-track' + (checked ? ' ou-switch-on' : '')">
+        <span class="ou-switch-thumb"></span>
       </span>
-      <span *ngIf="label" class="l-switch-label">{{ label }}</span>
+      <span *ngIf="label" class="ou-switch-label">{{ label }}</span>
     </label>
   `,
 })

@@ -10,7 +10,7 @@ export const Switch = ({
 }) => {
   return (
     <div 
-      className={`l-switch ${active ? 'l-switch-active' : ''} ${disabled ? 'l-disabled' : ''} ${className}`}
+      className={`ou-switch ${active ? 'ou-switch-active' : ''} ${disabled ? 'ou-disabled' : ''} ${className}`}
       onClick={() => !disabled && onChange(!active)}
       style={{
         width: '44px', height: '24px', background: active ? 'var(--primary)' : 'var(--surface-raised)',

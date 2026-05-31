@@ -2,9 +2,9 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 
 const AIContext = createContext(null);
 
-const STORAGE_KEY = 'lumina-ai-settings';
-const KIT_STORAGE_KEY = 'lumina-kit-settings';
-const MCP_STORAGE_KEY = 'lumina-mcp-servers';
+const STORAGE_KEY = 'openui-ai-settings';
+const KIT_STORAGE_KEY = 'openui-kit-settings';
+const MCP_STORAGE_KEY = 'openui-mcp-servers';
 
 export const AI_PROVIDERS = {
   claude: {
@@ -51,7 +51,7 @@ const defaultSettings = {
   apiKey: '',
   baseUrl: 'http://localhost:11434/v1',
 };
-const defaultKit = { kitName: 'Lumina UI', kitPrefix: 'l' };
+const defaultKit = { kitName: 'openUI', kitPrefix: 'ou' };
 
 export const AIProvider = ({ children }) => {
   const [settings, setSettings] = useState(() => {

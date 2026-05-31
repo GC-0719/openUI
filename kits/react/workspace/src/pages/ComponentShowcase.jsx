@@ -9,7 +9,7 @@ import {
   Dropdown, DropdownItem, DropdownDivider,
   Drawer, ToastProvider, useToast,
 } from '../components/ui';
-import '../styles/lumina.css';
+import '../styles/openui.css';
 
 // ── Layout helpers ────────────────────────────────────────────────────────────
 
@@ -91,15 +91,15 @@ function PreviewCard() {
           <div style={{ fontWeight: 600, marginBottom: 4 }}>Default</div>
           <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>Surface container.</div>
         </Card>
-        <Card className="l-card-glass" style={{ padding: 20, minWidth: 160 }}>
+        <Card className="ou-card-glass" style={{ padding: 20, minWidth: 160 }}>
           <div style={{ fontWeight: 600, marginBottom: 4 }}>Glass</div>
           <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>Frosted glass.</div>
         </Card>
-        <Card className="l-card-hover" style={{ padding: 20, minWidth: 160 }}>
+        <Card className="ou-card-hover" style={{ padding: 20, minWidth: 160 }}>
           <div style={{ fontWeight: 600, marginBottom: 4 }}>Hover</div>
           <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>Lifts on hover.</div>
         </Card>
-        <Card className="l-card-glow" style={{ padding: 20, minWidth: 160 }}>
+        <Card className="ou-card-glow" style={{ padding: 20, minWidth: 160 }}>
           <div style={{ fontWeight: 600, marginBottom: 4 }}>Glow</div>
           <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>Primary glow.</div>
         </Card>
@@ -117,8 +117,8 @@ function PreviewAvatar() {
         <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=carol" size="lg" alt="Carol" />
       </Sect>
       <Sect label="Variants">
-        <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=dave" alt="Dave" className="l-avatar-ring" />
-        <div className="l-avatar-group">
+        <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=dave" alt="Dave" className="ou-avatar-ring" />
+        <div className="ou-avatar-group">
           <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=a" alt="A" />
           <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=b" alt="B" />
           <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=c" alt="C" />
@@ -316,11 +316,11 @@ function PreviewChip() {
     <div style={COL}>
       <Sect label="Variants">
         <Chip>Default</Chip>
-        <Chip className="l-chip-primary">Primary</Chip>
-        <Chip className="l-chip-success">Success</Chip>
-        <Chip className="l-chip-warning">Warning</Chip>
-        <Chip className="l-chip-danger">Danger</Chip>
-        <Chip className="l-chip-outline">Outline</Chip>
+        <Chip className="ou-chip-primary">Primary</Chip>
+        <Chip className="ou-chip-success">Success</Chip>
+        <Chip className="ou-chip-warning">Warning</Chip>
+        <Chip className="ou-chip-danger">Danger</Chip>
+        <Chip className="ou-chip-outline">Outline</Chip>
       </Sect>
     </div>
   );
@@ -372,7 +372,7 @@ function PreviewNavbar() {
     <div style={COL}>
       <Sect label="Default">
         <Navbar style={{ width: '100%' }}>
-          <NavbarBrand>Lumina</NavbarBrand>
+          <NavbarBrand>openUI</NavbarBrand>
           <NavbarActions>
             <Button variant="ghost" size="sm">Docs</Button>
             <Button variant="ghost" size="sm">Blog</Button>
@@ -381,8 +381,8 @@ function PreviewNavbar() {
         </Navbar>
       </Sect>
       <Sect label="Glass">
-        <Navbar className="l-navbar-glass" style={{ width: '100%' }}>
-          <NavbarBrand>Lumina</NavbarBrand>
+        <Navbar className="ou-navbar-glass" style={{ width: '100%' }}>
+          <NavbarBrand>openUI</NavbarBrand>
           <NavbarActions>
             <Button variant="ghost" size="sm">Docs</Button>
             <Button variant="outline" size="sm">Sign in</Button>
@@ -495,7 +495,7 @@ function PreviewList() {
           {items.map((item, i) => (
             <ListItem
               key={i}
-              className={active === i ? 'l-list-item-active' : ''}
+              className={active === i ? 'ou-list-item-active' : ''}
               onClick={() => setActive(i)}
               style={{ cursor: 'pointer' }}
             >

@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Angular Kit — Lumina UI</title>
-  <link rel="stylesheet" href="/kits/angular/workspace/src/styles/lumina.css" />
+  <title>Angular Kit — openUI</title>
+  <link rel="stylesheet" href="/kits/angular/workspace/src/styles/openui.css" />
   <link rel="stylesheet" href="/kits/angular/workspace/src/styles/demo.css" />
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <style>
-    .l-demo-notif-dot {
+    .ou-demo-notif-dot {
       position: absolute; top: 6px; right: 6px;
       width: 6px; height: 6px;
       background: var(--accent); border-radius: 50%;
     }
-    .l-demo-icon-btn { position: relative; }
+    .ou-demo-icon-btn { position: relative; }
     .ng-badge {
       display: inline-flex; align-items: center; justify-content: center;
       width: 28px; height: 28px; border-radius: 6px;
@@ -22,70 +22,70 @@
       flex-shrink: 0;
     }
     /* Angular component selectors used as display:block where needed */
-    l-navbar { display: block; }
-    l-toast-provider { display: contents; }
-    l-modal[style*="display: none"], l-drawer[style*="display: none"] { display: none !important; }
+    ou-navbar { display: block; }
+    ou-toast-provider { display: contents; }
+    ou-modal[style*="display: none"], ou-drawer[style*="display: none"] { display: none !important; }
   </style>
 </head>
 <body>
-<l-toast-provider>
-<div class="l-demo-layout">
+<ou-toast-provider>
+<div class="ou-demo-layout">
 
   <!-- ── SIDEBAR ── -->
-  <aside class="l-demo-sidebar">
-    <div class="l-demo-brand">
+  <aside class="ou-demo-sidebar">
+    <div class="ou-demo-brand">
       <div class="ng-badge">ng</div>
       <div>
-        <div class="l-demo-brand-name">Angular</div>
+        <div class="ou-demo-brand-name">Angular</div>
       </div>
-      <l-badge variant="primary" style="font-size:9px;padding:2px 6px">UI Kit</l-badge>
+      <ou-badge variant="primary" style="font-size:9px;padding:2px 6px">UI Kit</ou-badge>
     </div>
 
-    <nav class="l-demo-nav">
-      <span class="l-demo-nav-section">Main</span>
-      <l-nav-item active>
+    <nav class="ou-demo-nav">
+      <span class="ou-demo-nav-section">Main</span>
+      <ou-nav-item active>
         <i data-lucide="home"></i> Dashboard
-      </l-nav-item>
-      <l-nav-item>
+      </ou-nav-item>
+      <ou-nav-item>
         <i data-lucide="bar-chart-2"></i> Analytics
-      </l-nav-item>
-      <l-nav-item>
+      </ou-nav-item>
+      <ou-nav-item>
         <i data-lucide="users"></i> Team
-      </l-nav-item>
-      <l-nav-item>
+      </ou-nav-item>
+      <ou-nav-item>
         <i data-lucide="globe"></i> Global Traffic
-      </l-nav-item>
+      </ou-nav-item>
 
-      <span class="l-demo-nav-section">Infrastructure</span>
-      <l-nav-item>
+      <span class="ou-demo-nav-section">Infrastructure</span>
+      <ou-nav-item>
         <i data-lucide="database"></i> Database
-      </l-nav-item>
-      <l-nav-item>
+      </ou-nav-item>
+      <ou-nav-item>
         <i data-lucide="cpu"></i> Compute
-      </l-nav-item>
-      <l-nav-item style="justify-content:space-between">
+      </ou-nav-item>
+      <ou-nav-item style="justify-content:space-between">
         <span style="display:flex;align-items:center;gap:10px"><i data-lucide="shield"></i> Security</span>
-        <l-badge variant="danger" style="font-size:9px;padding:1px 5px">2</l-badge>
-      </l-nav-item>
-      <l-nav-item>
+        <ou-badge variant="danger" style="font-size:9px;padding:1px 5px">2</ou-badge>
+      </ou-nav-item>
+      <ou-nav-item>
         <i data-lucide="layers"></i> Services
-      </l-nav-item>
+      </ou-nav-item>
 
-      <span class="l-demo-nav-section">Preferences</span>
-      <l-nav-item onclick="toggleTheme()">
+      <span class="ou-demo-nav-section">Preferences</span>
+      <ou-nav-item onclick="toggleTheme()">
         <i data-lucide="moon" id="theme-icon"></i>
         <span id="theme-label">Light Mode</span>
-      </l-nav-item>
-      <l-nav-item>
+      </ou-nav-item>
+      <ou-nav-item>
         <i data-lucide="settings"></i> Settings
-      </l-nav-item>
+      </ou-nav-item>
     </nav>
 
-    <div class="l-demo-user">
-      <l-avatar initials="EW" size="sm" ring></l-avatar>
-      <div class="l-demo-user-info">
-        <div class="l-demo-user-name">Erica Wright</div>
-        <div class="l-demo-user-role">Admin · Pro</div>
+    <div class="ou-demo-user">
+      <ou-avatar initials="EW" size="sm" ring></ou-avatar>
+      <div class="ou-demo-user-info">
+        <div class="ou-demo-user-name">Erica Wright</div>
+        <div class="ou-demo-user-role">Admin · Pro</div>
       </div>
       <button style="background:none;border:none;cursor:pointer;color:var(--text-dim);display:flex" title="Sign out">
         <i data-lucide="log-out" style="width:14px;height:14px"></i>
@@ -94,183 +94,183 @@
   </aside>
 
   <!-- ── MAIN ── -->
-  <main class="l-demo-main">
+  <main class="ou-demo-main">
 
     <!-- ── NAVBAR ── -->
-    <l-navbar>
-      <l-navbar-brand>
-        <l-breadcrumbs items="Organization,System Intel,Dashboard"></l-breadcrumbs>
-      </l-navbar-brand>
-      <l-navbar-actions>
-        <l-input placeholder="Search..." type="text" style="width:200px"></l-input>
+    <ou-navbar>
+      <ou-navbar-brand>
+        <ou-breadcrumbs items="Organization,System Intel,Dashboard"></ou-breadcrumbs>
+      </ou-navbar-brand>
+      <ou-navbar-actions>
+        <ou-input placeholder="Search..." type="text" style="width:200px"></ou-input>
 
-        <l-tooltip text="Toggle theme" position="bottom">
-          <button class="l-demo-icon-btn" onclick="toggleTheme()">
+        <ou-tooltip text="Toggle theme" position="bottom">
+          <button class="ou-demo-icon-btn" onclick="toggleTheme()">
             <i data-lucide="moon" id="header-theme-icon"></i>
           </button>
-        </l-tooltip>
+        </ou-tooltip>
 
-        <l-tooltip text="Notifications" position="bottom">
-          <button class="l-demo-icon-btn" style="position:relative" onclick="showToast('No new alerts','All systems nominal.','info')">
+        <ou-tooltip text="Notifications" position="bottom">
+          <button class="ou-demo-icon-btn" style="position:relative" onclick="showToast('No new alerts','All systems nominal.','info')">
             <i data-lucide="bell"></i>
-            <span class="l-demo-notif-dot"></span>
+            <span class="ou-demo-notif-dot"></span>
           </button>
-        </l-tooltip>
+        </ou-tooltip>
 
-        <div class="l-dropdown-wrap">
-          <l-avatar initials="EW" size="sm" ring onclick="toggleDropdown('user-menu')" style="cursor:pointer"></l-avatar>
-          <div class="l-dropdown-menu" id="user-menu" style="display:none">
-            <button class="l-dropdown-item"><i data-lucide="settings" style="width:13px;height:13px"></i> Account Settings</button>
-            <button class="l-dropdown-item"><i data-lucide="credit-card" style="width:13px;height:13px"></i> Billing</button>
-            <div class="l-dropdown-divider"></div>
-            <button class="l-dropdown-item danger"><i data-lucide="log-out" style="width:13px;height:13px"></i> Sign Out</button>
+        <div class="ou-dropdown-wrap">
+          <ou-avatar initials="EW" size="sm" ring onclick="toggleDropdown('user-menu')" style="cursor:pointer"></ou-avatar>
+          <div class="ou-dropdown-menu" id="user-menu" style="display:none">
+            <button class="ou-dropdown-item"><i data-lucide="settings" style="width:13px;height:13px"></i> Account Settings</button>
+            <button class="ou-dropdown-item"><i data-lucide="credit-card" style="width:13px;height:13px"></i> Billing</button>
+            <div class="ou-dropdown-divider"></div>
+            <button class="ou-dropdown-item danger"><i data-lucide="log-out" style="width:13px;height:13px"></i> Sign Out</button>
           </div>
         </div>
-      </l-navbar-actions>
-    </l-navbar>
+      </ou-navbar-actions>
+    </ou-navbar>
 
     <!-- ── CONTENT ── -->
-    <div class="l-demo-content">
+    <div class="ou-demo-content">
 
       <!-- Page title row -->
       <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:8px">
         <div>
-          <h1 class="l-demo-page-title">Cloud Console</h1>
-          <p class="l-demo-page-sub">Live infrastructure health · Lumina Core v2.4</p>
+          <h1 class="ou-demo-page-title">Cloud Console</h1>
+          <p class="ou-demo-page-sub">Live infrastructure health · openUI Core v2.4</p>
         </div>
         <div style="display:flex;gap:10px;align-items:center">
-          <button class="l-demo-icon-btn" style="width:auto;padding:0 12px;gap:6px;display:flex;align-items:center;font-size:13px;color:var(--text-muted);border-radius:8px">
+          <button class="ou-demo-icon-btn" style="width:auto;padding:0 12px;gap:6px;display:flex;align-items:center;font-size:13px;color:var(--text-muted);border-radius:8px">
             <i data-lucide="refresh-cw" style="width:14px;height:14px"></i> Refresh
           </button>
-          <l-button variant="outline" size="sm">
+          <ou-button variant="outline" size="sm">
             <i data-lucide="download" style="width:13px;height:13px"></i> Export
-          </l-button>
-          <l-button variant="primary" size="sm" onclick="showToast('Deployment Started','Build pipeline triggered for auth-v3.','success')">
+          </ou-button>
+          <ou-button variant="primary" size="sm" onclick="showToast('Deployment Started','Build pipeline triggered for auth-v3.','success')">
             <i data-lucide="plus" style="width:13px;height:13px"></i> Deploy
-          </l-button>
+          </ou-button>
         </div>
       </div>
 
       <!-- Tabs -->
-      <div class="l-tabs" style="margin-bottom:24px">
-        <div class="l-tabs-list">
-          <button class="l-tab l-tab-active" onclick="switchTab(this)">Overview</button>
-          <button class="l-tab" onclick="switchTab(this)">Network</button>
-          <button class="l-tab" onclick="switchTab(this)">Activity</button>
+      <div class="ou-tabs" style="margin-bottom:24px">
+        <div class="ou-tabs-list">
+          <button class="ou-tab ou-tab-active" onclick="switchTab(this)">Overview</button>
+          <button class="ou-tab" onclick="switchTab(this)">Network</button>
+          <button class="ou-tab" onclick="switchTab(this)">Activity</button>
         </div>
       </div>
 
       <!-- Alert -->
-      <l-alert variant="warning" title="Maintenance" dismissible style="margin-bottom:24px">
+      <ou-alert variant="warning" title="Maintenance" dismissible style="margin-bottom:24px">
         Regional maintenance scheduled for <strong>EU-WEST-1</strong> — Sunday 02:00 UTC.
-        <l-button variant="outline" size="sm" style="margin-left:auto;flex-shrink:0">View Schedule</l-button>
-      </l-alert>
+        <ou-button variant="outline" size="sm" style="margin-left:auto;flex-shrink:0">View Schedule</ou-button>
+      </ou-alert>
 
       <!-- ── STAT CARDS ── -->
-      <div class="l-demo-stats animate-fade-in">
-        <div class="l-demo-stat">
-          <div class="l-demo-stat-icon" style="background:var(--primary-soft);color:var(--primary)">
+      <div class="ou-demo-stats animate-fade-in">
+        <div class="ou-demo-stat">
+          <div class="ou-demo-stat-icon" style="background:var(--primary-soft);color:var(--primary)">
             <i data-lucide="shield" style="width:18px;height:18px"></i>
           </div>
           <div>
-            <div class="l-demo-stat-value">99.9%</div>
-            <div class="l-demo-stat-label">Uptime SLA</div>
+            <div class="ou-demo-stat-value">99.9%</div>
+            <div class="ou-demo-stat-label">Uptime SLA</div>
           </div>
-          <div class="l-demo-stat-change l-demo-stat-up">
+          <div class="ou-demo-stat-change ou-demo-stat-up">
             <i data-lucide="arrow-up-right" style="width:12px;height:12px"></i> +0.2% vs last week
           </div>
         </div>
-        <div class="l-demo-stat">
-          <div class="l-demo-stat-icon" style="background:var(--secondary-soft);color:var(--secondary)">
+        <div class="ou-demo-stat">
+          <div class="ou-demo-stat-icon" style="background:var(--secondary-soft);color:var(--secondary)">
             <i data-lucide="zap" style="width:18px;height:18px"></i>
           </div>
           <div>
-            <div class="l-demo-stat-value">1.2ms</div>
-            <div class="l-demo-stat-label">Avg. Latency</div>
+            <div class="ou-demo-stat-value">1.2ms</div>
+            <div class="ou-demo-stat-label">Avg. Latency</div>
           </div>
-          <div class="l-demo-stat-change l-demo-stat-up">
+          <div class="ou-demo-stat-change ou-demo-stat-up">
             <i data-lucide="arrow-up-right" style="width:12px;height:12px"></i> 18% faster
           </div>
         </div>
-        <div class="l-demo-stat">
-          <div class="l-demo-stat-icon" style="background:rgba(245,158,11,0.12);color:var(--warning)">
+        <div class="ou-demo-stat">
+          <div class="ou-demo-stat-icon" style="background:rgba(245,158,11,0.12);color:var(--warning)">
             <i data-lucide="users" style="width:18px;height:18px"></i>
           </div>
           <div>
-            <div class="l-demo-stat-value">42.5k</div>
-            <div class="l-demo-stat-label">Active Sessions</div>
+            <div class="ou-demo-stat-value">42.5k</div>
+            <div class="ou-demo-stat-label">Active Sessions</div>
           </div>
-          <div class="l-demo-stat-change l-demo-stat-down">
+          <div class="ou-demo-stat-change ou-demo-stat-down">
             <i data-lucide="arrow-down-right" style="width:12px;height:12px"></i> −3% from peak
           </div>
         </div>
-        <div class="l-demo-stat">
-          <div class="l-demo-stat-icon" style="background:var(--accent-soft);color:var(--accent)">
+        <div class="ou-demo-stat">
+          <div class="ou-demo-stat-icon" style="background:var(--accent-soft);color:var(--accent)">
             <i data-lucide="activity" style="width:18px;height:18px"></i>
           </div>
           <div>
-            <div class="l-demo-stat-value">2.1 TB</div>
-            <div class="l-demo-stat-label">Data Processed</div>
+            <div class="ou-demo-stat-value">2.1 TB</div>
+            <div class="ou-demo-stat-label">Data Processed</div>
           </div>
-          <div class="l-demo-stat-change l-demo-stat-up">
+          <div class="ou-demo-stat-change ou-demo-stat-up">
             <i data-lucide="arrow-up-right" style="width:12px;height:12px"></i> +12% this month
           </div>
         </div>
       </div>
 
       <!-- ── BODY GRID ── -->
-      <div class="l-demo-body">
+      <div class="ou-demo-body">
 
         <!-- ── LEFT COLUMN ── -->
-        <div class="l-demo-body-left">
+        <div class="ou-demo-body-left">
 
           <!-- Chart -->
-          <l-card style="padding:20px">
-            <div class="l-demo-section-header">
-              <div class="l-demo-section-title">Request Volume</div>
+          <ou-card style="padding:20px">
+            <div class="ou-demo-section-header">
+              <div class="ou-demo-section-title">Request Volume</div>
               <div style="display:flex;gap:8px;align-items:center">
-                <l-chip>This Week</l-chip>
-                <div class="l-dropdown-wrap">
-                  <button class="l-demo-icon-btn" style="width:28px;height:28px" onclick="toggleDropdown('chart-menu')">
+                <ou-chip>This Week</ou-chip>
+                <div class="ou-dropdown-wrap">
+                  <button class="ou-demo-icon-btn" style="width:28px;height:28px" onclick="toggleDropdown('chart-menu')">
                     <i data-lucide="more-horizontal" style="width:14px;height:14px"></i>
                   </button>
-                  <div class="l-dropdown-menu" id="chart-menu" style="display:none">
-                    <button class="l-dropdown-item">Download CSV</button>
-                    <button class="l-dropdown-item">Compare period</button>
+                  <div class="ou-dropdown-menu" id="chart-menu" style="display:none">
+                    <button class="ou-dropdown-item">Download CSV</button>
+                    <button class="ou-dropdown-item">Compare period</button>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="l-demo-chart" id="chart">
-              <l-tooltip text="45k requests" position="top"><div class="l-demo-bar" style="height:48.9%" onclick="setBar(this)"></div></l-tooltip>
-              <l-tooltip text="72k requests" position="top"><div class="l-demo-bar" style="height:78.3%" onclick="setBar(this)"></div></l-tooltip>
-              <l-tooltip text="58k requests" position="top"><div class="l-demo-bar" style="height:63.0%" onclick="setBar(this)"></div></l-tooltip>
-              <l-tooltip text="88k requests" position="top"><div class="l-demo-bar" style="height:95.7%" onclick="setBar(this)"></div></l-tooltip>
-              <l-tooltip text="64k requests" position="top"><div class="l-demo-bar" style="height:69.6%" onclick="setBar(this)"></div></l-tooltip>
-              <l-tooltip text="92k requests" position="top"><div class="l-demo-bar active" style="height:100%" onclick="setBar(this)"></div></l-tooltip>
-              <l-tooltip text="78k requests" position="top"><div class="l-demo-bar" style="height:84.8%" onclick="setBar(this)"></div></l-tooltip>
+            <div class="ou-demo-chart" id="chart">
+              <ou-tooltip text="45k requests" position="top"><div class="ou-demo-bar" style="height:48.9%" onclick="setBar(this)"></div></ou-tooltip>
+              <ou-tooltip text="72k requests" position="top"><div class="ou-demo-bar" style="height:78.3%" onclick="setBar(this)"></div></ou-tooltip>
+              <ou-tooltip text="58k requests" position="top"><div class="ou-demo-bar" style="height:63.0%" onclick="setBar(this)"></div></ou-tooltip>
+              <ou-tooltip text="88k requests" position="top"><div class="ou-demo-bar" style="height:95.7%" onclick="setBar(this)"></div></ou-tooltip>
+              <ou-tooltip text="64k requests" position="top"><div class="ou-demo-bar" style="height:69.6%" onclick="setBar(this)"></div></ou-tooltip>
+              <ou-tooltip text="92k requests" position="top"><div class="ou-demo-bar active" style="height:100%" onclick="setBar(this)"></div></ou-tooltip>
+              <ou-tooltip text="78k requests" position="top"><div class="ou-demo-bar" style="height:84.8%" onclick="setBar(this)"></div></ou-tooltip>
             </div>
-            <div class="l-demo-chart-labels">
-              <div class="l-demo-chart-label">Mon</div>
-              <div class="l-demo-chart-label">Tue</div>
-              <div class="l-demo-chart-label">Wed</div>
-              <div class="l-demo-chart-label">Thu</div>
-              <div class="l-demo-chart-label">Fri</div>
-              <div class="l-demo-chart-label">Sat</div>
-              <div class="l-demo-chart-label">Sun</div>
+            <div class="ou-demo-chart-labels">
+              <div class="ou-demo-chart-label">Mon</div>
+              <div class="ou-demo-chart-label">Tue</div>
+              <div class="ou-demo-chart-label">Wed</div>
+              <div class="ou-demo-chart-label">Thu</div>
+              <div class="ou-demo-chart-label">Fri</div>
+              <div class="ou-demo-chart-label">Sat</div>
+              <div class="ou-demo-chart-label">Sun</div>
             </div>
-          </l-card>
+          </ou-card>
 
           <!-- Node Table -->
           <div>
-            <div class="l-demo-section-header">
-              <div class="l-demo-section-title">Node Status</div>
-              <l-button variant="ghost" size="sm">
+            <div class="ou-demo-section-header">
+              <div class="ou-demo-section-title">Node Status</div>
+              <ou-button variant="ghost" size="sm">
                 <i data-lucide="filter" style="width:13px;height:13px"></i> Filter
-              </l-button>
+              </ou-button>
             </div>
-            <div class="l-demo-table-card">
-              <table class="l-table">
+            <div class="ou-demo-table-card">
+              <table class="ou-table">
                 <thead>
                   <tr>
                     <th>Node ID</th><th>Region</th><th>CPU Load</th><th>Status</th><th></th>
@@ -281,29 +281,29 @@
                     <td style="font-family:monospace;font-size:13px">#node-882</td>
                     <td style="color:var(--text-muted);font-size:13px">US-EAST-1</td>
                     <td style="width:140px"><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:4px;background:var(--surface-raised);border-radius:4px;overflow:hidden"><div style="height:100%;width:12%;background:var(--secondary);border-radius:4px"></div></div><span style="font-size:12px;color:var(--text-dim)">12%</span></div></td>
-                    <td><l-badge variant="success">Healthy</l-badge></td>
-                    <td><div class="l-dropdown-wrap"><button class="l-demo-icon-btn" style="width:28px;height:28px" onclick="toggleDropdown('node-1')"><i data-lucide="more-horizontal" style="width:14px;height:14px"></i></button><div class="l-dropdown-menu" id="node-1" style="display:none"><button class="l-dropdown-item">View Metrics</button><button class="l-dropdown-item">Restart</button><div class="l-dropdown-divider"></div><button class="l-dropdown-item danger">Terminate</button></div></div></td>
+                    <td><ou-badge variant="success">Healthy</ou-badge></td>
+                    <td><div class="ou-dropdown-wrap"><button class="ou-demo-icon-btn" style="width:28px;height:28px" onclick="toggleDropdown('node-1')"><i data-lucide="more-horizontal" style="width:14px;height:14px"></i></button><div class="ou-dropdown-menu" id="node-1" style="display:none"><button class="ou-dropdown-item">View Metrics</button><button class="ou-dropdown-item">Restart</button><div class="ou-dropdown-divider"></div><button class="ou-dropdown-item danger">Terminate</button></div></div></td>
                   </tr>
                   <tr>
                     <td style="font-family:monospace;font-size:13px">#node-914</td>
                     <td style="color:var(--text-muted);font-size:13px">EU-WEST-1</td>
                     <td style="width:140px"><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:4px;background:var(--surface-raised);border-radius:4px;overflow:hidden"><div style="height:100%;width:88%;background:var(--warning);border-radius:4px"></div></div><span style="font-size:12px;color:var(--text-dim)">88%</span></div></td>
-                    <td><l-badge variant="primary">Balancing</l-badge></td>
-                    <td><div class="l-dropdown-wrap"><button class="l-demo-icon-btn" style="width:28px;height:28px" onclick="toggleDropdown('node-2')"><i data-lucide="more-horizontal" style="width:14px;height:14px"></i></button><div class="l-dropdown-menu" id="node-2" style="display:none"><button class="l-dropdown-item">View Metrics</button><button class="l-dropdown-item">Restart</button><div class="l-dropdown-divider"></div><button class="l-dropdown-item danger">Terminate</button></div></div></td>
+                    <td><ou-badge variant="primary">Balancing</ou-badge></td>
+                    <td><div class="ou-dropdown-wrap"><button class="ou-demo-icon-btn" style="width:28px;height:28px" onclick="toggleDropdown('node-2')"><i data-lucide="more-horizontal" style="width:14px;height:14px"></i></button><div class="ou-dropdown-menu" id="node-2" style="display:none"><button class="ou-dropdown-item">View Metrics</button><button class="ou-dropdown-item">Restart</button><div class="ou-dropdown-divider"></div><button class="ou-dropdown-item danger">Terminate</button></div></div></td>
                   </tr>
                   <tr>
                     <td style="font-family:monospace;font-size:13px">#node-331</td>
                     <td style="color:var(--text-muted);font-size:13px">AP-SOUTH-1</td>
                     <td style="width:140px"><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:4px;background:var(--surface-raised);border-radius:4px;overflow:hidden"><div style="height:100%;width:34%;background:var(--secondary);border-radius:4px"></div></div><span style="font-size:12px;color:var(--text-dim)">34%</span></div></td>
-                    <td><l-badge variant="success">Healthy</l-badge></td>
-                    <td><div class="l-dropdown-wrap"><button class="l-demo-icon-btn" style="width:28px;height:28px" onclick="toggleDropdown('node-3')"><i data-lucide="more-horizontal" style="width:14px;height:14px"></i></button><div class="l-dropdown-menu" id="node-3" style="display:none"><button class="l-dropdown-item">View Metrics</button><button class="l-dropdown-item">Restart</button></div></div></td>
+                    <td><ou-badge variant="success">Healthy</ou-badge></td>
+                    <td><div class="ou-dropdown-wrap"><button class="ou-demo-icon-btn" style="width:28px;height:28px" onclick="toggleDropdown('node-3')"><i data-lucide="more-horizontal" style="width:14px;height:14px"></i></button><div class="ou-dropdown-menu" id="node-3" style="display:none"><button class="ou-dropdown-item">View Metrics</button><button class="ou-dropdown-item">Restart</button></div></div></td>
                   </tr>
                   <tr>
                     <td style="font-family:monospace;font-size:13px">#node-107</td>
                     <td style="color:var(--text-muted);font-size:13px">US-WEST-2</td>
                     <td style="width:140px"><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:4px;background:var(--surface-raised);border-radius:4px;overflow:hidden"><div style="height:100%;width:67%;background:var(--warning);border-radius:4px"></div></div><span style="font-size:12px;color:var(--text-dim)">67%</span></div></td>
-                    <td><l-badge variant="warning">Watch</l-badge></td>
-                    <td><div class="l-dropdown-wrap"><button class="l-demo-icon-btn" style="width:28px;height:28px" onclick="toggleDropdown('node-4')"><i data-lucide="more-horizontal" style="width:14px;height:14px"></i></button><div class="l-dropdown-menu" id="node-4" style="display:none"><button class="l-dropdown-item">View Metrics</button><button class="l-dropdown-item">Restart</button></div></div></td>
+                    <td><ou-badge variant="warning">Watch</ou-badge></td>
+                    <td><div class="ou-dropdown-wrap"><button class="ou-demo-icon-btn" style="width:28px;height:28px" onclick="toggleDropdown('node-4')"><i data-lucide="more-horizontal" style="width:14px;height:14px"></i></button><div class="ou-dropdown-menu" id="node-4" style="display:none"><button class="ou-dropdown-item">View Metrics</button><button class="ou-dropdown-item">Restart</button></div></div></td>
                   </tr>
                 </tbody>
               </table>
@@ -311,121 +311,121 @@
           </div>
 
           <!-- Activity Feed -->
-          <l-card style="padding:20px">
-            <div class="l-demo-section-header">
-              <div class="l-demo-section-title">Activity Feed</div>
-              <l-badge variant="primary" style="font-size:10px">Live</l-badge>
+          <ou-card style="padding:20px">
+            <div class="ou-demo-section-header">
+              <div class="ou-demo-section-title">Activity Feed</div>
+              <ou-badge variant="primary" style="font-size:10px">Live</ou-badge>
             </div>
-            <div class="l-demo-activity">
-              <div class="l-demo-activity-item">
-                <div class="l-demo-activity-dot" style="background:var(--secondary)"></div>
-                <div class="l-demo-activity-text"><strong>Sarah Chen</strong> deployed auth-v2 to production</div>
-                <div class="l-demo-activity-time">2m ago</div>
+            <div class="ou-demo-activity">
+              <div class="ou-demo-activity-item">
+                <div class="ou-demo-activity-dot" style="background:var(--secondary)"></div>
+                <div class="ou-demo-activity-text"><strong>Sarah Chen</strong> deployed auth-v2 to production</div>
+                <div class="ou-demo-activity-time">2m ago</div>
               </div>
-              <div class="l-demo-activity-item">
-                <div class="l-demo-activity-dot" style="background:var(--primary)"></div>
-                <div class="l-demo-activity-text"><strong>Node #914</strong> load balanced — 88% → 42%</div>
-                <div class="l-demo-activity-time">11m ago</div>
+              <div class="ou-demo-activity-item">
+                <div class="ou-demo-activity-dot" style="background:var(--primary)"></div>
+                <div class="ou-demo-activity-text"><strong>Node #914</strong> load balanced — 88% → 42%</div>
+                <div class="ou-demo-activity-time">11m ago</div>
               </div>
-              <div class="l-demo-activity-item">
-                <div class="l-demo-activity-dot" style="background:var(--warning)"></div>
-                <div class="l-demo-activity-text"><strong>EU-WEST-1</strong> maintenance window started</div>
-                <div class="l-demo-activity-time">32m ago</div>
+              <div class="ou-demo-activity-item">
+                <div class="ou-demo-activity-dot" style="background:var(--warning)"></div>
+                <div class="ou-demo-activity-text"><strong>EU-WEST-1</strong> maintenance window started</div>
+                <div class="ou-demo-activity-time">32m ago</div>
               </div>
-              <div class="l-demo-activity-item">
-                <div class="l-demo-activity-dot" style="background:var(--accent)"></div>
-                <div class="l-demo-activity-text"><strong>Alert</strong>: CPU spike on node #882 resolved</div>
-                <div class="l-demo-activity-time">1h ago</div>
+              <div class="ou-demo-activity-item">
+                <div class="ou-demo-activity-dot" style="background:var(--accent)"></div>
+                <div class="ou-demo-activity-text"><strong>Alert</strong>: CPU spike on node #882 resolved</div>
+                <div class="ou-demo-activity-time">1h ago</div>
               </div>
             </div>
-          </l-card>
+          </ou-card>
 
         </div><!-- /left -->
 
         <!-- ── RIGHT COLUMN ── -->
-        <div class="l-demo-body-right">
+        <div class="ou-demo-body-right">
 
           <!-- Resources -->
-          <div class="l-demo-panel">
-            <div class="l-demo-section-header" style="margin-bottom:16px">
-              <div class="l-demo-section-title">Resources</div>
-              <l-tooltip text="Refresh stats" position="left">
-                <button class="l-demo-icon-btn" style="width:26px;height:26px">
+          <div class="ou-demo-panel">
+            <div class="ou-demo-section-header" style="margin-bottom:16px">
+              <div class="ou-demo-section-title">Resources</div>
+              <ou-tooltip text="Refresh stats" position="left">
+                <button class="ou-demo-icon-btn" style="width:26px;height:26px">
                   <i data-lucide="refresh-cw" style="width:12px;height:12px"></i>
                 </button>
-              </l-tooltip>
+              </ou-tooltip>
             </div>
-            <div class="l-demo-metric">
-              <div class="l-demo-metric-label">
+            <div class="ou-demo-metric">
+              <div class="ou-demo-metric-label">
                 <span style="display:flex;align-items:center;gap:4px"><i data-lucide="cpu" style="width:11px;height:11px"></i> CPU</span>
                 <span>78.4%</span>
               </div>
-              <l-progress value="78"></l-progress>
+              <ou-progress value="78"></ou-progress>
             </div>
-            <div class="l-demo-metric">
-              <div class="l-demo-metric-label">
+            <div class="ou-demo-metric">
+              <div class="ou-demo-metric-label">
                 <span style="display:flex;align-items:center;gap:4px"><i data-lucide="hard-drive" style="width:11px;height:11px"></i> Memory</span>
                 <span>61.2%</span>
               </div>
-              <l-progress value="61"></l-progress>
+              <ou-progress value="61"></ou-progress>
             </div>
-            <div class="l-demo-metric">
-              <div class="l-demo-metric-label">
+            <div class="ou-demo-metric">
+              <div class="ou-demo-metric-label">
                 <span style="display:flex;align-items:center;gap:4px"><i data-lucide="database" style="width:11px;height:11px"></i> Storage</span>
                 <span>43.0%</span>
               </div>
-              <l-progress value="43"></l-progress>
+              <ou-progress value="43"></ou-progress>
             </div>
-            <div class="l-demo-metric" style="margin-bottom:0">
-              <div class="l-demo-metric-label">
+            <div class="ou-demo-metric" style="margin-bottom:0">
+              <div class="ou-demo-metric-label">
                 <span style="display:flex;align-items:center;gap:4px"><i data-lucide="network" style="width:11px;height:11px"></i> Bandwidth</span>
                 <span>92.1%</span>
               </div>
-              <l-progress value="92"></l-progress>
+              <ou-progress value="92"></ou-progress>
             </div>
           </div>
 
           <!-- System Controls -->
-          <div class="l-demo-panel">
-            <div class="l-demo-section-title" style="margin-bottom:16px">System Controls</div>
+          <div class="ou-demo-panel">
+            <div class="ou-demo-section-title" style="margin-bottom:16px">System Controls</div>
             <div style="display:flex;flex-direction:column;gap:14px">
               <div style="display:flex;justify-content:space-between;align-items:center">
                 <div>
                   <div style="font-size:13px;font-weight:500">Auto-Scaling</div>
                   <div style="font-size:11px;color:var(--text-dim)">Scale on load spike</div>
                 </div>
-                <l-switch active></l-switch>
+                <ou-switch active></ou-switch>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center">
                 <div>
                   <div style="font-size:13px;font-weight:500">Auto Backup</div>
                   <div style="font-size:11px;color:var(--text-dim)">Every 6 hours</div>
                 </div>
-                <l-switch></l-switch>
+                <ou-switch></ou-switch>
               </div>
               <div style="height:1px;background:var(--border)"></div>
-              <l-checkbox label="Notify on scale event" checked></l-checkbox>
-              <l-checkbox label="Send weekly digest"></l-checkbox>
-              <l-checkbox label="Enable debug logs"></l-checkbox>
+              <ou-checkbox label="Notify on scale event" checked></ou-checkbox>
+              <ou-checkbox label="Send weekly digest"></ou-checkbox>
+              <ou-checkbox label="Enable debug logs"></ou-checkbox>
             </div>
           </div>
 
           <!-- Accordion -->
-          <div class="l-demo-panel" style="padding:0;overflow:hidden">
-            <div class="l-accordion">
-              <div class="l-accordion-item">
-                <button class="l-accordion-trigger" onclick="toggleAccordion(this)">
-                  Advanced Config <span class="l-accordion-icon">+</span>
+          <div class="ou-demo-panel" style="padding:0;overflow:hidden">
+            <div class="ou-accordion">
+              <div class="ou-accordion-item">
+                <button class="ou-accordion-trigger" onclick="toggleAccordion(this)">
+                  Advanced Config <span class="ou-accordion-icon">+</span>
                 </button>
-                <div class="l-accordion-content" style="display:none">
+                <div class="ou-accordion-content" style="display:none">
                   <p>Kernel parameters are optimized. Max connections: 10,000. Keep-alive: 75s.</p>
                 </div>
               </div>
-              <div class="l-accordion-item">
-                <button class="l-accordion-trigger" onclick="toggleAccordion(this)">
-                  Environment <span class="l-accordion-icon">+</span>
+              <div class="ou-accordion-item">
+                <button class="ou-accordion-trigger" onclick="toggleAccordion(this)">
+                  Environment <span class="ou-accordion-icon">+</span>
                 </button>
-                <div class="l-accordion-content" style="display:none">
+                <div class="ou-accordion-content" style="display:none">
                   <p>Runtime: Node 20 LTS · Region: us-east-1 · TLS 1.3 enforced.</p>
                 </div>
               </div>
@@ -433,136 +433,136 @@
           </div>
 
           <!-- Team -->
-          <div class="l-demo-panel">
-            <div class="l-demo-section-header" style="margin-bottom:12px">
-              <div class="l-demo-section-title">Active Team</div>
-              <l-button variant="ghost" size="sm" style="font-size:11px;padding:4px 8px">
+          <div class="ou-demo-panel">
+            <div class="ou-demo-section-header" style="margin-bottom:12px">
+              <div class="ou-demo-section-title">Active Team</div>
+              <ou-button variant="ghost" size="sm" style="font-size:11px;padding:4px 8px">
                 <i data-lucide="plus" style="width:12px;height:12px"></i> Add
-              </l-button>
+              </ou-button>
             </div>
-            <div class="l-demo-team-item">
-              <l-tooltip text="Lead Engineer" position="left">
-                <l-avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=sarah" size="sm"></l-avatar>
-              </l-tooltip>
-              <div class="l-demo-team-info">
-                <div class="l-demo-team-name">Sarah Chen</div>
-                <div class="l-demo-team-role">Lead Engineer</div>
+            <div class="ou-demo-team-item">
+              <ou-tooltip text="Lead Engineer" position="left">
+                <ou-avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=sarah" size="sm"></ou-avatar>
+              </ou-tooltip>
+              <div class="ou-demo-team-info">
+                <div class="ou-demo-team-name">Sarah Chen</div>
+                <div class="ou-demo-team-role">Lead Engineer</div>
               </div>
-              <l-badge variant="success" style="font-size:9px;padding:1px 6px">Online</l-badge>
+              <ou-badge variant="success" style="font-size:9px;padding:1px 6px">Online</ou-badge>
             </div>
-            <div class="l-demo-team-item">
-              <l-tooltip text="DevOps" position="left">
-                <l-avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=marcus" size="sm"></l-avatar>
-              </l-tooltip>
-              <div class="l-demo-team-info">
-                <div class="l-demo-team-name">Marcus Davis</div>
-                <div class="l-demo-team-role">DevOps</div>
+            <div class="ou-demo-team-item">
+              <ou-tooltip text="DevOps" position="left">
+                <ou-avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=marcus" size="sm"></ou-avatar>
+              </ou-tooltip>
+              <div class="ou-demo-team-info">
+                <div class="ou-demo-team-name">Marcus Davis</div>
+                <div class="ou-demo-team-role">DevOps</div>
               </div>
-              <l-badge variant="primary" style="font-size:9px;padding:1px 6px">Online</l-badge>
+              <ou-badge variant="primary" style="font-size:9px;padding:1px 6px">Online</ou-badge>
             </div>
-            <div class="l-demo-team-item">
-              <l-tooltip text="Security" position="left">
-                <l-avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=priya" size="sm"></l-avatar>
-              </l-tooltip>
-              <div class="l-demo-team-info">
-                <div class="l-demo-team-name">Priya Patel</div>
-                <div class="l-demo-team-role">Security</div>
+            <div class="ou-demo-team-item">
+              <ou-tooltip text="Security" position="left">
+                <ou-avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=priya" size="sm"></ou-avatar>
+              </ou-tooltip>
+              <div class="ou-demo-team-info">
+                <div class="ou-demo-team-name">Priya Patel</div>
+                <div class="ou-demo-team-role">Security</div>
               </div>
-              <l-badge variant="success" style="font-size:9px;padding:1px 6px">Online</l-badge>
+              <ou-badge variant="success" style="font-size:9px;padding:1px 6px">Online</ou-badge>
             </div>
           </div>
 
           <!-- Tags -->
-          <div class="l-demo-panel">
-            <div class="l-demo-section-title" style="margin-bottom:12px">Tags</div>
+          <div class="ou-demo-panel">
+            <div class="ou-demo-section-title" style="margin-bottom:12px">Tags</div>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <l-chip variant="primary" removable>Security</l-chip>
-              <l-chip variant="success" removable>Performance</l-chip>
-              <l-chip removable>Global</l-chip>
-              <l-chip variant="warning" removable>Storage</l-chip>
+              <ou-chip variant="primary" removable>Security</ou-chip>
+              <ou-chip variant="success" removable>Performance</ou-chip>
+              <ou-chip removable>Global</ou-chip>
+              <ou-chip variant="warning" removable>Storage</ou-chip>
             </div>
           </div>
 
-          <l-button variant="danger" style="width:100%" onclick="document.getElementById('modal').style.display='flex'">
+          <ou-button variant="danger" style="width:100%" onclick="document.getElementById('modal').style.display='flex'">
             <i data-lucide="trash-2" style="width:14px;height:14px"></i> Terminate Session
-          </l-button>
-          <l-button variant="outline" style="width:100%;margin-top:8px" onclick="document.getElementById('drawer').style.display='flex'">
+          </ou-button>
+          <ou-button variant="outline" style="width:100%;margin-top:8px" onclick="document.getElementById('drawer').style.display='flex'">
             <i data-lucide="settings" style="width:14px;height:14px"></i> Quick Settings
-          </l-button>
+          </ou-button>
 
         </div><!-- /right -->
       </div><!-- /body -->
     </div><!-- /content -->
   </main>
 </div>
-</l-toast-provider>
+</ou-toast-provider>
 
 <!-- ── MODAL ── -->
-<l-modal id="modal" style="display:none">
-  <div class="l-modal-overlay" onclick="if(event.target===this)document.getElementById('modal').style.display='none'">
-    <div class="l-modal l-modal-md">
-      <div class="l-modal-header">
-        <span class="l-modal-title">Terminate Session</span>
-        <button class="l-modal-close" onclick="document.getElementById('modal').style.display='none'">✕</button>
+<ou-modal id="modal" style="display:none">
+  <div class="ou-modal-overlay" onclick="if(event.target===this)document.getElementById('modal').style.display='none'">
+    <div class="ou-modal ou-modal-md">
+      <div class="ou-modal-header">
+        <span class="ou-modal-title">Terminate Session</span>
+        <button class="ou-modal-close" onclick="document.getElementById('modal').style.display='none'">✕</button>
       </div>
-      <div class="l-modal-body">
-        <l-alert variant="danger" title="Warning" style="margin-bottom:20px">This action cannot be undone.</l-alert>
+      <div class="ou-modal-body">
+        <ou-alert variant="danger" title="Warning" style="margin-bottom:20px">This action cannot be undone.</ou-alert>
         <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px">
           Terminating the session will immediately close all active connections and stop running jobs.
         </p>
         <div style="display:flex;flex-direction:column;gap:10px">
-          <l-radio label="Save state and exit" name="termMode"></l-radio>
-          <l-radio label="Exit immediately (discard state)" name="termMode"></l-radio>
+          <ou-radio label="Save state and exit" name="termMode"></ou-radio>
+          <ou-radio label="Exit immediately (discard state)" name="termMode"></ou-radio>
         </div>
       </div>
-      <div class="l-modal-footer">
-        <l-button variant="ghost" size="sm" onclick="document.getElementById('modal').style.display='none'">Cancel</l-button>
-        <l-button variant="danger" size="sm" onclick="document.getElementById('modal').style.display='none';showToast('Session Terminated','All connections closed.','warning')">Terminate</l-button>
+      <div class="ou-modal-footer">
+        <ou-button variant="ghost" size="sm" onclick="document.getElementById('modal').style.display='none'">Cancel</ou-button>
+        <ou-button variant="danger" size="sm" onclick="document.getElementById('modal').style.display='none';showToast('Session Terminated','All connections closed.','warning')">Terminate</ou-button>
       </div>
     </div>
   </div>
-</l-modal>
+</ou-modal>
 
 <!-- ── DRAWER ── -->
-<l-drawer id="drawer" style="display:none">
-  <div class="l-drawer-overlay" onclick="if(event.target===this)document.getElementById('drawer').style.display='none'">
-    <div class="l-drawer">
-      <div class="l-drawer-header">
-        <span class="l-drawer-title">Quick Settings</span>
-        <button class="l-modal-close" onclick="document.getElementById('drawer').style.display='none'">✕</button>
+<ou-drawer id="drawer" style="display:none">
+  <div class="ou-drawer-overlay" onclick="if(event.target===this)document.getElementById('drawer').style.display='none'">
+    <div class="ou-drawer">
+      <div class="ou-drawer-header">
+        <span class="ou-drawer-title">Quick Settings</span>
+        <button class="ou-modal-close" onclick="document.getElementById('drawer').style.display='none'">✕</button>
       </div>
       <div style="display:flex;flex-direction:column;gap:24px;flex:1">
         <div>
           <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;font-weight:600;letter-spacing:0.05em">APPEARANCE</div>
           <div style="display:flex;justify-content:space-between;align-items:center">
             <span style="font-size:14px">Dark Mode</span>
-            <l-switch active onclick="toggleTheme()"></l-switch>
+            <ou-switch active onclick="toggleTheme()"></ou-switch>
           </div>
         </div>
         <div>
           <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;font-weight:600;letter-spacing:0.05em">NOTIFICATIONS</div>
           <div style="display:flex;flex-direction:column;gap:10px">
-            <l-checkbox label="Email alerts" checked></l-checkbox>
-            <l-checkbox label="Slack integration" checked></l-checkbox>
-            <l-checkbox label="SMS critical only"></l-checkbox>
+            <ou-checkbox label="Email alerts" checked></ou-checkbox>
+            <ou-checkbox label="Slack integration" checked></ou-checkbox>
+            <ou-checkbox label="SMS critical only"></ou-checkbox>
           </div>
         </div>
         <div>
           <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;font-weight:600;letter-spacing:0.05em">TAGS</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <l-chip>Security</l-chip>
-            <l-chip>Performance</l-chip>
-            <l-chip>Global</l-chip>
-            <l-chip>Storage</l-chip>
+            <ou-chip>Security</ou-chip>
+            <ou-chip>Performance</ou-chip>
+            <ou-chip>Global</ou-chip>
+            <ou-chip>Storage</ou-chip>
           </div>
         </div>
-        <l-button variant="primary" style="width:100%;margin-top:auto" onclick="document.getElementById('drawer').style.display='none';showToast('Settings Saved','Preferences updated successfully.','success')">
+        <ou-button variant="primary" style="width:100%;margin-top:auto" onclick="document.getElementById('drawer').style.display='none';showToast('Settings Saved','Preferences updated successfully.','success')">
           Save Preferences
-        </l-button>
+        </ou-button>
       </div>
     </div>
   </div>
-</l-drawer>
+</ou-drawer>
 
 <!-- ── TOAST CONTAINER ── -->
 <div id="toasts" style="position:fixed;bottom:24px;right:24px;z-index:2000;display:flex;flex-direction:column;gap:10px;pointer-events:none"></div>
@@ -583,37 +583,37 @@
     return el.hasAttribute(name) || el.getAttribute(name) !== null;
   }
 
-  // ── l-nav-item ────────────────────────────────────────────────────────────
-  customElements.define('l-nav-item', class extends HTMLElement {
+  // ── ou-nav-item ────────────────────────────────────────────────────────────
+  customElements.define('ou-nav-item', class extends HTMLElement {
     connectedCallback() {
       const active = hasAttr(this, 'active');
-      this.className = 'l-nav-item' + (active ? ' l-nav-item-active' : '');
+      this.className = 'ou-nav-item' + (active ? ' ou-nav-item-active' : '');
       this.style.cursor = 'pointer';
       this.addEventListener('click', () => {
-        document.querySelectorAll('l-nav-item').forEach(n => n.classList.remove('l-nav-item-active'));
-        this.classList.add('l-nav-item-active');
+        document.querySelectorAll('ou-nav-item').forEach(n => n.classList.remove('ou-nav-item-active'));
+        this.classList.add('ou-nav-item-active');
         this.setAttribute('active', '');
       });
     }
   });
 
-  // ── l-navbar / l-navbar-brand / l-navbar-actions ─────────────────────────
-  customElements.define('l-navbar', class extends HTMLElement {
-    connectedCallback() { this.className = 'l-demo-header'; this.style.display = 'flex'; }
+  // ── ou-navbar / ou-navbar-brand / ou-navbar-actions ─────────────────────────
+  customElements.define('ou-navbar', class extends HTMLElement {
+    connectedCallback() { this.className = 'ou-demo-header'; this.style.display = 'flex'; }
   });
-  customElements.define('l-navbar-brand', class extends HTMLElement {
-    connectedCallback() { this.className = 'l-navbar-brand'; }
+  customElements.define('ou-navbar-brand', class extends HTMLElement {
+    connectedCallback() { this.className = 'ou-navbar-brand'; }
   });
-  customElements.define('l-navbar-actions', class extends HTMLElement {
-    connectedCallback() { this.className = 'l-demo-header-right'; }
+  customElements.define('ou-navbar-actions', class extends HTMLElement {
+    connectedCallback() { this.className = 'ou-demo-header-right'; }
   });
 
-  // ── l-button ──────────────────────────────────────────────────────────────
-  customElements.define('l-button', class extends HTMLElement {
+  // ── ou-button ──────────────────────────────────────────────────────────────
+  customElements.define('ou-button', class extends HTMLElement {
     connectedCallback() {
       const variant = attr(this, 'variant', 'primary');
       const size = attr(this, 'size', 'md');
-      this.className = `l-btn l-btn-${variant} l-btn-${size}`;
+      this.className = `ou-btn ou-btn-${variant} ou-btn-${size}`;
       this.style.cursor = 'pointer';
       this.style.display = 'inline-flex';
       this.style.alignItems = 'center';
@@ -621,42 +621,42 @@
     }
   });
 
-  // ── l-badge ───────────────────────────────────────────────────────────────
-  customElements.define('l-badge', class extends HTMLElement {
+  // ── ou-badge ───────────────────────────────────────────────────────────────
+  customElements.define('ou-badge', class extends HTMLElement {
     connectedCallback() {
       const variant = attr(this, 'variant', '');
-      this.className = 'l-badge' + (variant ? ` l-badge-${variant}` : '');
+      this.className = 'ou-badge' + (variant ? ` ou-badge-${variant}` : '');
     }
   });
 
-  // ── l-card ────────────────────────────────────────────────────────────────
-  customElements.define('l-card', class extends HTMLElement {
+  // ── ou-card ────────────────────────────────────────────────────────────────
+  customElements.define('ou-card', class extends HTMLElement {
     connectedCallback() {
-      this.className = 'l-card' + (hasAttr(this, 'hover') ? ' l-card-hover' : '');
+      this.className = 'ou-card' + (hasAttr(this, 'hover') ? ' ou-card-hover' : '');
       this.style.display = 'block';
     }
   });
 
-  // ── l-alert ───────────────────────────────────────────────────────────────
-  customElements.define('l-alert', class extends HTMLElement {
+  // ── ou-alert ───────────────────────────────────────────────────────────────
+  customElements.define('ou-alert', class extends HTMLElement {
     connectedCallback() {
       const variant = attr(this, 'variant', 'info');
       const title = attr(this, 'title', '');
       const dismissible = hasAttr(this, 'dismissible');
-      this.className = `l-alert l-alert-${variant}`;
+      this.className = `ou-alert ou-alert-${variant}`;
       this.style.display = 'flex';
       this.style.alignItems = 'center';
       this.style.gap = '10px';
       if (title) {
         const titleEl = document.createElement('strong');
-        titleEl.className = 'l-alert-title';
+        titleEl.className = 'ou-alert-title';
         titleEl.style.marginRight = '4px';
         titleEl.textContent = title + ':';
         this.insertBefore(titleEl, this.firstChild);
       }
       if (dismissible) {
         const btn = document.createElement('button');
-        btn.className = 'l-modal-close';
+        btn.className = 'ou-modal-close';
         btn.style.marginLeft = 'auto';
         btn.textContent = '✕';
         btn.onclick = () => this.style.display = 'none';
@@ -665,8 +665,8 @@
     }
   });
 
-  // ── l-avatar ──────────────────────────────────────────────────────────────
-  customElements.define('l-avatar', class extends HTMLElement {
+  // ── ou-avatar ──────────────────────────────────────────────────────────────
+  customElements.define('ou-avatar', class extends HTMLElement {
     connectedCallback() {
       const initials = attr(this, 'initials', '');
       const src = attr(this, 'src', '');
@@ -698,23 +698,23 @@
     }
   });
 
-  // ── l-progress ────────────────────────────────────────────────────────────
-  customElements.define('l-progress', class extends HTMLElement {
+  // ── ou-progress ────────────────────────────────────────────────────────────
+  customElements.define('ou-progress', class extends HTMLElement {
     connectedCallback() {
       const value = parseInt(attr(this, 'value', '0'));
       const bg = value > 75 ? 'var(--accent)' : value > 50 ? 'var(--warning)' : 'var(--primary)';
-      this.className = 'l-progress';
+      this.className = 'ou-progress';
       this.style.display = 'block';
-      this.innerHTML = `<div class="l-progress-bar" style="width:${value}%;background:${bg}"></div>`;
+      this.innerHTML = `<div class="ou-progress-bar" style="width:${value}%;background:${bg}"></div>`;
     }
   });
 
-  // ── l-chip ────────────────────────────────────────────────────────────────
-  customElements.define('l-chip', class extends HTMLElement {
+  // ── ou-chip ────────────────────────────────────────────────────────────────
+  customElements.define('ou-chip', class extends HTMLElement {
     connectedCallback() {
       const variant = attr(this, 'variant', '');
       const removable = hasAttr(this, 'removable');
-      this.className = 'l-chip l-chip-' + (variant || 'default');
+      this.className = 'ou-chip ou-chip-' + (variant || 'default');
       this.style.display = 'inline-flex';
       this.style.alignItems = 'center';
       this.style.gap = '6px';
@@ -728,46 +728,46 @@
     }
   });
 
-  // ── l-switch ──────────────────────────────────────────────────────────────
-  customElements.define('l-switch', class extends HTMLElement {
+  // ── ou-switch ──────────────────────────────────────────────────────────────
+  customElements.define('ou-switch', class extends HTMLElement {
     connectedCallback() {
       const active = hasAttr(this, 'active');
-      this.innerHTML = `<span class="l-switch-track${active ? ' l-switch-on' : ''}"><span class="l-switch-thumb"></span></span>`;
-      this.className = 'l-switch';
+      this.innerHTML = `<span class="ou-switch-track${active ? ' ou-switch-on' : ''}"><span class="ou-switch-thumb"></span></span>`;
+      this.className = 'ou-switch';
       this.style.cursor = 'pointer';
       this.style.display = 'inline-flex';
       const userClick = this.getAttribute('onclick');
       this.removeAttribute('onclick');
       this.addEventListener('click', (e) => {
-        const track = this.querySelector('.l-switch-track');
-        if (track) track.classList.toggle('l-switch-on');
+        const track = this.querySelector('.ou-switch-track');
+        if (track) track.classList.toggle('ou-switch-on');
         if (userClick) eval(userClick);
       });
     }
   });
 
-  // ── l-checkbox ────────────────────────────────────────────────────────────
-  customElements.define('l-checkbox', class extends HTMLElement {
+  // ── ou-checkbox ────────────────────────────────────────────────────────────
+  customElements.define('ou-checkbox', class extends HTMLElement {
     connectedCallback() {
       const label = attr(this, 'label', this.textContent.trim());
       const checked = hasAttr(this, 'checked');
       this.textContent = '';
-      this.innerHTML = `<input type="checkbox" ${checked ? 'checked' : ''} /><span class="l-checkbox-box"></span>${label ? `<span class="l-checkbox-label">${label}</span>` : ''}`;
-      this.className = 'l-checkbox';
+      this.innerHTML = `<input type="checkbox" ${checked ? 'checked' : ''} /><span class="ou-checkbox-box"></span>${label ? `<span class="ou-checkbox-label">${label}</span>` : ''}`;
+      this.className = 'ou-checkbox';
       this.style.cursor = 'pointer';
       this.style.display = 'inline-flex';
       this.style.alignItems = 'center';
     }
   });
 
-  // ── l-radio ───────────────────────────────────────────────────────────────
-  customElements.define('l-radio', class extends HTMLElement {
+  // ── ou-radio ───────────────────────────────────────────────────────────────
+  customElements.define('ou-radio', class extends HTMLElement {
     connectedCallback() {
       const label = attr(this, 'label', this.textContent.trim());
       const name = attr(this, 'name', '');
       this.textContent = '';
-      this.innerHTML = `<input type="radio" name="${name}" /><span class="l-radio-circle"></span>${label ? `<span class="l-radio-label">${label}</span>` : ''}`;
-      this.className = 'l-radio';
+      this.innerHTML = `<input type="radio" name="${name}" /><span class="ou-radio-circle"></span>${label ? `<span class="ou-radio-label">${label}</span>` : ''}`;
+      this.className = 'ou-radio';
       this.style.display = 'inline-flex';
       this.style.alignItems = 'center';
       this.style.gap = '8px';
@@ -776,55 +776,55 @@
     }
   });
 
-  // ── l-input ───────────────────────────────────────────────────────────────
-  customElements.define('l-input', class extends HTMLElement {
+  // ── ou-input ───────────────────────────────────────────────────────────────
+  customElements.define('ou-input', class extends HTMLElement {
     connectedCallback() {
       const label = attr(this, 'label', '');
       const placeholder = attr(this, 'placeholder', '');
       const type = attr(this, 'type', 'text');
       const error = attr(this, 'error', '');
       const disabled = hasAttr(this, 'disabled');
-      this.className = 'l-input-group';
+      this.className = 'ou-input-group';
       this.style.display = 'flex';
       this.style.flexDirection = 'column';
       this.style.gap = '4px';
       this.innerHTML =
-        (label ? `<label class="l-label">${label}</label>` : '') +
-        `<input class="l-input${error ? ' l-input-error' : ''}" type="${type}" placeholder="${placeholder}"${disabled ? ' disabled' : ''} />` +
-        (error ? `<span class="l-input-msg" style="color:var(--accent);font-size:12px">${error}</span>` : '');
+        (label ? `<label class="ou-label">${label}</label>` : '') +
+        `<input class="ou-input${error ? ' ou-input-error' : ''}" type="${type}" placeholder="${placeholder}"${disabled ? ' disabled' : ''} />` +
+        (error ? `<span class="ou-input-msg" style="color:var(--accent);font-size:12px">${error}</span>` : '');
     }
   });
 
-  // ── l-tooltip ─────────────────────────────────────────────────────────────
-  customElements.define('l-tooltip', class extends HTMLElement {
+  // ── ou-tooltip ─────────────────────────────────────────────────────────────
+  customElements.define('ou-tooltip', class extends HTMLElement {
     connectedCallback() {
       const text = attr(this, 'text', '');
       const position = attr(this, 'position', 'top');
-      this.className = 'l-tooltip-wrap';
+      this.className = 'ou-tooltip-wrap';
       this.style.display = 'inline-flex';
       const tip = document.createElement('span');
-      tip.className = `l-tooltip l-tooltip-${position}`;
+      tip.className = `ou-tooltip ou-tooltip-${position}`;
       tip.textContent = text;
       this.appendChild(tip);
     }
   });
 
-  // ── l-breadcrumbs ─────────────────────────────────────────────────────────
-  customElements.define('l-breadcrumbs', class extends HTMLElement {
+  // ── ou-breadcrumbs ─────────────────────────────────────────────────────────
+  customElements.define('ou-breadcrumbs', class extends HTMLElement {
     connectedCallback() {
       const items = attr(this, 'items', '').split(',').map(s => s.trim()).filter(Boolean);
-      this.className = 'l-breadcrumbs';
+      this.className = 'ou-breadcrumbs';
       this.innerHTML = items.map((item, i) =>
-        `<span class="l-breadcrumb-item${i === items.length - 1 ? ' l-breadcrumb-active' : ''}">${item}</span>` +
-        (i < items.length - 1 ? '<span class="l-breadcrumb-sep">/</span>' : '')
+        `<span class="ou-breadcrumb-item${i === items.length - 1 ? ' ou-breadcrumb-active' : ''}">${item}</span>` +
+        (i < items.length - 1 ? '<span class="ou-breadcrumb-sep">/</span>' : '')
       ).join('');
     }
   });
 
-  // ── l-skeleton ────────────────────────────────────────────────────────────
-  customElements.define('l-skeleton', class extends HTMLElement {
+  // ── ou-skeleton ────────────────────────────────────────────────────────────
+  customElements.define('ou-skeleton', class extends HTMLElement {
     connectedCallback() {
-      this.className = 'l-skeleton';
+      this.className = 'ou-skeleton';
       const w = this.getAttribute('width');
       const h = this.getAttribute('height');
       if (w) this.style.width = w;
@@ -833,17 +833,17 @@
     }
   });
 
-  // ── l-toast-provider (pass-through wrapper) ───────────────────────────────
-  customElements.define('l-toast-provider', class extends HTMLElement {
+  // ── ou-toast-provider (pass-through wrapper) ───────────────────────────────
+  customElements.define('ou-toast-provider', class extends HTMLElement {
     connectedCallback() { this.style.display = 'contents'; }
   });
 
-  // ── l-modal / l-drawer (pass-through wrappers) ────────────────────────────
+  // ── ou-modal / ou-drawer (pass-through wrappers) ────────────────────────────
   // Only set display:contents if the element doesn't already have display:none from HTML
-  customElements.define('l-modal', class extends HTMLElement {
+  customElements.define('ou-modal', class extends HTMLElement {
     connectedCallback() { if (!this.style.display) this.style.display = 'contents'; }
   });
-  customElements.define('l-drawer', class extends HTMLElement {
+  customElements.define('ou-drawer', class extends HTMLElement {
     connectedCallback() { if (!this.style.display) this.style.display = 'contents'; }
   });
 
@@ -868,14 +868,14 @@ function toggleTheme() {
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 function switchTab(btn) {
-  btn.closest('.l-tabs-list').querySelectorAll('.l-tab').forEach(t => t.classList.remove('l-tab-active'));
-  btn.classList.add('l-tab-active');
+  btn.closest('.ou-tabs-list').querySelectorAll('.ou-tab').forEach(t => t.classList.remove('ou-tab-active'));
+  btn.classList.add('ou-tab-active');
 }
 
 // ── Accordion ─────────────────────────────────────────────────────────────────
 function toggleAccordion(btn) {
   const content = btn.nextElementSibling;
-  const icon = btn.querySelector('.l-accordion-icon');
+  const icon = btn.querySelector('.ou-accordion-icon');
   const isOpen = content.style.display !== 'none';
   content.style.display = isOpen ? 'none' : 'block';
   if (icon) icon.textContent = isOpen ? '+' : '−';
@@ -883,7 +883,7 @@ function toggleAccordion(btn) {
 
 // ── Bar chart ─────────────────────────────────────────────────────────────────
 function setBar(bar) {
-  document.querySelectorAll('#chart .l-demo-bar').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#chart .ou-demo-bar').forEach(b => b.classList.remove('active'));
   bar.classList.add('active');
 }
 
@@ -891,12 +891,12 @@ function setBar(bar) {
 function toggleDropdown(id) {
   const menu = document.getElementById(id);
   const isOpen = menu.style.display !== 'none';
-  document.querySelectorAll('.l-dropdown-menu').forEach(m => m.style.display = 'none');
+  document.querySelectorAll('.ou-dropdown-menu').forEach(m => m.style.display = 'none');
   if (!isOpen) menu.style.display = 'block';
 }
 document.addEventListener('click', e => {
-  if (!e.target.closest('.l-dropdown-wrap')) {
-    document.querySelectorAll('.l-dropdown-menu').forEach(m => m.style.display = 'none');
+  if (!e.target.closest('.ou-dropdown-wrap')) {
+    document.querySelectorAll('.ou-dropdown-menu').forEach(m => m.style.display = 'none');
   }
 });
 
@@ -912,41 +912,41 @@ function showToast(title, message, variant = 'info') {
 </script>
 <style>
   /* ── Missing CSS for components used in the demo ── */
-  .l-modal-footer { display:flex;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid var(--border); }
-  .l-drawer-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);display:flex;justify-content:flex-end;z-index:1000; }
-  .l-drawer { width:360px;max-width:90vw;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;height:100%;padding:24px;overflow-y:auto; }
-  .l-drawer-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:24px; }
-  .l-drawer-title { font-size:16px;font-weight:600; }
-  .l-modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:1000; }
-  .l-dropdown-menu { position:absolute;right:0;top:calc(100% + 6px);background:var(--surface-raised);border:1px solid var(--border);border-radius:10px;padding:6px;min-width:170px;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,0.25); }
-  .l-dropdown-item { display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--text);border:none;background:none;width:100%;text-align:left; }
-  .l-dropdown-item:hover { background:var(--surface-hover); }
-  .l-dropdown-item.danger { color:var(--danger, var(--accent)); }
-  .l-dropdown-divider { height:1px;background:var(--border);margin:4px 0; }
-  .l-dropdown-wrap { position:relative;display:inline-flex; }
-  .l-breadcrumbs { display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-dim); }
-  .l-breadcrumb-active { color:var(--text); }
-  .l-breadcrumb-sep { opacity:0.4; }
-  .l-radio { display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:14px; }
-  .l-radio input[type=radio] { accent-color:var(--primary);width:15px;height:15px; }
-  .l-radio-circle { width:15px;height:15px;border-radius:50%;border:2px solid var(--border-strong);flex-shrink:0; }
-  .l-demo-chart { height:100px;display:flex;align-items:flex-end;gap:8px;margin:16px 0 8px; }
-  .l-demo-bar { flex:1;border-radius:4px 4px 0 0;background:var(--primary-soft);cursor:pointer;transition:background .15s,transform .15s; }
-  .l-demo-bar:hover,.l-demo-bar.active { background:var(--primary);transform:scaleY(1.04); }
-  .l-demo-chart-labels { display:flex;gap:8px; }
-  .l-demo-chart-label { flex:1;text-align:center;font-size:11px;color:var(--text-dim); }
-  .l-demo-table-card { border-radius:12px;overflow:hidden;border:1px solid var(--border); }
-  .l-table { width:100%;border-collapse:collapse; }
-  .l-table th { font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);padding:10px 14px;text-align:left;background:var(--surface-raised);border-bottom:1px solid var(--border); }
-  .l-table td { padding:11px 14px;font-size:13px;border-bottom:1px solid var(--border); }
-  .l-table tr:last-child td { border-bottom:none; }
-  .l-table tbody tr:hover { background:var(--surface-hover,rgba(255,255,255,0.02)); }
-  .l-tooltip-wrap { position:relative;display:inline-flex; }
-  .l-tooltip { position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:#fff;font-size:11px;white-space:nowrap;padding:4px 8px;border-radius:5px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:200; }
-  .l-tooltip-right { left:calc(100% + 6px);bottom:auto;top:50%;transform:translateY(-50%); }
-  .l-tooltip-left { right:calc(100% + 6px);left:auto;bottom:auto;top:50%;transform:translateY(-50%); }
-  .l-tooltip-bottom { top:calc(100% + 6px);bottom:auto; }
-  .l-tooltip-wrap:hover .l-tooltip { opacity:1; }
+  .ou-modal-footer { display:flex;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid var(--border); }
+  .ou-drawer-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);display:flex;justify-content:flex-end;z-index:1000; }
+  .ou-drawer { width:360px;max-width:90vw;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;height:100%;padding:24px;overflow-y:auto; }
+  .ou-drawer-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:24px; }
+  .ou-drawer-title { font-size:16px;font-weight:600; }
+  .ou-modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:1000; }
+  .ou-dropdown-menu { position:absolute;right:0;top:calc(100% + 6px);background:var(--surface-raised);border:1px solid var(--border);border-radius:10px;padding:6px;min-width:170px;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,0.25); }
+  .ou-dropdown-item { display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--text);border:none;background:none;width:100%;text-align:left; }
+  .ou-dropdown-item:hover { background:var(--surface-hover); }
+  .ou-dropdown-item.danger { color:var(--danger, var(--accent)); }
+  .ou-dropdown-divider { height:1px;background:var(--border);margin:4px 0; }
+  .ou-dropdown-wrap { position:relative;display:inline-flex; }
+  .ou-breadcrumbs { display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-dim); }
+  .ou-breadcrumb-active { color:var(--text); }
+  .ou-breadcrumb-sep { opacity:0.4; }
+  .ou-radio { display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:14px; }
+  .ou-radio input[type=radio] { accent-color:var(--primary);width:15px;height:15px; }
+  .ou-radio-circle { width:15px;height:15px;border-radius:50%;border:2px solid var(--border-strong);flex-shrink:0; }
+  .ou-demo-chart { height:100px;display:flex;align-items:flex-end;gap:8px;margin:16px 0 8px; }
+  .ou-demo-bar { flex:1;border-radius:4px 4px 0 0;background:var(--primary-soft);cursor:pointer;transition:background .15s,transform .15s; }
+  .ou-demo-bar:hover,.ou-demo-bar.active { background:var(--primary);transform:scaleY(1.04); }
+  .ou-demo-chart-labels { display:flex;gap:8px; }
+  .ou-demo-chart-label { flex:1;text-align:center;font-size:11px;color:var(--text-dim); }
+  .ou-demo-table-card { border-radius:12px;overflow:hidden;border:1px solid var(--border); }
+  .ou-table { width:100%;border-collapse:collapse; }
+  .ou-table th { font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);padding:10px 14px;text-align:left;background:var(--surface-raised);border-bottom:1px solid var(--border); }
+  .ou-table td { padding:11px 14px;font-size:13px;border-bottom:1px solid var(--border); }
+  .ou-table tr:last-child td { border-bottom:none; }
+  .ou-table tbody tr:hover { background:var(--surface-hover,rgba(255,255,255,0.02)); }
+  .ou-tooltip-wrap { position:relative;display:inline-flex; }
+  .ou-tooltip { position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:#fff;font-size:11px;white-space:nowrap;padding:4px 8px;border-radius:5px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:200; }
+  .ou-tooltip-right { left:calc(100% + 6px);bottom:auto;top:50%;transform:translateY(-50%); }
+  .ou-tooltip-left { right:calc(100% + 6px);left:auto;bottom:auto;top:50%;transform:translateY(-50%); }
+  .ou-tooltip-bottom { top:calc(100% + 6px);bottom:auto; }
+  .ou-tooltip-wrap:hover .ou-tooltip { opacity:1; }
   @keyframes slideIn { from { opacity:0;transform:translateX(20px); } to { opacity:1;transform:translateX(0); } }
 </style>
 <script>
@@ -957,166 +957,166 @@ function showToast(title, message, variant = 'info') {
   var previews = {
     Button: '<div class="sc-title">Button</div>' +
       '<div class="sc-sect"><div class="sc-label">Variants</div><div class="sc-row">' +
-      '<l-button variant="primary">Primary</l-button>' +
-      '<l-button variant="secondary">Secondary</l-button>' +
-      '<l-button variant="outline">Outline</l-button>' +
-      '<l-button variant="ghost">Ghost</l-button>' +
-      '<l-button variant="danger">Danger</l-button>' +
+      '<ou-button variant="primary">Primary</ou-button>' +
+      '<ou-button variant="secondary">Secondary</ou-button>' +
+      '<ou-button variant="outline">Outline</ou-button>' +
+      '<ou-button variant="ghost">Ghost</ou-button>' +
+      '<ou-button variant="danger">Danger</ou-button>' +
       '</div></div>' +
       '<div class="sc-sect"><div class="sc-label">Sizes</div><div class="sc-row">' +
-      '<l-button variant="primary" size="sm">Small</l-button>' +
-      '<l-button variant="primary" size="md">Medium</l-button>' +
-      '<l-button variant="primary" size="lg">Large</l-button>' +
+      '<ou-button variant="primary" size="sm">Small</ou-button>' +
+      '<ou-button variant="primary" size="md">Medium</ou-button>' +
+      '<ou-button variant="primary" size="lg">Large</ou-button>' +
       '</div></div>' +
       '<div class="sc-sect"><div class="sc-label">States</div><div class="sc-row">' +
-      '<l-button variant="primary" disabled>Disabled</l-button>' +
-      '<l-button variant="outline" disabled>Disabled Outline</l-button>' +
+      '<ou-button variant="primary" disabled>Disabled</ou-button>' +
+      '<ou-button variant="outline" disabled>Disabled Outline</ou-button>' +
       '</div></div>',
 
     Badge: '<div class="sc-title">Badge</div>' +
       '<div class="sc-sect"><div class="sc-label">Variants</div><div class="sc-row">' +
-      '<l-badge variant="primary">Primary</l-badge>' +
-      '<l-badge variant="success">Success</l-badge>' +
-      '<l-badge variant="warning">Warning</l-badge>' +
-      '<l-badge variant="danger">Danger</l-badge>' +
-      '<l-badge variant="outline">Outline</l-badge>' +
+      '<ou-badge variant="primary">Primary</ou-badge>' +
+      '<ou-badge variant="success">Success</ou-badge>' +
+      '<ou-badge variant="warning">Warning</ou-badge>' +
+      '<ou-badge variant="danger">Danger</ou-badge>' +
+      '<ou-badge variant="outline">Outline</ou-badge>' +
       '</div></div>',
 
     Alert: '<div class="sc-title">Alert</div>' +
       '<div class="sc-col">' +
-      '<l-alert variant="info" title="Info">This is an informational alert.</l-alert>' +
-      '<l-alert variant="success" title="Success">Your changes have been saved.</l-alert>' +
-      '<l-alert variant="warn" title="Warning">Please review before continuing.</l-alert>' +
-      '<l-alert variant="danger" title="Danger">An error has occurred.</l-alert>' +
+      '<ou-alert variant="info" title="Info">This is an informational alert.</ou-alert>' +
+      '<ou-alert variant="success" title="Success">Your changes have been saved.</ou-alert>' +
+      '<ou-alert variant="warn" title="Warning">Please review before continuing.</ou-alert>' +
+      '<ou-alert variant="danger" title="Danger">An error has occurred.</ou-alert>' +
       '</div>',
 
     Card: '<div class="sc-title">Card</div>' +
       '<div class="sc-row" style="align-items:stretch">' +
-      '<l-card style="min-width:180px"><div style="font-weight:600;margin-bottom:6px">Default Card</div><div style="font-size:13px;color:var(--text-dim)">Standard card surface.</div></l-card>' +
-      '<div class="l-card l-card-glass" style="min-width:180px;padding:18px 20px"><div style="font-weight:600;margin-bottom:6px">Glass Card</div><div style="font-size:13px;color:var(--text-dim)">Frosted glass variant.</div></div>' +
-      '<div class="l-card l-card-hover" style="min-width:180px;padding:18px 20px"><div style="font-weight:600;margin-bottom:6px">Hover Card</div><div style="font-size:13px;color:var(--text-dim)">Lifts on hover.</div></div>' +
+      '<ou-card style="min-width:180px"><div style="font-weight:600;margin-bottom:6px">Default Card</div><div style="font-size:13px;color:var(--text-dim)">Standard card surface.</div></ou-card>' +
+      '<div class="ou-card ou-card-glass" style="min-width:180px;padding:18px 20px"><div style="font-weight:600;margin-bottom:6px">Glass Card</div><div style="font-size:13px;color:var(--text-dim)">Frosted glass variant.</div></div>' +
+      '<div class="ou-card ou-card-hover" style="min-width:180px;padding:18px 20px"><div style="font-weight:600;margin-bottom:6px">Hover Card</div><div style="font-size:13px;color:var(--text-dim)">Lifts on hover.</div></div>' +
       '</div>',
 
     Avatar: '<div class="sc-title">Avatar</div>' +
       '<div class="sc-sect"><div class="sc-label">Sizes</div><div class="sc-row">' +
-      '<l-avatar size="sm" initials="AB"></l-avatar>' +
-      '<l-avatar size="md" initials="CD"></l-avatar>' +
-      '<l-avatar size="lg" initials="EF"></l-avatar>' +
+      '<ou-avatar size="sm" initials="AB"></ou-avatar>' +
+      '<ou-avatar size="md" initials="CD"></ou-avatar>' +
+      '<ou-avatar size="lg" initials="EF"></ou-avatar>' +
       '</div></div>' +
       '<div class="sc-sect"><div class="sc-label">Ring Style</div><div class="sc-row">' +
-      '<l-avatar size="md" initials="GH" ring></l-avatar>' +
-      '<l-avatar size="lg" initials="IJ" ring></l-avatar>' +
+      '<ou-avatar size="md" initials="GH" ring></ou-avatar>' +
+      '<ou-avatar size="lg" initials="IJ" ring></ou-avatar>' +
       '</div></div>',
 
     Input: '<div class="sc-title">Input</div>' +
       '<div class="sc-col" style="max-width:320px">' +
-      '<l-input label="Username" placeholder="Enter your username"></l-input>' +
-      '<l-input label="Email" placeholder="you@example.com" type="email"></l-input>' +
-      '<l-input label="Password" placeholder="••••••••" type="password" error="Password must be at least 8 characters"></l-input>' +
+      '<ou-input label="Username" placeholder="Enter your username"></ou-input>' +
+      '<ou-input label="Email" placeholder="you@example.com" type="email"></ou-input>' +
+      '<ou-input label="Password" placeholder="••••••••" type="password" error="Password must be at least 8 characters"></ou-input>' +
       '</div>',
 
     Progress: '<div class="sc-title">Progress</div>' +
       '<div class="sc-col" style="max-width:360px;gap:14px">' +
-      '<div><div class="sc-label">20%</div><l-progress value="20"></l-progress></div>' +
-      '<div><div class="sc-label">50%</div><l-progress value="50"></l-progress></div>' +
-      '<div><div class="sc-label">80%</div><l-progress value="80"></l-progress></div>' +
-      '<div><div class="sc-label">100% (Complete)</div><l-progress value="100"></l-progress></div>' +
-      '<div><div class="sc-label">Striped</div><l-progress value="65" striped></l-progress></div>' +
+      '<div><div class="sc-label">20%</div><ou-progress value="20"></ou-progress></div>' +
+      '<div><div class="sc-label">50%</div><ou-progress value="50"></ou-progress></div>' +
+      '<div><div class="sc-label">80%</div><ou-progress value="80"></ou-progress></div>' +
+      '<div><div class="sc-label">100% (Complete)</div><ou-progress value="100"></ou-progress></div>' +
+      '<div><div class="sc-label">Striped</div><ou-progress value="65" striped></ou-progress></div>' +
       '</div>',
 
     Skeleton: '<div class="sc-title">Skeleton</div>' +
       '<div class="sc-col" style="max-width:320px;gap:12px">' +
       '<div class="sc-label">Text lines</div>' +
-      '<l-skeleton width="100%"></l-skeleton>' +
-      '<l-skeleton width="80%"></l-skeleton>' +
-      '<l-skeleton width="60%"></l-skeleton>' +
+      '<ou-skeleton width="100%"></ou-skeleton>' +
+      '<ou-skeleton width="80%"></ou-skeleton>' +
+      '<ou-skeleton width="60%"></ou-skeleton>' +
       '<div class="sc-label">Circle</div>' +
-      '<l-skeleton circle width="48px" height="48px"></l-skeleton>' +
+      '<ou-skeleton circle width="48px" height="48px"></ou-skeleton>' +
       '<div class="sc-label">Card block</div>' +
-      '<l-skeleton width="100%" height="80px"></l-skeleton>' +
+      '<ou-skeleton width="100%" height="80px"></ou-skeleton>' +
       '</div>',
 
     Tabs: '<div class="sc-title">Tabs</div>' +
-      '<div class="l-tabs">' +
-      '<div class="l-tabs-list">' +
-      '<button class="l-tab l-tab-active">Overview</button>' +
-      '<button class="l-tab">Analytics</button>' +
-      '<button class="l-tab">Settings</button>' +
-      '<button class="l-tab">Billing</button>' +
+      '<div class="ou-tabs">' +
+      '<div class="ou-tabs-list">' +
+      '<button class="ou-tab ou-tab-active">Overview</button>' +
+      '<button class="ou-tab">Analytics</button>' +
+      '<button class="ou-tab">Settings</button>' +
+      '<button class="ou-tab">Billing</button>' +
       '</div>' +
       '<div style="padding:16px 4px;font-size:13px;color:var(--text-dim)">Tab panel content for the active tab appears here.</div>' +
       '</div>',
 
     Accordion: '<div class="sc-title">Accordion</div>' +
-      '<div class="l-accordion" style="max-width:420px">' +
-      '<div class="l-accordion-item">' +
-      '<button class="l-accordion-trigger">What is Lumina UI? <i data-lucide="chevron-down" style="margin-left:auto;width:16px;height:16px"></i></button>' +
-      '<div class="l-accordion-content" style="padding:12px 16px;font-size:13px;color:var(--text-dim)">Lumina UI is a modern component library for Angular, React, and Vue.</div>' +
+      '<div class="ou-accordion" style="max-width:420px">' +
+      '<div class="ou-accordion-item">' +
+      '<button class="ou-accordion-trigger">What is openUI? <i data-lucide="chevron-down" style="margin-left:auto;width:16px;height:16px"></i></button>' +
+      '<div class="ou-accordion-content" style="padding:12px 16px;font-size:13px;color:var(--text-dim)">openUI is a modern component library for Angular, React, and Vue.</div>' +
       '</div>' +
-      '<div class="l-accordion-item">' +
-      '<button class="l-accordion-trigger">How do I install it? <i data-lucide="chevron-down" style="margin-left:auto;width:16px;height:16px"></i></button>' +
-      '<div class="l-accordion-content" style="padding:12px 16px;font-size:13px;color:var(--text-dim)">Run <code>npm install @lumina-ui/angular</code> and import the module.</div>' +
+      '<div class="ou-accordion-item">' +
+      '<button class="ou-accordion-trigger">How do I install it? <i data-lucide="chevron-down" style="margin-left:auto;width:16px;height:16px"></i></button>' +
+      '<div class="ou-accordion-content" style="padding:12px 16px;font-size:13px;color:var(--text-dim)">Run <code>npm install @openui-ui/angular</code> and import the module.</div>' +
       '</div>' +
-      '<div class="l-accordion-item">' +
-      '<button class="l-accordion-trigger">Is dark mode supported? <i data-lucide="chevron-down" style="margin-left:auto;width:16px;height:16px"></i></button>' +
-      '<div class="l-accordion-content" style="padding:12px 16px;font-size:13px;color:var(--text-dim)">Yes! Set <code>data-theme="dark"</code> on <code>&lt;html&gt;</code> for full dark mode support.</div>' +
+      '<div class="ou-accordion-item">' +
+      '<button class="ou-accordion-trigger">Is dark mode supported? <i data-lucide="chevron-down" style="margin-left:auto;width:16px;height:16px"></i></button>' +
+      '<div class="ou-accordion-content" style="padding:12px 16px;font-size:13px;color:var(--text-dim)">Yes! Set <code>data-theme="dark"</code> on <code>&lt;html&gt;</code> for full dark mode support.</div>' +
       '</div>' +
       '</div>',
 
     Breadcrumbs: '<div class="sc-title">Breadcrumbs</div>' +
       '<div class="sc-col" style="gap:16px">' +
-      '<div><div class="sc-label">Short path</div><l-breadcrumbs items="Home,Components"></l-breadcrumbs></div>' +
-      '<div><div class="sc-label">Deep path</div><l-breadcrumbs items="Home,Docs,Components,Button"></l-breadcrumbs></div>' +
-      '<div><div class="sc-label">Full path</div><l-breadcrumbs items="Home,Dashboard,Settings,Profile,Edit"></l-breadcrumbs></div>' +
+      '<div><div class="sc-label">Short path</div><ou-breadcrumbs items="Home,Components"></ou-breadcrumbs></div>' +
+      '<div><div class="sc-label">Deep path</div><ou-breadcrumbs items="Home,Docs,Components,Button"></ou-breadcrumbs></div>' +
+      '<div><div class="sc-label">Full path</div><ou-breadcrumbs items="Home,Dashboard,Settings,Profile,Edit"></ou-breadcrumbs></div>' +
       '</div>',
 
     NavItem: '<div class="sc-title">NavItem</div>' +
       '<div class="sc-col" style="max-width:220px">' +
-      '<l-nav-item active><i data-lucide="home"></i> Dashboard</l-nav-item>' +
-      '<l-nav-item><i data-lucide="bar-chart-2"></i> Analytics</l-nav-item>' +
-      '<l-nav-item><i data-lucide="users"></i> Users</l-nav-item>' +
-      '<l-nav-item><i data-lucide="settings"></i> Settings</l-nav-item>' +
-      '<l-nav-item><i data-lucide="help-circle"></i> Help</l-nav-item>' +
+      '<ou-nav-item active><i data-lucide="home"></i> Dashboard</ou-nav-item>' +
+      '<ou-nav-item><i data-lucide="bar-chart-2"></i> Analytics</ou-nav-item>' +
+      '<ou-nav-item><i data-lucide="users"></i> Users</ou-nav-item>' +
+      '<ou-nav-item><i data-lucide="settings"></i> Settings</ou-nav-item>' +
+      '<ou-nav-item><i data-lucide="help-circle"></i> Help</ou-nav-item>' +
       '</div>',
 
     Checkbox: '<div class="sc-title">Checkbox</div>' +
       '<div class="sc-col" style="gap:10px">' +
-      '<l-checkbox label="Checked" checked></l-checkbox>' +
-      '<l-checkbox label="Unchecked"></l-checkbox>' +
-      '<l-checkbox label="Disabled (checked)" checked disabled></l-checkbox>' +
-      '<l-checkbox label="Disabled (unchecked)" disabled></l-checkbox>' +
+      '<ou-checkbox label="Checked" checked></ou-checkbox>' +
+      '<ou-checkbox label="Unchecked"></ou-checkbox>' +
+      '<ou-checkbox label="Disabled (checked)" checked disabled></ou-checkbox>' +
+      '<ou-checkbox label="Disabled (unchecked)" disabled></ou-checkbox>' +
       '</div>',
 
     Switch: '<div class="sc-title">Switch</div>' +
       '<div class="sc-col" style="gap:10px">' +
-      '<l-switch label="Enabled (on)" checked></l-switch>' +
-      '<l-switch label="Disabled look (off)"></l-switch>' +
-      '<l-switch label="Disabled (on)" checked disabled></l-switch>' +
-      '<l-switch label="Disabled (off)" disabled></l-switch>' +
+      '<ou-switch label="Enabled (on)" checked></ou-switch>' +
+      '<ou-switch label="Disabled look (off)"></ou-switch>' +
+      '<ou-switch label="Disabled (on)" checked disabled></ou-switch>' +
+      '<ou-switch label="Disabled (off)" disabled></ou-switch>' +
       '</div>',
 
     Radio: '<div class="sc-title">Radio</div>' +
       '<div class="sc-col" style="gap:10px">' +
-      '<label class="l-radio"><input type="radio" name="sc-radio" checked> Option A</label>' +
-      '<label class="l-radio"><input type="radio" name="sc-radio"> Option B</label>' +
-      '<label class="l-radio"><input type="radio" name="sc-radio"> Option C</label>' +
+      '<label class="ou-radio"><input type="radio" name="sc-radio" checked> Option A</label>' +
+      '<label class="ou-radio"><input type="radio" name="sc-radio"> Option B</label>' +
+      '<label class="ou-radio"><input type="radio" name="sc-radio"> Option C</label>' +
       '</div>',
 
     Chip: '<div class="sc-title">Chip</div>' +
       '<div class="sc-row">' +
-      '<l-chip variant="default">Default</l-chip>' +
-      '<l-chip variant="primary">Primary</l-chip>' +
-      '<l-chip variant="success">Success</l-chip>' +
-      '<l-chip variant="warning">Warning</l-chip>' +
-      '<l-chip variant="danger">Danger</l-chip>' +
-      '<l-chip variant="outline">Outline</l-chip>' +
+      '<ou-chip variant="default">Default</ou-chip>' +
+      '<ou-chip variant="primary">Primary</ou-chip>' +
+      '<ou-chip variant="success">Success</ou-chip>' +
+      '<ou-chip variant="warning">Warning</ou-chip>' +
+      '<ou-chip variant="danger">Danger</ou-chip>' +
+      '<ou-chip variant="outline">Outline</ou-chip>' +
       '</div>',
 
     Modal: '<div class="sc-title">Modal</div>' +
       '<div class="sc-col">' +
       '<div style="font-size:13px;color:var(--text-dim);margin-bottom:12px">Click the button below to open the Modal overlay already present on this page.</div>' +
       '<div class="sc-row">' +
-      '<l-button variant="primary" onclick="document.getElementById(\'modal\').style.display=\'flex\'">Open Modal</l-button>' +
+      '<ou-button variant="primary" onclick="document.getElementById(\'modal\').style.display=\'flex\'">Open Modal</ou-button>' +
       '</div>' +
       '</div>',
 
@@ -1124,31 +1124,31 @@ function showToast(title, message, variant = 'info') {
       '<div class="sc-col">' +
       '<div style="font-size:13px;color:var(--text-dim);margin-bottom:12px">Click the button below to open the Drawer panel already present on this page.</div>' +
       '<div class="sc-row">' +
-      '<l-button variant="outline" onclick="document.getElementById(\'drawer\').style.display=\'flex\'">Open Drawer</l-button>' +
+      '<ou-button variant="outline" onclick="document.getElementById(\'drawer\').style.display=\'flex\'">Open Drawer</ou-button>' +
       '</div>' +
       '</div>',
 
     Navbar: '<div class="sc-title">Navbar</div>' +
-      '<l-navbar>' +
-      '<l-navbar-brand>Lumina UI</l-navbar-brand>' +
-      '<l-navbar-actions>' +
-      '<l-button variant="ghost" size="sm"><i data-lucide="search"></i></l-button>' +
-      '<l-button variant="ghost" size="sm"><i data-lucide="bell"></i></l-button>' +
-      '<l-button variant="primary" size="sm">Get Started</l-button>' +
-      '</l-navbar-actions>' +
-      '</l-navbar>',
+      '<ou-navbar>' +
+      '<ou-navbar-brand>openUI</ou-navbar-brand>' +
+      '<ou-navbar-actions>' +
+      '<ou-button variant="ghost" size="sm"><i data-lucide="search"></i></ou-button>' +
+      '<ou-button variant="ghost" size="sm"><i data-lucide="bell"></i></ou-button>' +
+      '<ou-button variant="primary" size="sm">Get Started</ou-button>' +
+      '</ou-navbar-actions>' +
+      '</ou-navbar>',
 
     Dropdown: '<div class="sc-title">Dropdown</div>' +
       '<div class="sc-row" style="align-items:flex-start;gap:32px">' +
       '<div>' +
       '<div class="sc-label">Menu (shown by default)</div>' +
-      '<div class="l-dropdown-wrap" style="position:relative">' +
-      '<l-button variant="outline" size="sm">Options <i data-lucide="chevron-down" style="width:14px;height:14px;margin-left:4px"></i></l-button>' +
-      '<div class="l-dropdown-menu" style="display:block;position:relative;top:6px;right:auto;left:0;margin-top:0">' +
-      '<button class="l-dropdown-item"><i data-lucide="edit" style="width:14px;height:14px"></i> Edit</button>' +
-      '<button class="l-dropdown-item"><i data-lucide="copy" style="width:14px;height:14px"></i> Duplicate</button>' +
-      '<div class="l-dropdown-divider"></div>' +
-      '<button class="l-dropdown-item danger"><i data-lucide="trash-2" style="width:14px;height:14px"></i> Delete</button>' +
+      '<div class="ou-dropdown-wrap" style="position:relative">' +
+      '<ou-button variant="outline" size="sm">Options <i data-lucide="chevron-down" style="width:14px;height:14px;margin-left:4px"></i></ou-button>' +
+      '<div class="ou-dropdown-menu" style="display:block;position:relative;top:6px;right:auto;left:0;margin-top:0">' +
+      '<button class="ou-dropdown-item"><i data-lucide="edit" style="width:14px;height:14px"></i> Edit</button>' +
+      '<button class="ou-dropdown-item"><i data-lucide="copy" style="width:14px;height:14px"></i> Duplicate</button>' +
+      '<div class="ou-dropdown-divider"></div>' +
+      '<button class="ou-dropdown-item danger"><i data-lucide="trash-2" style="width:14px;height:14px"></i> Delete</button>' +
       '</div>' +
       '</div>' +
       '</div>' +
@@ -1156,42 +1156,42 @@ function showToast(title, message, variant = 'info') {
 
     Tooltip: '<div class="sc-title">Tooltip</div>' +
       '<div class="sc-row" style="gap:40px;flex-wrap:wrap;padding:24px 0">' +
-      '<div><div class="sc-label" style="margin-bottom:24px">Top (default)</div><l-tooltip content="Tooltip on top"><l-button variant="outline" size="sm">Hover me</l-button></l-tooltip></div>' +
-      '<div><div class="sc-label" style="margin-bottom:24px">Bottom</div><l-tooltip content="Tooltip below" position="bottom"><l-button variant="outline" size="sm">Hover me</l-button></l-tooltip></div>' +
-      '<div><div class="sc-label" style="margin-bottom:24px">Left</div><l-tooltip content="On the left" position="left"><l-button variant="outline" size="sm">Hover me</l-button></l-tooltip></div>' +
-      '<div><div class="sc-label" style="margin-bottom:24px">Right</div><l-tooltip content="On the right" position="right"><l-button variant="outline" size="sm">Hover me</l-button></l-tooltip></div>' +
+      '<div><div class="sc-label" style="margin-bottom:24px">Top (default)</div><ou-tooltip content="Tooltip on top"><ou-button variant="outline" size="sm">Hover me</ou-button></ou-tooltip></div>' +
+      '<div><div class="sc-label" style="margin-bottom:24px">Bottom</div><ou-tooltip content="Tooltip below" position="bottom"><ou-button variant="outline" size="sm">Hover me</ou-button></ou-tooltip></div>' +
+      '<div><div class="sc-label" style="margin-bottom:24px">Left</div><ou-tooltip content="On the left" position="left"><ou-button variant="outline" size="sm">Hover me</ou-button></ou-tooltip></div>' +
+      '<div><div class="sc-label" style="margin-bottom:24px">Right</div><ou-tooltip content="On the right" position="right"><ou-button variant="outline" size="sm">Hover me</ou-button></ou-tooltip></div>' +
       '</div>',
 
     Table: '<div class="sc-title">Table</div>' +
-      '<div class="l-demo-table-card">' +
-      '<table class="l-table">' +
+      '<div class="ou-demo-table-card">' +
+      '<table class="ou-table">' +
       '<thead><tr><th>Name</th><th>Role</th><th>Joined</th><th>Status</th></tr></thead>' +
       '<tbody>' +
-      '<tr><td>Alice Martin</td><td>Engineer</td><td>Jan 2024</td><td><l-badge variant="success">Active</l-badge></td></tr>' +
-      '<tr><td>Bob Chen</td><td>Designer</td><td>Mar 2024</td><td><l-badge variant="primary">Active</l-badge></td></tr>' +
-      '<tr><td>Carol White</td><td>Manager</td><td>Sep 2023</td><td><l-badge variant="warning">Away</l-badge></td></tr>' +
-      '<tr><td>Dan Lee</td><td>DevOps</td><td>Jun 2024</td><td><l-badge variant="danger">Inactive</l-badge></td></tr>' +
+      '<tr><td>Alice Martin</td><td>Engineer</td><td>Jan 2024</td><td><ou-badge variant="success">Active</ou-badge></td></tr>' +
+      '<tr><td>Bob Chen</td><td>Designer</td><td>Mar 2024</td><td><ou-badge variant="primary">Active</ou-badge></td></tr>' +
+      '<tr><td>Carol White</td><td>Manager</td><td>Sep 2023</td><td><ou-badge variant="warning">Away</ou-badge></td></tr>' +
+      '<tr><td>Dan Lee</td><td>DevOps</td><td>Jun 2024</td><td><ou-badge variant="danger">Inactive</ou-badge></td></tr>' +
       '</tbody>' +
       '</table>' +
       '</div>',
 
     List: '<div class="sc-title">List</div>' +
-      '<div class="l-list" style="max-width:280px">' +
-      '<div class="l-list-item l-list-item-active"><i data-lucide="home" style="width:15px;height:15px"></i> Dashboard</div>' +
-      '<div class="l-list-item"><i data-lucide="inbox" style="width:15px;height:15px"></i> Inbox <l-badge variant="primary" style="margin-left:auto">4</l-badge></div>' +
-      '<div class="l-list-item"><i data-lucide="send" style="width:15px;height:15px"></i> Sent</div>' +
-      '<div class="l-list-item"><i data-lucide="archive" style="width:15px;height:15px"></i> Archive</div>' +
-      '<div class="l-list-item"><i data-lucide="trash-2" style="width:15px;height:15px"></i> Trash</div>' +
+      '<div class="ou-list" style="max-width:280px">' +
+      '<div class="ou-list-item ou-list-item-active"><i data-lucide="home" style="width:15px;height:15px"></i> Dashboard</div>' +
+      '<div class="ou-list-item"><i data-lucide="inbox" style="width:15px;height:15px"></i> Inbox <ou-badge variant="primary" style="margin-left:auto">4</ou-badge></div>' +
+      '<div class="ou-list-item"><i data-lucide="send" style="width:15px;height:15px"></i> Sent</div>' +
+      '<div class="ou-list-item"><i data-lucide="archive" style="width:15px;height:15px"></i> Archive</div>' +
+      '<div class="ou-list-item"><i data-lucide="trash-2" style="width:15px;height:15px"></i> Trash</div>' +
       '</div>',
 
     Toast: '<div class="sc-title">Toast</div>' +
       '<div class="sc-col">' +
       '<div style="font-size:13px;color:var(--text-dim);margin-bottom:12px">Click a button to fire a toast notification.</div>' +
       '<div class="sc-row">' +
-      '<l-button variant="primary" size="sm" onclick="showToast(\'Info\',\'This is an informational message.\',\'info\')">Info</l-button>' +
-      '<l-button variant="secondary" size="sm" onclick="showToast(\'Success\',\'Operation completed successfully.\',\'success\')">Success</l-button>' +
-      '<l-button variant="outline" size="sm" onclick="showToast(\'Warning\',\'Please review before proceeding.\',\'warning\')">Warning</l-button>' +
-      '<l-button variant="danger" size="sm" onclick="showToast(\'Error\',\'Something went wrong.\',\'danger\')">Danger</l-button>' +
+      '<ou-button variant="primary" size="sm" onclick="showToast(\'Info\',\'This is an informational message.\',\'info\')">Info</ou-button>' +
+      '<ou-button variant="secondary" size="sm" onclick="showToast(\'Success\',\'Operation completed successfully.\',\'success\')">Success</ou-button>' +
+      '<ou-button variant="outline" size="sm" onclick="showToast(\'Warning\',\'Please review before proceeding.\',\'warning\')">Warning</ou-button>' +
+      '<ou-button variant="danger" size="sm" onclick="showToast(\'Error\',\'Something went wrong.\',\'danger\')">Danger</ou-button>' +
       '</div>' +
       '</div>'
   };
@@ -1209,7 +1209,7 @@ function showToast(title, message, variant = 'info') {
     document.head.appendChild(styleEl);
 
     // Hide the main demo
-    var demoRoot = document.querySelector('l-toast-provider');
+    var demoRoot = document.querySelector('ou-toast-provider');
     if (demoRoot) demoRoot.style.display = 'none';
 
     // Build showcase container
@@ -1222,7 +1222,7 @@ function showToast(title, message, variant = 'info') {
     container.style.cssText = 'padding:40px;max-width:860px;margin:0 auto';
     container.innerHTML = html;
 
-    // Insert before l-toast-provider (or into body if not found)
+    // Insert before ou-toast-provider (or into body if not found)
     if (demoRoot && demoRoot.parentNode) {
       demoRoot.parentNode.insertBefore(container, demoRoot);
     } else {

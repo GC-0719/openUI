@@ -10,7 +10,7 @@ export const NavItem = ({
 }) => {
   return (
     <div 
-      className={`l-nav-item ${active ? 'l-nav-item-active' : ''} ${className}`}
+      className={`ou-nav-item ${active ? 'ou-nav-item-active' : ''} ${className}`}
       style={{
         display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 16px',
         borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s',

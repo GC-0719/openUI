@@ -14,7 +14,7 @@ import {
 } from './components/ui';
 
 @Component({
-  selector: 'l-showcase',
+  selector: 'ou-showcase',
   standalone: true,
   imports: [
     CommonModule,
@@ -38,7 +38,7 @@ import {
     .sc-col { display: flex; flex-direction: column; gap: 10px; }
   `],
   template: `
-    <l-toast-provider>
+    <ou-toast-provider>
       <div class="sc-wrap">
 
         <!-- Button -->
@@ -46,26 +46,26 @@ import {
           <div class="sc-section">
             <div class="sc-label">Variants</div>
             <div class="sc-row">
-              <l-button variant="primary">Primary</l-button>
-              <l-button variant="secondary">Secondary</l-button>
-              <l-button variant="outline">Outline</l-button>
-              <l-button variant="ghost">Ghost</l-button>
-              <l-button variant="danger">Danger</l-button>
+              <ou-button variant="primary">Primary</ou-button>
+              <ou-button variant="secondary">Secondary</ou-button>
+              <ou-button variant="outline">Outline</ou-button>
+              <ou-button variant="ghost">Ghost</ou-button>
+              <ou-button variant="danger">Danger</ou-button>
             </div>
           </div>
           <div class="sc-section">
             <div class="sc-label">Sizes</div>
             <div class="sc-row">
-              <l-button variant="primary" size="sm">Small</l-button>
-              <l-button variant="primary" size="md">Medium</l-button>
-              <l-button variant="primary" size="lg">Large</l-button>
+              <ou-button variant="primary" size="sm">Small</ou-button>
+              <ou-button variant="primary" size="md">Medium</ou-button>
+              <ou-button variant="primary" size="lg">Large</ou-button>
             </div>
           </div>
           <div class="sc-section">
             <div class="sc-label">States</div>
             <div class="sc-row">
-              <l-button variant="primary" [disabled]="true">Disabled</l-button>
-              <l-button variant="outline" [disabled]="true">Disabled Outline</l-button>
+              <ou-button variant="primary" [disabled]="true">Disabled</ou-button>
+              <ou-button variant="outline" [disabled]="true">Disabled Outline</ou-button>
             </div>
           </div>
         </ng-container>
@@ -75,11 +75,11 @@ import {
           <div class="sc-section">
             <div class="sc-label">Variants</div>
             <div class="sc-row">
-              <l-badge variant="default">Default</l-badge>
-              <l-badge variant="primary">Primary</l-badge>
-              <l-badge variant="success">Success</l-badge>
-              <l-badge variant="warning">Warning</l-badge>
-              <l-badge variant="danger">Danger</l-badge>
+              <ou-badge variant="default">Default</ou-badge>
+              <ou-badge variant="primary">Primary</ou-badge>
+              <ou-badge variant="success">Success</ou-badge>
+              <ou-badge variant="warning">Warning</ou-badge>
+              <ou-badge variant="danger">Danger</ou-badge>
             </div>
           </div>
         </ng-container>
@@ -88,21 +88,21 @@ import {
         <ng-container *ngIf="preview === 'Card'">
           <div class="sc-section">
             <div class="sc-label">Default</div>
-            <l-card style="padding:20px;max-width:300px">
+            <ou-card style="padding:20px;max-width:300px">
               <div style="font-size:16px;font-weight:700;margin-bottom:8px">Card Title</div>
               <div style="font-size:13px;color:var(--text-muted)">Card content goes here. Use cards to group related information.</div>
-            </l-card>
+            </ou-card>
           </div>
           <div class="sc-section">
             <div class="sc-label">With Action</div>
-            <l-card style="padding:20px;max-width:300px">
+            <ou-card style="padding:20px;max-width:300px">
               <div style="font-size:16px;font-weight:700;margin-bottom:8px">Settings</div>
               <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Manage your account preferences.</div>
               <div class="sc-row">
-                <l-button variant="primary" size="sm">Save</l-button>
-                <l-button variant="ghost" size="sm">Cancel</l-button>
+                <ou-button variant="primary" size="sm">Save</ou-button>
+                <ou-button variant="ghost" size="sm">Cancel</ou-button>
               </div>
-            </l-card>
+            </ou-card>
           </div>
         </ng-container>
 
@@ -111,16 +111,16 @@ import {
           <div class="sc-section">
             <div class="sc-label">Default</div>
             <div class="sc-col" style="max-width:280px">
-              <l-input placeholder="Enter text…"></l-input>
-              <l-input placeholder="With label" label="Email address"></l-input>
-              <l-input placeholder="Password" type="password" label="Password"></l-input>
+              <ou-input placeholder="Enter text…"></ou-input>
+              <ou-input placeholder="With label" label="Email address"></ou-input>
+              <ou-input placeholder="Password" type="password" label="Password"></ou-input>
             </div>
           </div>
           <div class="sc-section">
             <div class="sc-label">States</div>
             <div class="sc-col" style="max-width:280px">
-              <l-input placeholder="Error state" [error]="true" errorMessage="This field is required" label="Username"></l-input>
-              <l-input placeholder="Disabled" [disabled]="true" label="Read only"></l-input>
+              <ou-input placeholder="Error state" [error]="true" errorMessage="This field is required" label="Username"></ou-input>
+              <ou-input placeholder="Disabled" [disabled]="true" label="Read only"></ou-input>
             </div>
           </div>
         </ng-container>
@@ -130,15 +130,15 @@ import {
           <div class="sc-section">
             <div class="sc-label">Variants</div>
             <div class="sc-col">
-              <l-alert variant="info" title="Info">This is an informational alert message.</l-alert>
-              <l-alert variant="success" title="Success">Operation completed successfully.</l-alert>
-              <l-alert variant="warning" title="Warning">This action may have consequences.</l-alert>
-              <l-alert variant="danger" title="Error">Something went wrong. Please try again.</l-alert>
+              <ou-alert variant="info" title="Info">This is an informational alert message.</ou-alert>
+              <ou-alert variant="success" title="Success">Operation completed successfully.</ou-alert>
+              <ou-alert variant="warning" title="Warning">This action may have consequences.</ou-alert>
+              <ou-alert variant="danger" title="Error">Something went wrong. Please try again.</ou-alert>
             </div>
           </div>
           <div class="sc-section">
             <div class="sc-label">Dismissible</div>
-            <l-alert variant="info" title="Dismissible" [dismissible]="true">Click the × to dismiss this alert.</l-alert>
+            <ou-alert variant="info" title="Dismissible" [dismissible]="true">Click the × to dismiss this alert.</ou-alert>
           </div>
         </ng-container>
 
@@ -147,17 +147,17 @@ import {
           <div class="sc-section">
             <div class="sc-label">Sizes</div>
             <div class="sc-row">
-              <l-avatar initials="AB" size="sm"></l-avatar>
-              <l-avatar initials="CD" size="md"></l-avatar>
-              <l-avatar initials="EF" size="lg"></l-avatar>
+              <ou-avatar initials="AB" size="sm"></ou-avatar>
+              <ou-avatar initials="CD" size="md"></ou-avatar>
+              <ou-avatar initials="EF" size="lg"></ou-avatar>
             </div>
           </div>
           <div class="sc-section">
             <div class="sc-label">With Ring</div>
             <div class="sc-row">
-              <l-avatar initials="GH" size="sm" [ring]="true"></l-avatar>
-              <l-avatar initials="IJ" size="md" [ring]="true"></l-avatar>
-              <l-avatar initials="KL" size="lg" [ring]="true"></l-avatar>
+              <ou-avatar initials="GH" size="sm" [ring]="true"></ou-avatar>
+              <ou-avatar initials="IJ" size="md" [ring]="true"></ou-avatar>
+              <ou-avatar initials="KL" size="lg" [ring]="true"></ou-avatar>
             </div>
           </div>
         </ng-container>
@@ -167,9 +167,9 @@ import {
           <div class="sc-section">
             <div class="sc-label">States</div>
             <div class="sc-col">
-              <l-switch [active]="false"></l-switch>
-              <l-switch [active]="true"></l-switch>
-              <l-switch [active]="true" [disabled]="true"></l-switch>
+              <ou-switch [active]="false"></ou-switch>
+              <ou-switch [active]="true"></ou-switch>
+              <ou-switch [active]="true" [disabled]="true"></ou-switch>
             </div>
           </div>
         </ng-container>
@@ -179,9 +179,9 @@ import {
           <div class="sc-section">
             <div class="sc-label">States</div>
             <div class="sc-col">
-              <l-checkbox label="Unchecked"></l-checkbox>
-              <l-checkbox label="Checked" [checked]="true"></l-checkbox>
-              <l-checkbox label="Disabled" [disabled]="true"></l-checkbox>
+              <ou-checkbox label="Unchecked"></ou-checkbox>
+              <ou-checkbox label="Checked" [checked]="true"></ou-checkbox>
+              <ou-checkbox label="Disabled" [disabled]="true"></ou-checkbox>
             </div>
           </div>
         </ng-container>
@@ -191,9 +191,9 @@ import {
           <div class="sc-section">
             <div class="sc-label">Group</div>
             <div class="sc-col">
-              <l-radio label="Option A" name="demo" value="a"></l-radio>
-              <l-radio label="Option B" name="demo" value="b"></l-radio>
-              <l-radio label="Option C (disabled)" name="demo" value="c" [disabled]="true"></l-radio>
+              <ou-radio label="Option A" name="demo" value="a"></ou-radio>
+              <ou-radio label="Option B" name="demo" value="b"></ou-radio>
+              <ou-radio label="Option C (disabled)" name="demo" value="c" [disabled]="true"></ou-radio>
             </div>
           </div>
         </ng-container>
@@ -203,16 +203,16 @@ import {
           <div class="sc-section">
             <div class="sc-label">Values</div>
             <div class="sc-col">
-              <l-progress [value]="25"></l-progress>
-              <l-progress [value]="50"></l-progress>
-              <l-progress [value]="75"></l-progress>
-              <l-progress [value]="100"></l-progress>
+              <ou-progress [value]="25"></ou-progress>
+              <ou-progress [value]="50"></ou-progress>
+              <ou-progress [value]="75"></ou-progress>
+              <ou-progress [value]="100"></ou-progress>
             </div>
           </div>
           <div class="sc-section">
             <div class="sc-label">Striped</div>
             <div class="sc-col">
-              <l-progress [value]="60" [striped]="true"></l-progress>
+              <ou-progress [value]="60" [striped]="true"></ou-progress>
             </div>
           </div>
         </ng-container>
@@ -222,18 +222,18 @@ import {
           <div class="sc-section">
             <div class="sc-label">Variants</div>
             <div class="sc-row">
-              <l-chip>Default</l-chip>
-              <l-chip variant="primary">Primary</l-chip>
-              <l-chip variant="success">Success</l-chip>
-              <l-chip variant="warning">Warning</l-chip>
-              <l-chip variant="danger">Danger</l-chip>
+              <ou-chip>Default</ou-chip>
+              <ou-chip variant="primary">Primary</ou-chip>
+              <ou-chip variant="success">Success</ou-chip>
+              <ou-chip variant="warning">Warning</ou-chip>
+              <ou-chip variant="danger">Danger</ou-chip>
             </div>
           </div>
           <div class="sc-section">
             <div class="sc-label">Removable</div>
             <div class="sc-row">
-              <l-chip [removable]="true">Removable</l-chip>
-              <l-chip variant="primary" [removable]="true">Primary</l-chip>
+              <ou-chip [removable]="true">Removable</ou-chip>
+              <ou-chip variant="primary" [removable]="true">Primary</ou-chip>
             </div>
           </div>
         </ng-container>
@@ -242,11 +242,11 @@ import {
         <ng-container *ngIf="preview === 'Tabs'">
           <div class="sc-section">
             <div class="sc-label">Default</div>
-            <l-tabs [tabs]="['Overview', 'Analytics', 'Reports']" active="Overview"></l-tabs>
+            <ou-tabs [tabs]="['Overview', 'Analytics', 'Reports']" active="Overview"></ou-tabs>
           </div>
           <div class="sc-section">
             <div class="sc-label">With Icon Labels</div>
-            <l-tabs [tabs]="['Files', 'Code', 'Preview']" active="Files"></l-tabs>
+            <ou-tabs [tabs]="['Files', 'Code', 'Preview']" active="Files"></ou-tabs>
           </div>
         </ng-container>
 
@@ -254,7 +254,7 @@ import {
         <ng-container *ngIf="preview === 'Accordion'">
           <div class="sc-section">
             <div class="sc-label">Default</div>
-            <l-accordion [items]="accordionItems"></l-accordion>
+            <ou-accordion [items]="accordionItems"></ou-accordion>
           </div>
         </ng-container>
 
@@ -263,18 +263,18 @@ import {
           <div class="sc-section">
             <div class="sc-label">Shapes</div>
             <div class="sc-col">
-              <l-skeleton width="100%" height="20px"></l-skeleton>
-              <l-skeleton width="60%" height="20px"></l-skeleton>
-              <l-skeleton width="80%" height="20px"></l-skeleton>
+              <ou-skeleton width="100%" height="20px"></ou-skeleton>
+              <ou-skeleton width="60%" height="20px"></ou-skeleton>
+              <ou-skeleton width="80%" height="20px"></ou-skeleton>
             </div>
           </div>
           <div class="sc-section">
             <div class="sc-label">Avatar Placeholder</div>
             <div class="sc-row">
-              <l-skeleton width="40px" height="40px" [circle]="true"></l-skeleton>
+              <ou-skeleton width="40px" height="40px" [circle]="true"></ou-skeleton>
               <div class="sc-col" style="flex:1">
-                <l-skeleton width="120px" height="14px"></l-skeleton>
-                <l-skeleton width="80px" height="12px"></l-skeleton>
+                <ou-skeleton width="120px" height="14px"></ou-skeleton>
+                <ou-skeleton width="80px" height="12px"></ou-skeleton>
               </div>
             </div>
           </div>
@@ -285,10 +285,10 @@ import {
           <div class="sc-section">
             <div class="sc-label">Positions</div>
             <div class="sc-row" style="padding:32px 0">
-              <l-tooltip text="Top tooltip" position="top"><l-button variant="outline" size="sm">Top</l-button></l-tooltip>
-              <l-tooltip text="Bottom tooltip" position="bottom"><l-button variant="outline" size="sm">Bottom</l-button></l-tooltip>
-              <l-tooltip text="Left tooltip" position="left"><l-button variant="outline" size="sm">Left</l-button></l-tooltip>
-              <l-tooltip text="Right tooltip" position="right"><l-button variant="outline" size="sm">Right</l-button></l-tooltip>
+              <ou-tooltip text="Top tooltip" position="top"><ou-button variant="outline" size="sm">Top</ou-button></ou-tooltip>
+              <ou-tooltip text="Bottom tooltip" position="bottom"><ou-button variant="outline" size="sm">Bottom</ou-button></ou-tooltip>
+              <ou-tooltip text="Left tooltip" position="left"><ou-button variant="outline" size="sm">Left</ou-button></ou-tooltip>
+              <ou-tooltip text="Right tooltip" position="right"><ou-button variant="outline" size="sm">Right</ou-button></ou-tooltip>
             </div>
           </div>
         </ng-container>
@@ -297,13 +297,13 @@ import {
         <ng-container *ngIf="preview === 'Navbar'">
           <div class="sc-section">
             <div class="sc-label">Default</div>
-            <l-navbar>
-              <l-navbar-brand>My App</l-navbar-brand>
-              <l-navbar-actions>
-                <l-button variant="ghost" size="sm">Docs</l-button>
-                <l-button variant="primary" size="sm">Sign In</l-button>
-              </l-navbar-actions>
-            </l-navbar>
+            <ou-navbar>
+              <ou-navbar-brand>My App</ou-navbar-brand>
+              <ou-navbar-actions>
+                <ou-button variant="ghost" size="sm">Docs</ou-button>
+                <ou-button variant="primary" size="sm">Sign In</ou-button>
+              </ou-navbar-actions>
+            </ou-navbar>
           </div>
         </ng-container>
 
@@ -312,9 +312,9 @@ import {
           <div class="sc-section">
             <div class="sc-label">States</div>
             <div class="sc-col" style="max-width:220px">
-              <l-nav-item>Dashboard</l-nav-item>
-              <l-nav-item [active]="true">Analytics (active)</l-nav-item>
-              <l-nav-item>Settings</l-nav-item>
+              <ou-nav-item>Dashboard</ou-nav-item>
+              <ou-nav-item [active]="true">Analytics (active)</ou-nav-item>
+              <ou-nav-item>Settings</ou-nav-item>
             </div>
           </div>
         </ng-container>
@@ -323,13 +323,13 @@ import {
         <ng-container *ngIf="preview === 'Table'">
           <div class="sc-section">
             <div class="sc-label">Default</div>
-            <l-table [columns]="tableColumns">
+            <ou-table [columns]="tableColumns">
               <tr *ngFor="let row of tableRows">
                 <td>{{ row.name }}</td>
                 <td>{{ row.role }}</td>
-                <td><l-badge [variant]="row.variant">{{ row.status }}</l-badge></td>
+                <td><ou-badge [variant]="row.variant">{{ row.status }}</ou-badge></td>
               </tr>
-            </l-table>
+            </ou-table>
           </div>
         </ng-container>
 
@@ -338,20 +338,20 @@ import {
           <div class="sc-section">
             <div class="sc-label">Default</div>
             <div class="sc-row">
-              <l-dropdown>
-                <l-button variant="outline" trigger>Options ▾</l-button>
-                <l-dropdown-item>View Profile</l-dropdown-item>
-                <l-dropdown-item>Settings</l-dropdown-item>
-                <l-dropdown-divider></l-dropdown-divider>
-                <l-dropdown-item [danger]="true">Sign Out</l-dropdown-item>
-              </l-dropdown>
-              <l-dropdown align="right">
-                <l-button variant="primary" trigger>Actions ▾</l-button>
-                <l-dropdown-item>Edit</l-dropdown-item>
-                <l-dropdown-item>Duplicate</l-dropdown-item>
-                <l-dropdown-divider></l-dropdown-divider>
-                <l-dropdown-item [danger]="true">Delete</l-dropdown-item>
-              </l-dropdown>
+              <ou-dropdown>
+                <ou-button variant="outline" trigger>Options ▾</ou-button>
+                <ou-dropdown-item>View Profile</ou-dropdown-item>
+                <ou-dropdown-item>Settings</ou-dropdown-item>
+                <ou-dropdown-divider></ou-dropdown-divider>
+                <ou-dropdown-item [danger]="true">Sign Out</ou-dropdown-item>
+              </ou-dropdown>
+              <ou-dropdown align="right">
+                <ou-button variant="primary" trigger>Actions ▾</ou-button>
+                <ou-dropdown-item>Edit</ou-dropdown-item>
+                <ou-dropdown-item>Duplicate</ou-dropdown-item>
+                <ou-dropdown-divider></ou-dropdown-divider>
+                <ou-dropdown-item [danger]="true">Delete</ou-dropdown-item>
+              </ou-dropdown>
             </div>
           </div>
         </ng-container>
@@ -360,41 +360,41 @@ import {
         <ng-container *ngIf="preview === 'Modal'">
           <div class="sc-section">
             <div class="sc-label">Trigger</div>
-            <l-button variant="primary" (click)="isModalOpen = true">Open Modal</l-button>
+            <ou-button variant="primary" (click)="isModalOpen = true">Open Modal</ou-button>
           </div>
-          <l-modal [open]="isModalOpen" title="Example Modal" (close)="isModalOpen = false">
+          <ou-modal [open]="isModalOpen" title="Example Modal" (close)="isModalOpen = false">
             <p style="color:var(--text-muted);font-size:14px">This is the modal body content. Add any content here.</p>
             <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:24px">
-              <l-button variant="ghost" (click)="isModalOpen = false">Cancel</l-button>
-              <l-button variant="primary" (click)="isModalOpen = false">Confirm</l-button>
+              <ou-button variant="ghost" (click)="isModalOpen = false">Cancel</ou-button>
+              <ou-button variant="primary" (click)="isModalOpen = false">Confirm</ou-button>
             </div>
-          </l-modal>
+          </ou-modal>
         </ng-container>
 
         <!-- Drawer -->
         <ng-container *ngIf="preview === 'Drawer'">
           <div class="sc-section">
             <div class="sc-label">Trigger</div>
-            <l-button variant="outline" (click)="isDrawerOpen = true">Open Drawer</l-button>
+            <ou-button variant="outline" (click)="isDrawerOpen = true">Open Drawer</ou-button>
           </div>
-          <l-drawer [open]="isDrawerOpen" title="Quick Settings" (close)="isDrawerOpen = false">
+          <ou-drawer [open]="isDrawerOpen" title="Quick Settings" (close)="isDrawerOpen = false">
             <div style="display:flex;flex-direction:column;gap:16px">
-              <l-checkbox label="Enable notifications"></l-checkbox>
-              <l-checkbox label="Dark mode"></l-checkbox>
-              <l-button variant="primary" style="width:100%" (click)="isDrawerOpen = false">Save</l-button>
+              <ou-checkbox label="Enable notifications"></ou-checkbox>
+              <ou-checkbox label="Dark mode"></ou-checkbox>
+              <ou-button variant="primary" style="width:100%" (click)="isDrawerOpen = false">Save</ou-button>
             </div>
-          </l-drawer>
+          </ou-drawer>
         </ng-container>
 
         <!-- Breadcrumbs -->
         <ng-container *ngIf="preview === 'Breadcrumbs'">
           <div class="sc-section">
             <div class="sc-label">Default</div>
-            <l-breadcrumbs [items]="['Home', 'Products', 'Details']"></l-breadcrumbs>
+            <ou-breadcrumbs [items]="['Home', 'Products', 'Details']"></ou-breadcrumbs>
           </div>
           <div class="sc-section">
             <div class="sc-label">Deeper Path</div>
-            <l-breadcrumbs [items]="['Org', 'Project', 'Build', 'Logs']"></l-breadcrumbs>
+            <ou-breadcrumbs [items]="['Org', 'Project', 'Build', 'Logs']"></ou-breadcrumbs>
           </div>
         </ng-container>
 
@@ -402,12 +402,12 @@ import {
         <ng-container *ngIf="preview === 'List'">
           <div class="sc-section">
             <div class="sc-label">Default</div>
-            <l-list style="max-width:280px">
-              <l-list-item>Dashboard Overview</l-list-item>
-              <l-list-item [active]="true">Analytics (active)</l-list-item>
-              <l-list-item>Team Members</l-list-item>
-              <l-list-item>Settings</l-list-item>
-            </l-list>
+            <ou-list style="max-width:280px">
+              <ou-list-item>Dashboard Overview</ou-list-item>
+              <ou-list-item [active]="true">Analytics (active)</ou-list-item>
+              <ou-list-item>Team Members</ou-list-item>
+              <ou-list-item>Settings</ou-list-item>
+            </ou-list>
           </div>
         </ng-container>
 
@@ -416,10 +416,10 @@ import {
           <div class="sc-section">
             <div class="sc-label">Trigger</div>
             <div class="sc-row">
-              <l-button variant="primary" size="sm" (click)="showToast('success')">Success Toast</l-button>
-              <l-button variant="danger" size="sm" (click)="showToast('danger')">Error Toast</l-button>
-              <l-button variant="outline" size="sm" (click)="showToast('info')">Info Toast</l-button>
-              <l-button variant="ghost" size="sm" (click)="showToast('warning')">Warning Toast</l-button>
+              <ou-button variant="primary" size="sm" (click)="showToast('success')">Success Toast</ou-button>
+              <ou-button variant="danger" size="sm" (click)="showToast('danger')">Error Toast</ou-button>
+              <ou-button variant="outline" size="sm" (click)="showToast('info')">Info Toast</ou-button>
+              <ou-button variant="ghost" size="sm" (click)="showToast('warning')">Warning Toast</ou-button>
             </div>
           </div>
         </ng-container>
@@ -430,7 +430,7 @@ import {
         </ng-container>
 
       </div>
-    </l-toast-provider>
+    </ou-toast-provider>
   `,
 })
 export class ShowcaseComponent implements OnInit {

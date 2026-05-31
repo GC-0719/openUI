@@ -7,12 +7,12 @@ export interface TableColumn {
 }
 
 @Component({
-  selector: 'l-table',
+  selector: 'ou-table',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="l-table-wrap">
-      <table class="l-table">
+    <div class="ou-table-wrap">
+      <table class="ou-table">
         <thead *ngIf="columns.length">
           <tr>
             <th *ngFor="let col of columns">{{ col.label }}</th>

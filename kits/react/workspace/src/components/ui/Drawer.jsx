@@ -27,7 +27,7 @@ export const Drawer = ({
 
   return (
     <div 
-      className="l-drawer-overlay animate-fade-in" 
+      className="ou-drawer-overlay animate-fade-in" 
       onClick={onClose}
       style={{
         position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -36,7 +36,7 @@ export const Drawer = ({
       }}
     >
       <div 
-        className={`l-drawer l-drawer-${position} animate-slide-in-${position}`}
+        className={`ou-drawer ou-drawer-${position} animate-slide-in-${position}`}
         onClick={e => e.stopPropagation()}
         style={{
           position: 'fixed', background: 'var(--surface)', borderLeft: position === 'right' ? '1px solid var(--border)' : 'none',
@@ -46,11 +46,11 @@ export const Drawer = ({
         }}
         {...props}
       >
-        <div className="l-drawer-header" style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="ou-drawer-header" style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3 style={{ margin: 0 }}>{title}</h3>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-dim)' }}><X size={20} /></button>
         </div>
-        <div className="l-drawer-content" style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
+        <div className="ou-drawer-content" style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
           {children}
         </div>
       </div>

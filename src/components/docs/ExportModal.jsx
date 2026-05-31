@@ -100,7 +100,7 @@ const ExportModal = ({ onClose }) => {
         headers,
         body: JSON.stringify({
           name: repo,
-          description: description || 'My Lumina UI Kit',
+          description: description || 'My openUI',
           private: isPrivate,
           auto_init: true,
         }),
@@ -150,7 +150,7 @@ const ExportModal = ({ onClose }) => {
         method: 'POST',
         headers,
         body: JSON.stringify({
-          message: 'Initial commit — Lumina UI Kit export',
+          message: 'Initial commit — openUI export',
           tree: tree.sha,
           parents: baseSha ? [baseSha] : [],
         }),
@@ -178,11 +178,11 @@ const ExportModal = ({ onClose }) => {
   const hasOverrides = Object.keys(cssVars).length > 0 || Object.keys(componentCSS).length > 0;
 
   return (
-    <div className="lumina-modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="lumina-modal" style={{ width: '500px' }}>
-        <div className="lumina-modal-header">
-          <span className="lumina-modal-title">Export Kit</span>
-          <button className="lumina-modal-close" onClick={onClose}><X size={16} /></button>
+    <div className="openui-modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="openui-modal" style={{ width: '500px' }}>
+        <div className="openui-modal-header">
+          <span className="openui-modal-title">Export Kit</span>
+          <button className="openui-modal-close" onClick={onClose}><X size={16} /></button>
         </div>
 
         {/* Tabs */}
@@ -198,7 +198,7 @@ const ExportModal = ({ onClose }) => {
           </button>
         </div>
 
-        <div className="lumina-modal-body">
+        <div className="openui-modal-body">
           {hasOverrides && (
             <div className="export-override-notice">
               <Check size={13} />
@@ -209,7 +209,7 @@ const ExportModal = ({ onClose }) => {
           {tab === 'zip' && (
             <div className="flex-col" style={{ gap: '16px' }}>
               <p className="export-desc">
-                Download the complete Lumina UI Kit as a ZIP file. Includes all source files, components, styles, and your current theme.
+                Download the complete openUI as a ZIP file. Includes all source files, components, styles, and your current theme.
               </p>
               <ul className="export-checklist">
                 <li><Check size={12} /> All React components (<code>src/components/ui/</code>)</li>

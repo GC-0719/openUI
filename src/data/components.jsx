@@ -732,7 +732,7 @@ export const componentsData = [
     id: 'accordions',
     name: 'Accordion',
     description: 'Collapsible sections for organizing dense content with a clean expand/collapse interaction.',
-    classes: ['l-accordion-group', 'l-accordion', 'l-accordion-open', 'l-accordion-header', 'l-accordion-content'],
+    classes: ['ou-accordion-group', 'ou-accordion', 'ou-accordion-open', 'ou-accordion-header', 'ou-accordion-content'],
     variants: [
       {
         name: 'Basic Sections',
@@ -771,7 +771,7 @@ export const componentsData = [
     {
       title: 'Active Team',
       content: (
-        <div className="l-avatar-group">
+        <div className="ou-avatar-group">
           <Avatar src="/alice.png" size="sm" />
           <Avatar src="/bob.png" size="sm" />
         </div>
@@ -797,7 +797,7 @@ export const componentsData = [
               title: 'Active Team Members',
               content: (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '8px' }}>
-                  <div className="l-avatar-group">
+                  <div className="ou-avatar-group">
                     {['Alice', 'Bob', 'Carol', 'Dave'].map(n => (
                       <Avatar key={n} src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${n}`} size="sm" />
                     ))}
@@ -829,7 +829,7 @@ export const componentsData = [
     id: 'alerts',
     name: 'Alert',
     description: 'Contextual feedback messages for success, warnings, errors, and general info.',
-    classes: ['l-alert', 'l-alert-info', 'l-alert-success', 'l-alert-warn', 'l-alert-danger', 'l-alert-glass'],
+    classes: ['ou-alert', 'ou-alert-info', 'ou-alert-success', 'ou-alert-warn', 'ou-alert-danger', 'ou-alert-glass'],
     variants: [
       {
         name: 'Contextual Variants',
@@ -880,7 +880,7 @@ const dismiss = (id) => setAlerts(prev => prev.filter(a => a.id !== id));
     id: 'avatars',
     name: 'Avatar',
     description: 'User and organization image representations with size and ring variants.',
-    classes: ['l-avatar', 'l-avatar-ring', 'l-avatar-sm', 'l-avatar-md', 'l-avatar-lg', 'l-avatar-xl', 'l-avatar-group'],
+    classes: ['ou-avatar', 'ou-avatar-ring', 'ou-avatar-sm', 'ou-avatar-md', 'ou-avatar-lg', 'ou-avatar-xl', 'ou-avatar-group'],
     variants: [
       {
         name: 'Sizes & Ring',
@@ -902,8 +902,8 @@ const dismiss = (id) => setAlerts(prev => prev.filter(a => a.id !== id));
       },
       {
         name: 'Avatar Group',
-        desc: 'Stack avatars with overlapping offset using the l-avatar-group CSS class.',
-        code: `<div className="l-avatar-group">
+        desc: 'Stack avatars with overlapping offset using the ou-avatar-group CSS class.',
+        code: `<div className="ou-avatar-group">
   <Avatar src="/alice.png" size="md" />
   <Avatar src="/bob.png" size="md" />
   <Avatar src="/carol.png" size="md" />
@@ -911,13 +911,13 @@ const dismiss = (id) => setAlerts(prev => prev.filter(a => a.id !== id));
 </div>`,
         render: () => (
           <div className="flex-col" style={{ gap: '20px', alignItems: 'flex-start' }}>
-            <div className="l-avatar-group">
+            <div className="ou-avatar-group">
               {['Eve', 'Frank', 'Grace', 'Hank', 'Iris'].map(seed => (
                 <Avatar key={seed} src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`} size="md" />
               ))}
             </div>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <div className="l-avatar-group">
+              <div className="ou-avatar-group">
                 {['Jade', 'Karl', 'Luna'].map(seed => (
                   <Avatar key={seed} src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`} size="sm" />
                 ))}
@@ -934,7 +934,7 @@ const dismiss = (id) => setAlerts(prev => prev.filter(a => a.id !== id));
     id: 'badges',
     name: 'Badge',
     description: 'Compact labels for status, categories, and counts.',
-    classes: ['l-badge', 'l-badge-primary', 'l-badge-success', 'l-badge-warning', 'l-badge-danger', 'l-badge-outline', 'l-badge-glass'],
+    classes: ['ou-badge', 'ou-badge-primary', 'ou-badge-success', 'ou-badge-warning', 'ou-badge-danger', 'ou-badge-outline', 'ou-badge-glass'],
     variants: [
       {
         name: 'Status Variants',
@@ -980,7 +980,7 @@ const dismiss = (id) => setAlerts(prev => prev.filter(a => a.id !== id));
     id: 'breadcrumbs',
     name: 'Breadcrumbs',
     description: 'Path navigation for deep hierarchies.',
-    classes: ['l-breadcrumbs', 'l-breadcrumb-item', 'l-breadcrumb-active'],
+    classes: ['ou-breadcrumbs', 'ou-breadcrumb-item', 'ou-breadcrumb-active'],
     variants: [
       {
         name: 'Navigation Trail',
@@ -1026,7 +1026,7 @@ const dismiss = (id) => setAlerts(prev => prev.filter(a => a.id !== id));
     id: 'buttons',
     name: 'Button',
     description: 'A flexible button with variants for every action context — from subtle to high-emphasis.',
-    classes: ['l-btn', 'l-btn-primary', 'l-btn-secondary', 'l-btn-outline', 'l-btn-ghost', 'l-btn-glass', 'l-btn-neon', 'l-btn-danger'],
+    classes: ['ou-btn', 'ou-btn-primary', 'ou-btn-secondary', 'ou-btn-outline', 'ou-btn-ghost', 'ou-btn-glass', 'ou-btn-neon', 'ou-btn-danger'],
     variants: [
       {
         name: 'Core Variants',
@@ -1110,7 +1110,7 @@ const handleDeploy = () => {
     id: 'cards',
     name: 'Card',
     description: 'Foundational container for grouping related content and actions.',
-    classes: ['l-card', 'l-card-glass', 'l-card-hover', 'l-card-glow'],
+    classes: ['ou-card', 'ou-card-glass', 'ou-card-hover', 'ou-card-glow'],
     variants: [
       {
         name: 'Surface Types',
@@ -1183,7 +1183,7 @@ const handleDeploy = () => {
     id: 'checkboxes',
     name: 'Checkbox',
     description: 'Controlled checkbox for multi-selection and boolean settings.',
-    classes: ['l-checkbox-container', 'l-checkbox-input', 'l-disabled'],
+    classes: ['ou-checkbox-container', 'ou-checkbox-input', 'ou-disabled'],
     variants: [
       {
         name: 'Controlled Checkboxes',
@@ -1222,7 +1222,7 @@ useEffect(() => {
     id: 'chips',
     name: 'Chip',
     description: 'Compact interactive tags for filters, metadata, and selections.',
-    classes: ['l-chip', 'l-chip-icon'],
+    classes: ['ou-chip', 'ou-chip-icon'],
     variants: [
       {
         name: 'Tag Variants',
@@ -1268,7 +1268,7 @@ const toggle = (f) => {
     id: 'drawers',
     name: 'Drawer',
     description: 'Slide-out side panel for settings, detail views, and auxiliary content.',
-    classes: ['l-drawer', 'l-drawer-overlay', 'l-drawer-header', 'l-drawer-content'],
+    classes: ['ou-drawer', 'ou-drawer-overlay', 'ou-drawer-header', 'ou-drawer-content'],
     variants: [
       {
         name: 'Settings Panel',
@@ -1310,7 +1310,7 @@ const markAll = () => setNotifs(notifs.map(n => ({ ...n, read: true })));
     id: 'dropdowns',
     name: 'Dropdown',
     description: 'Overlay action menus triggered by any element.',
-    classes: ['l-dropdown', 'l-dropdown-menu', 'l-dropdown-item', 'l-dropdown-item-danger'],
+    classes: ['ou-dropdown', 'ou-dropdown-menu', 'ou-dropdown-item', 'ou-dropdown-item-danger'],
     variants: [
       {
         name: 'Action Menu',
@@ -1389,7 +1389,7 @@ import { User, Settings, LogOut } from 'lucide-react';
     id: 'inputs',
     name: 'Input',
     description: 'Text input with icon, error, and glass variants.',
-    classes: ['l-input', 'l-input-glass', 'l-input-error', 'l-input-icon-wrapper'],
+    classes: ['ou-input', 'ou-input-glass', 'ou-input-error', 'ou-input-icon-wrapper'],
     variants: [
       {
         name: 'Input States',
@@ -1451,7 +1451,7 @@ import { User, Search, Mail } from 'lucide-react';
     id: 'lists',
     name: 'List',
     description: 'Vertical item stack with icon and action support.',
-    classes: ['l-list', 'l-list-item'],
+    classes: ['ou-list', 'ou-list-item'],
     variants: [
       {
         name: 'Vertical Stack',
@@ -1497,7 +1497,7 @@ const remove = (id) => setItems(prev => prev.filter(i => i.id !== id));
     id: 'modals',
     name: 'Modal',
     description: 'Focused overlay dialogs with header, scrollable body, and footer actions.',
-    classes: ['l-modal-overlay', 'l-modal', 'l-modal-header', 'l-modal-content', 'l-modal-footer'],
+    classes: ['ou-modal-overlay', 'ou-modal', 'ou-modal-header', 'ou-modal-content', 'ou-modal-footer'],
     variants: [
       {
         name: 'Overlay Dialog',
@@ -1552,7 +1552,7 @@ const [open, setOpen] = useState(false);
     id: 'navbar',
     name: 'Navbar',
     description: 'Flexible header component for navigation, search, and brand identity.',
-    classes: ['l-navbar', 'l-navbar-glass', 'l-navbar-sticky', 'l-navbar-brand', 'l-navbar-actions'],
+    classes: ['ou-navbar', 'ou-navbar-glass', 'ou-navbar-sticky', 'ou-navbar-brand', 'ou-navbar-actions'],
     variants: [
       {
         name: 'Standard & Glass',
@@ -1561,7 +1561,7 @@ const [open, setOpen] = useState(false);
 
 // Default
 <Navbar>
-  <NavbarBrand>Lumina</NavbarBrand>
+  <NavbarBrand>openUI</NavbarBrand>
   <NavbarActions>
     <Button variant="ghost" size="sm">Docs</Button>
     <Button variant="primary" size="sm">Get Started</Button>
@@ -1580,7 +1580,7 @@ const [open, setOpen] = useState(false);
             <Navbar style={{ borderRadius: '10px', position: 'relative' }}>
               <NavbarBrand>
                 <div className="logo-sq" style={{ width: '28px', height: '28px', fontSize: '13px' }}>L</div>
-                <span style={{ fontWeight: 700, fontSize: '15px' }}>Lumina</span>
+                <span style={{ fontWeight: 700, fontSize: '15px' }}>openUI</span>
               </NavbarBrand>
               <NavbarActions>
                 <Button variant="ghost" size="sm">Docs</Button>
@@ -1611,7 +1611,7 @@ const [open, setOpen] = useState(false);
     id: 'navigation',
     name: 'NavItem',
     description: 'Sidebar and app menu navigation elements with icon and active state.',
-    classes: ['l-nav-item', 'l-nav-item-active'],
+    classes: ['ou-nav-item', 'ou-nav-item-active'],
     variants: [
       {
         name: 'Sidebar Menu',
@@ -1654,7 +1654,7 @@ import { Home, Layers, Database, Settings } from 'lucide-react';
     id: 'progress',
     name: 'Progress',
     description: 'Visual progress bars for tasks, uploads, and resource metrics.',
-    classes: ['l-progress-container', 'l-progress-bar', 'l-progress-striped', 'l-progress-primary', 'l-progress-secondary'],
+    classes: ['ou-progress-container', 'ou-progress-bar', 'ou-progress-striped', 'ou-progress-primary', 'ou-progress-secondary'],
     variants: [
       {
         name: 'Variants & Striped',
@@ -1703,7 +1703,7 @@ const animate = () => {
     id: 'radios',
     name: 'Radio',
     description: 'Exclusive single-option selection within a named group.',
-    classes: ['l-radio-container', 'l-radio-input'],
+    classes: ['ou-radio-container', 'ou-radio-input'],
     variants: [
       {
         name: 'Single Selection',
@@ -1748,7 +1748,7 @@ const [env, setEnv] = useState('production');
     id: 'skeletons',
     name: 'Skeleton',
     description: 'Loading placeholders that match the shape of incoming content.',
-    classes: ['l-skeleton', 'l-skeleton-shimmer'],
+    classes: ['ou-skeleton', 'ou-skeleton-shimmer'],
     variants: [
       {
         name: 'Content Placeholders',
@@ -1820,7 +1820,7 @@ const [env, setEnv] = useState('production');
     id: 'switches',
     name: 'Switch',
     description: 'Smooth animated toggle for binary on/off states.',
-    classes: ['l-switch', 'l-switch-active', 'l-disabled'],
+    classes: ['ou-switch', 'ou-switch-active', 'ou-disabled'],
     variants: [
       {
         name: 'Toggle Controls',
@@ -1862,7 +1862,7 @@ const toggle = (id) => setEnabled(prev => ({ ...prev, [id]: !prev[id] }));
     id: 'tables',
     name: 'Table',
     description: 'Data table with hover rows, status badges, and scrollable overflow.',
-    classes: ['l-table-wrapper', 'l-table'],
+    classes: ['ou-table-wrapper', 'ou-table'],
     variants: [
       {
         name: 'Data Table',
@@ -1938,7 +1938,7 @@ const toggle = (id) => setSelected(prev => {
     id: 'tabs',
     name: 'Tabs',
     description: 'Pill-style navigation for switching between views.',
-    classes: ['l-tabs', 'l-tab', 'l-tabs-pill'],
+    classes: ['ou-tabs', 'ou-tab', 'ou-tabs-pill'],
     variants: [
       {
         name: 'Pill Tabs',
@@ -1982,7 +1982,7 @@ const [active, setActive] = useState('overview');
     id: 'toasts',
     name: 'Toast',
     description: 'Auto-dismissing notification toasts triggered via the useToast hook.',
-    classes: ['l-toast-container', 'l-toast', 'l-toast-success', 'l-toast-warning', 'l-toast-info'],
+    classes: ['ou-toast-container', 'ou-toast', 'ou-toast-success', 'ou-toast-warning', 'ou-toast-info'],
     variants: [
       {
         name: 'Notification System',
@@ -2010,7 +2010,7 @@ addToast({
     id: 'tooltips',
     name: 'Tooltip',
     description: 'Lightweight hover tooltips with four directional positions.',
-    classes: ['l-tooltip-wrapper', 'l-tooltip'],
+    classes: ['ou-tooltip-wrapper', 'ou-tooltip'],
     variants: [
       {
         name: 'Directional Positions',
@@ -2049,13 +2049,13 @@ addToast({
         name: 'Icon Button Tooltips',
         desc: 'Great for icon-only buttons where labeling the action via tooltip keeps the UI clean.',
         code: `<Tooltip content="Download report" position="bottom">
-  <button className="l-demo-icon-btn">
+  <button className="ou-demo-icon-btn">
     <Download size={16} />
   </button>
 </Tooltip>
 
 <Tooltip content="Filter results" position="bottom">
-  <button className="l-demo-icon-btn">
+  <button className="ou-demo-icon-btn">
     <Filter size={16} />
   </button>
 </Tooltip>`,

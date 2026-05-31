@@ -4,7 +4,7 @@ import Home from './pages/Home';
 import { ToastProvider } from '../kits/react/workspace/src/components/ui/Toast';
 import { ThemeProvider } from './context/ThemeContext';
 import { AIProvider } from './context/AIContext';
-import './styles/lumina.css';
+import './styles/openui.css';
 
 const Studio = React.lazy(() => import('./pages/Studio'));
 

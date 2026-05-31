@@ -10,7 +10,7 @@ export const Skeleton = ({
 }) => {
   return (
     <div 
-      className={`l-skeleton ${className}`}
+      className={`ou-skeleton ${className}`}
       style={{
         width: width || '100%',
         height: height || '16px',
@@ -22,7 +22,7 @@ export const Skeleton = ({
       }}
       {...props}
     >
-      <div className="l-skeleton-shimmer"></div>
+      <div className="ou-skeleton-shimmer"></div>
     </div>
   );
 };

@@ -12,7 +12,7 @@ export const Breadcrumbs = ({
 
   return (
     <nav 
-      className={`l-breadcrumbs ${className}`} 
+      className={`ou-breadcrumbs ${className}`} 
       style={{ 
         display: 'flex', 
         alignItems: 'center', 
@@ -33,7 +33,7 @@ export const Breadcrumbs = ({
             {href && !isLast ? (
               <a 
                 href={href} 
-                className="l-breadcrumb-link"
+                className="ou-breadcrumb-link"
                 style={{ 
                   color: 'var(--text-dim)', 
                   textDecoration: 'none',
@@ -49,7 +49,7 @@ export const Breadcrumbs = ({
               </a>
             ) : (
               <span 
-                className={isLast ? 'l-breadcrumb-active' : 'l-breadcrumb-item'}
+                className={isLast ? 'ou-breadcrumb-active' : 'ou-breadcrumb-item'}
                 style={{ 
                   color: isLast ? 'var(--text)' : 'var(--text-dim)',
                   fontWeight: isLast ? '600' : '400'

@@ -13,7 +13,7 @@ export const Progress = ({
 
   return (
     <div 
-      className={`l-progress-container ${className}`}
+      className={`ou-progress-container ${className}`}
       style={{
         width: '100%', height: '8px', background: 'var(--surface-raised)',
         borderRadius: '999px', overflow: 'hidden', ...style
@@ -21,7 +21,7 @@ export const Progress = ({
       {...props}
     >
       <div 
-        className={`l-progress-bar l-progress-${variant} ${striped ? 'l-progress-striped' : ''}`}
+        className={`ou-progress-bar ou-progress-${variant} ${striped ? 'ou-progress-striped' : ''}`}
         style={{
           width: `${percentage}%`, height: '100%', 
           background: `var(--${variant})`, transition: 'width 0.3s ease',

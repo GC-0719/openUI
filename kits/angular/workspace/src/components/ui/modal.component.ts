@@ -2,17 +2,17 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'l-modal',
+  selector: 'ou-modal',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div *ngIf="open" class="l-modal-overlay" (click)="closeOnOverlay && close.emit()">
-      <div [class]="'l-modal l-modal-' + size" (click)="$event.stopPropagation()">
-        <div class="l-modal-header">
-          <span class="l-modal-title">{{ title }}</span>
-          <button class="l-modal-close" (click)="close.emit()">✕</button>
+    <div *ngIf="open" class="ou-modal-overlay" (click)="closeOnOverlay && close.emit()">
+      <div [class]="'ou-modal ou-modal-' + size" (click)="$event.stopPropagation()">
+        <div class="ou-modal-header">
+          <span class="ou-modal-title">{{ title }}</span>
+          <button class="ou-modal-close" (click)="close.emit()">✕</button>
         </div>
-        <div class="l-modal-body">
+        <div class="ou-modal-body">
           <ng-content></ng-content>
         </div>
       </div>

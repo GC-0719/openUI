@@ -18,7 +18,7 @@ import {
   Dropdown, DropdownItem, DropdownDivider,
   useToast, Drawer
 } from '../components/ui';
-import '../styles/lumina.css';
+import '../styles/openui.css';
 import '../styles/demo.css';
 
 /* ── Mini bar chart data ── */
@@ -65,7 +65,7 @@ const Dashboard = () => {
   const [isAutoBackup, setIsAutoBackup] = useState(false);
   const [activeBar, setActiveBar] = useState(5);
   const [theme, setTheme] = useState(
-    localStorage.getItem('lumina-theme') ||
+    localStorage.getItem('openui-theme') ||
     (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
   );
   const { addToast } = useToast();
@@ -77,7 +77,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('lumina-theme', theme);
+    localStorage.setItem('openui-theme', theme);
   }, [theme]);
 
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
@@ -97,26 +97,26 @@ const Dashboard = () => {
   const maxBar = Math.max(...CHART_DATA.map(d => d.value));
 
   return (
-    <div className="l-demo-layout">
+    <div className="ou-demo-layout">
 
       {/* ── SIDEBAR ── */}
-      <aside className="l-demo-sidebar">
-        <div className="l-demo-brand">
+      <aside className="ou-demo-sidebar">
+        <div className="ou-demo-brand">
           <div className="logo-sq">L</div>
           <div>
-            <div className="l-demo-brand-name">Mina</div>
+            <div className="ou-demo-brand-name">Mina</div>
           </div>
-          <span className="l-demo-brand-tag">PRO</span>
+          <span className="ou-demo-brand-tag">PRO</span>
         </div>
 
-        <nav className="l-demo-nav">
-          <span className="l-demo-nav-section">Main</span>
+        <nav className="ou-demo-nav">
+          <span className="ou-demo-nav-section">Main</span>
           <NavItem active={activeNav === 'dashboard'} icon={Home} onClick={() => setActiveNav('dashboard')}>Dashboard</NavItem>
           <NavItem active={activeNav === 'analytics'} icon={BarChart2} onClick={() => setActiveNav('analytics')}>Analytics</NavItem>
           <NavItem active={activeNav === 'team'} icon={Users} onClick={() => setActiveNav('team')}>Team</NavItem>
           <NavItem active={activeNav === 'globe'} icon={Globe} onClick={() => setActiveNav('globe')}>Global Traffic</NavItem>
 
-          <span className="l-demo-nav-section">Infrastructure</span>
+          <span className="ou-demo-nav-section">Infrastructure</span>
           <NavItem active={activeNav === 'database'} icon={Database} onClick={() => setActiveNav('database')}>Database</NavItem>
           <NavItem active={activeNav === 'cpu'} icon={Cpu} onClick={() => setActiveNav('cpu')}>Compute</NavItem>
           <NavItem active={activeNav === 'security'} icon={Shield} onClick={() => setActiveNav('security')}>
@@ -125,7 +125,7 @@ const Dashboard = () => {
           </NavItem>
           <NavItem active={activeNav === 'layers'} icon={Layers} onClick={() => setActiveNav('layers')}>Services</NavItem>
 
-          <span className="l-demo-nav-section">Preferences</span>
+          <span className="ou-demo-nav-section">Preferences</span>
           <NavItem icon={theme === 'dark' ? Sun : Moon} onClick={toggleTheme}>
             {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
           </NavItem>
@@ -133,11 +133,11 @@ const Dashboard = () => {
         </nav>
 
         {/* User footer */}
-        <div className="l-demo-user">
+        <div className="ou-demo-user">
           <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=Erica" size="sm" ring />
-          <div className="l-demo-user-info">
-            <div className="l-demo-user-name">Erica Wright</div>
-            <div className="l-demo-user-role">Admin · Pro</div>
+          <div className="ou-demo-user-info">
+            <div className="ou-demo-user-name">Erica Wright</div>
+            <div className="ou-demo-user-role">Admin · Pro</div>
           </div>
           <Tooltip content="Sign out" position="right">
             <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-dim)', display: 'flex' }}>
@@ -148,13 +148,13 @@ const Dashboard = () => {
       </aside>
 
       {/* ── MAIN ── */}
-      <main className="l-demo-main">
+      <main className="ou-demo-main">
 
         {/* ── HEADER ── */}
-        <header className="l-demo-header">
+        <header className="ou-demo-header">
           <Breadcrumbs items={['Organization', 'System Intel', 'Dashboard']} />
 
-          <div className="l-demo-header-right">
+          <div className="ou-demo-header-right">
             <Input
               variant="glass"
               icon={Search}
@@ -163,15 +163,15 @@ const Dashboard = () => {
             />
 
             <Tooltip content={theme === 'dark' ? 'Light mode' : 'Dark mode'} position="bottom">
-              <button className="l-demo-icon-btn" onClick={toggleTheme}>
+              <button className="ou-demo-icon-btn" onClick={toggleTheme}>
                 {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
               </button>
             </Tooltip>
 
             <Tooltip content="Notifications" position="bottom">
-              <button className="l-demo-icon-btn" onClick={() => addToast({ title: 'No new alerts', message: 'All systems nominal.', variant: 'info' })}>
+              <button className="ou-demo-icon-btn" onClick={() => addToast({ title: 'No new alerts', message: 'All systems nominal.', variant: 'info' })}>
                 <Bell size={16} />
-                <span className="l-demo-notif-dot" />
+                <span className="ou-demo-notif-dot" />
               </button>
             </Tooltip>
 
@@ -190,17 +190,17 @@ const Dashboard = () => {
         </header>
 
         {/* ── CONTENT ── */}
-        <div className="l-demo-content">
+        <div className="ou-demo-content">
 
           {/* Page title row */}
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '8px' }}>
             <div>
-              <h1 className="l-demo-page-title">Cloud Console</h1>
-              <p className="l-demo-page-sub">Live infrastructure health · Lumina Core v2.4</p>
+              <h1 className="ou-demo-page-title">Cloud Console</h1>
+              <p className="ou-demo-page-sub">Live infrastructure health · openUI Core v2.4</p>
             </div>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               <Tooltip content="Refresh metrics">
-                <button className="l-demo-icon-btn" style={{ borderRadius: '8px', width: 'auto', padding: '0 12px', gap: '6px', display: 'flex', alignItems: 'center', fontSize: '13px', color: 'var(--text-muted)' }} onClick={handleRefresh}>
+                <button className="ou-demo-icon-btn" style={{ borderRadius: '8px', width: 'auto', padding: '0 12px', gap: '6px', display: 'flex', alignItems: 'center', fontSize: '13px', color: 'var(--text-muted)' }} onClick={handleRefresh}>
                   <RefreshCw size={14} /> Refresh
                 </button>
               </Tooltip>
@@ -229,9 +229,9 @@ const Dashboard = () => {
 
           {/* ── STAT CARDS ── */}
           {loading ? (
-            <div className="l-demo-stats">
+            <div className="ou-demo-stats">
               {[1, 2, 3, 4].map(i => (
-                <div key={i} className="l-demo-stat">
+                <div key={i} className="ou-demo-stat">
                   <Skeleton width="40px" height="40px" circle />
                   <Skeleton width="50%" height="28px" style={{ marginTop: '4px' }} />
                   <Skeleton width="70%" height="12px" />
@@ -239,56 +239,56 @@ const Dashboard = () => {
               ))}
             </div>
           ) : (
-            <div className="l-demo-stats animate-fade-in">
+            <div className="ou-demo-stats animate-fade-in">
               {/* Stat 1 */}
-              <div className="l-demo-stat">
-                <div className="l-demo-stat-icon" style={{ background: 'var(--primary-soft)', color: 'var(--primary)' }}>
+              <div className="ou-demo-stat">
+                <div className="ou-demo-stat-icon" style={{ background: 'var(--primary-soft)', color: 'var(--primary)' }}>
                   <Shield size={18} />
                 </div>
                 <div>
-                  <div className="l-demo-stat-value">99.9%</div>
-                  <div className="l-demo-stat-label">Uptime SLA</div>
+                  <div className="ou-demo-stat-value">99.9%</div>
+                  <div className="ou-demo-stat-label">Uptime SLA</div>
                 </div>
-                <div className="l-demo-stat-change l-demo-stat-up">
+                <div className="ou-demo-stat-change ou-demo-stat-up">
                   <ArrowUpRight size={12} /> +0.2% vs last week
                 </div>
               </div>
               {/* Stat 2 */}
-              <div className="l-demo-stat">
-                <div className="l-demo-stat-icon" style={{ background: 'var(--secondary-soft)', color: 'var(--secondary)' }}>
+              <div className="ou-demo-stat">
+                <div className="ou-demo-stat-icon" style={{ background: 'var(--secondary-soft)', color: 'var(--secondary)' }}>
                   <Zap size={18} />
                 </div>
                 <div>
-                  <div className="l-demo-stat-value">1.2ms</div>
-                  <div className="l-demo-stat-label">Avg. Latency</div>
+                  <div className="ou-demo-stat-value">1.2ms</div>
+                  <div className="ou-demo-stat-label">Avg. Latency</div>
                 </div>
-                <div className="l-demo-stat-change l-demo-stat-up">
+                <div className="ou-demo-stat-change ou-demo-stat-up">
                   <ArrowUpRight size={12} /> 18% faster
                 </div>
               </div>
               {/* Stat 3 */}
-              <div className="l-demo-stat">
-                <div className="l-demo-stat-icon" style={{ background: 'rgba(245,158,11,0.12)', color: 'var(--warning)' }}>
+              <div className="ou-demo-stat">
+                <div className="ou-demo-stat-icon" style={{ background: 'rgba(245,158,11,0.12)', color: 'var(--warning)' }}>
                   <Users size={18} />
                 </div>
                 <div>
-                  <div className="l-demo-stat-value">42.5k</div>
-                  <div className="l-demo-stat-label">Active Sessions</div>
+                  <div className="ou-demo-stat-value">42.5k</div>
+                  <div className="ou-demo-stat-label">Active Sessions</div>
                 </div>
-                <div className="l-demo-stat-change l-demo-stat-down">
+                <div className="ou-demo-stat-change ou-demo-stat-down">
                   <ArrowDownRight size={12} /> −3% from peak
                 </div>
               </div>
               {/* Stat 4 */}
-              <div className="l-demo-stat">
-                <div className="l-demo-stat-icon" style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}>
+              <div className="ou-demo-stat">
+                <div className="ou-demo-stat-icon" style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}>
                   <Activity size={18} />
                 </div>
                 <div>
-                  <div className="l-demo-stat-value">2.1 TB</div>
-                  <div className="l-demo-stat-label">Data Processed</div>
+                  <div className="ou-demo-stat-value">2.1 TB</div>
+                  <div className="ou-demo-stat-label">Data Processed</div>
                 </div>
-                <div className="l-demo-stat-change l-demo-stat-up">
+                <div className="ou-demo-stat-change ou-demo-stat-up">
                   <ArrowUpRight size={12} /> +12% this month
                 </div>
               </div>
@@ -296,48 +296,48 @@ const Dashboard = () => {
           )}
 
           {/* ── BODY GRID ── */}
-          <div className="l-demo-body">
+          <div className="ou-demo-body">
 
             {/* ── LEFT COLUMN ── */}
-            <div className="l-demo-body-left">
+            <div className="ou-demo-body-left">
 
               {/* Traffic chart */}
               <Card style={{ padding: '20px' }}>
-                <div className="l-demo-section-header">
-                  <div className="l-demo-section-title">Request Volume</div>
+                <div className="ou-demo-section-header">
+                  <div className="ou-demo-section-title">Request Volume</div>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <Chip style={{ fontSize: '11px', padding: '3px 10px' }}>This Week</Chip>
-                    <Dropdown trigger={<button className="l-demo-icon-btn" style={{ width: '28px', height: '28px' }}><MoreHorizontal size={14} /></button>} align="right">
+                    <Dropdown trigger={<button className="ou-demo-icon-btn" style={{ width: '28px', height: '28px' }}><MoreHorizontal size={14} /></button>} align="right">
                       <DropdownItem>Download CSV</DropdownItem>
                       <DropdownItem>Compare period</DropdownItem>
                     </Dropdown>
                   </div>
                 </div>
-                <div className="l-demo-chart">
+                <div className="ou-demo-chart">
                   {CHART_DATA.map((d, i) => (
                     <Tooltip key={i} content={`${d.value}k requests`} position="top">
                       <div
-                        className={`l-demo-bar ${i === activeBar ? 'active' : ''}`}
+                        className={`ou-demo-bar ${i === activeBar ? 'active' : ''}`}
                         style={{ height: `${(d.value / maxBar) * 100}%` }}
                         onClick={() => setActiveBar(i)}
                       />
                     </Tooltip>
                   ))}
                 </div>
-                <div className="l-demo-chart-labels">
+                <div className="ou-demo-chart-labels">
                   {CHART_DATA.map((d, i) => (
-                    <div key={i} className="l-demo-chart-label">{d.label}</div>
+                    <div key={i} className="ou-demo-chart-label">{d.label}</div>
                   ))}
                 </div>
               </Card>
 
               {/* Node table */}
               <div>
-                <div className="l-demo-section-header">
-                  <div className="l-demo-section-title">Node Status</div>
+                <div className="ou-demo-section-header">
+                  <div className="ou-demo-section-title">Node Status</div>
                   <Button variant="ghost" size="sm" icon={Filter}>Filter</Button>
                 </div>
-                <div className="l-demo-table-card">
+                <div className="ou-demo-table-card">
                   <Table>
                     <thead>
                       <tr>
@@ -363,7 +363,7 @@ const Dashboard = () => {
                           </td>
                           <td><Badge variant={node.status}>{node.label}</Badge></td>
                           <td>
-                            <Dropdown trigger={<button className="l-demo-icon-btn" style={{ width: '28px', height: '28px' }}><MoreHorizontal size={14} /></button>} align="right">
+                            <Dropdown trigger={<button className="ou-demo-icon-btn" style={{ width: '28px', height: '28px' }}><MoreHorizontal size={14} /></button>} align="right">
                               <DropdownItem icon={Activity}>View Metrics</DropdownItem>
                               <DropdownItem icon={RefreshCw}>Restart</DropdownItem>
                               <DropdownDivider />
@@ -379,16 +379,16 @@ const Dashboard = () => {
 
               {/* Activity Feed */}
               <Card style={{ padding: '20px' }}>
-                <div className="l-demo-section-header">
-                  <div className="l-demo-section-title">Activity Feed</div>
+                <div className="ou-demo-section-header">
+                  <div className="ou-demo-section-title">Activity Feed</div>
                   <Badge variant="primary" style={{ fontSize: '10px' }}>Live</Badge>
                 </div>
-                <div className="l-demo-activity">
+                <div className="ou-demo-activity">
                   {ACTIVITY.map((item, i) => (
-                    <div key={i} className="l-demo-activity-item">
-                      <div className="l-demo-activity-dot" style={{ background: item.color }} />
-                      <div className="l-demo-activity-text">{item.text}</div>
-                      <div className="l-demo-activity-time">{item.time}</div>
+                    <div key={i} className="ou-demo-activity-item">
+                      <div className="ou-demo-activity-dot" style={{ background: item.color }} />
+                      <div className="ou-demo-activity-text">{item.text}</div>
+                      <div className="ou-demo-activity-time">{item.time}</div>
                     </div>
                   ))}
                 </div>
@@ -396,40 +396,40 @@ const Dashboard = () => {
             </div>
 
             {/* ── RIGHT COLUMN ── */}
-            <div className="l-demo-body-right">
+            <div className="ou-demo-body-right">
 
               {/* System Resources */}
-              <div className="l-demo-panel">
-                <div className="l-demo-section-header" style={{ marginBottom: '16px' }}>
-                  <div className="l-demo-section-title">Resources</div>
+              <div className="ou-demo-panel">
+                <div className="ou-demo-section-header" style={{ marginBottom: '16px' }}>
+                  <div className="ou-demo-section-title">Resources</div>
                   <Tooltip content="Refresh stats">
-                    <button className="l-demo-icon-btn" style={{ width: '26px', height: '26px' }} onClick={handleRefresh}>
+                    <button className="ou-demo-icon-btn" style={{ width: '26px', height: '26px' }} onClick={handleRefresh}>
                       <RefreshCw size={12} />
                     </button>
                   </Tooltip>
                 </div>
 
-                <div className="l-demo-metric">
-                  <div className="l-demo-metric-label"><span><Cpu size={11} style={{ marginRight: 4 }} />CPU</span><span>78.4%</span></div>
+                <div className="ou-demo-metric">
+                  <div className="ou-demo-metric-label"><span><Cpu size={11} style={{ marginRight: 4 }} />CPU</span><span>78.4%</span></div>
                   <Progress value={78} />
                 </div>
-                <div className="l-demo-metric">
-                  <div className="l-demo-metric-label"><span><HardDrive size={11} style={{ marginRight: 4 }} />Memory</span><span>61.2%</span></div>
+                <div className="ou-demo-metric">
+                  <div className="ou-demo-metric-label"><span><HardDrive size={11} style={{ marginRight: 4 }} />Memory</span><span>61.2%</span></div>
                   <Progress value={61} variant="secondary" />
                 </div>
-                <div className="l-demo-metric">
-                  <div className="l-demo-metric-label"><span><Database size={11} style={{ marginRight: 4 }} />Storage</span><span>43.0%</span></div>
+                <div className="ou-demo-metric">
+                  <div className="ou-demo-metric-label"><span><Database size={11} style={{ marginRight: 4 }} />Storage</span><span>43.0%</span></div>
                   <Progress value={43} />
                 </div>
-                <div className="l-demo-metric" style={{ marginBottom: 0 }}>
-                  <div className="l-demo-metric-label"><span><Network size={11} style={{ marginRight: 4 }} />Bandwidth</span><span>92.1%</span></div>
+                <div className="ou-demo-metric" style={{ marginBottom: 0 }}>
+                  <div className="ou-demo-metric-label"><span><Network size={11} style={{ marginRight: 4 }} />Bandwidth</span><span>92.1%</span></div>
                   <Progress value={92} striped />
                 </div>
               </div>
 
               {/* Controls */}
-              <div className="l-demo-panel">
-                <div className="l-demo-section-title" style={{ marginBottom: '16px' }}>System Controls</div>
+              <div className="ou-demo-panel">
+                <div className="ou-demo-section-title" style={{ marginBottom: '16px' }}>System Controls</div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -454,7 +454,7 @@ const Dashboard = () => {
               </div>
 
               {/* Quick config accordion */}
-              <div className="l-demo-panel" style={{ padding: '0', overflow: 'hidden' }}>
+              <div className="ou-demo-panel" style={{ padding: '0', overflow: 'hidden' }}>
                 <Accordion items={[
                   { title: 'Advanced Config', content: 'Kernel parameters are optimized. Max connections: 10,000. Keep-alive: 75s.' },
                   { title: 'Environment', content: 'Runtime: Node 20 LTS · Region: us-east-1 · TLS 1.3 enforced.' },
@@ -462,19 +462,19 @@ const Dashboard = () => {
               </div>
 
               {/* Team */}
-              <div className="l-demo-panel">
-                <div className="l-demo-section-header" style={{ marginBottom: '12px' }}>
-                  <div className="l-demo-section-title">Active Team</div>
+              <div className="ou-demo-panel">
+                <div className="ou-demo-section-header" style={{ marginBottom: '12px' }}>
+                  <div className="ou-demo-section-title">Active Team</div>
                   <Button variant="ghost" size="sm" icon={Plus} style={{ fontSize: '11px', padding: '4px 8px' }}>Add</Button>
                 </div>
                 {TEAM.map((member, i) => (
-                  <div key={i} className="l-demo-team-item">
+                  <div key={i} className="ou-demo-team-item">
                     <Tooltip content={member.role} position="left">
                       <Avatar src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${member.seed}`} size="sm" />
                     </Tooltip>
-                    <div className="l-demo-team-info">
-                      <div className="l-demo-team-name">{member.name}</div>
-                      <div className="l-demo-team-role">{member.role}</div>
+                    <div className="ou-demo-team-info">
+                      <div className="ou-demo-team-name">{member.name}</div>
+                      <div className="ou-demo-team-role">{member.role}</div>
                     </div>
                     <Badge variant={member.status} style={{ fontSize: '9px', padding: '1px 6px' }}>Online</Badge>
                   </div>

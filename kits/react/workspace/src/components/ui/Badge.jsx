@@ -10,11 +10,11 @@ export const Badge = ({
 }) => {
   return (
     <span 
-      className={`l-badge l-badge-${variant} ${dot ? 'l-badge-dot' : ''} ${className}`}
+      className={`ou-badge ou-badge-${variant} ${dot ? 'ou-badge-dot' : ''} ${className}`}
       style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', ...style }}
       {...props}
     >
-      {dot && <span className="l-badge-dot-inner" style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'currentColor' }}></span>}
+      {dot && <span className="ou-badge-dot-inner" style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'currentColor' }}></span>}
       {children}
     </span>
   );

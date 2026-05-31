@@ -2,13 +2,13 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'l-chip',
+  selector: 'ou-chip',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <span [class]="'l-chip l-chip-' + variant">
+    <span [class]="'ou-chip ou-chip-' + variant">
       <ng-content></ng-content>
-      <button *ngIf="removable" class="l-chip-remove" (click)="remove.emit()">✕</button>
+      <button *ngIf="removable" class="ou-chip-remove" (click)="remove.emit()">✕</button>
     </span>
   `,
 })

@@ -13,7 +13,7 @@ export const Radio = ({
 }) => {
   return (
     <label 
-      className={`l-radio-container ${disabled ? 'l-disabled' : ''} ${className}`}
+      className={`ou-radio-container ${disabled ? 'ou-disabled' : ''} ${className}`}
       style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.5 : 1, ...style }}
     >
       <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -24,7 +24,7 @@ export const Radio = ({
           checked={checked} 
           onChange={onChange} 
           disabled={disabled}
-          className="l-radio-input"
+          className="ou-radio-input"
           {...props}
           style={{
             appearance: 'none',

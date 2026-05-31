@@ -12,7 +12,7 @@ export const Checkbox = ({
 }) => {
   return (
     <label 
-      className={`l-checkbox-container ${disabled ? 'l-disabled' : ''} ${className}`}
+      className={`ou-checkbox-container ${disabled ? 'ou-disabled' : ''} ${className}`}
       style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: disabled ? 'not-allowed' : 'pointer', ...style }}
     >
       <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -21,7 +21,7 @@ export const Checkbox = ({
           checked={checked} 
           onChange={onChange} 
           disabled={disabled}
-          className="l-checkbox-input"
+          className="ou-checkbox-input"
           {...props}
           style={{
             appearance: 'none',

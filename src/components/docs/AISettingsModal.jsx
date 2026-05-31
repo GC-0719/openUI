@@ -109,11 +109,11 @@ const AISettingsModal = ({ onClose, defaultTab = 'ai' }) => {
   const enabledCount = servers.filter(s => s.enabled).length;
 
   return (
-    <div className="lumina-modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="lumina-modal ai-settings-modal">
-        <div className="lumina-modal-header">
-          <span className="lumina-modal-title">AI Settings</span>
-          <button className="lumina-modal-close" onClick={onClose}><X size={16} /></button>
+    <div className="openui-modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="openui-modal ai-settings-modal">
+        <div className="openui-modal-header">
+          <span className="openui-modal-title">AI Settings</span>
+          <button className="openui-modal-close" onClick={onClose}><X size={16} /></button>
         </div>
 
         {/* Tabs */}
@@ -127,7 +127,7 @@ const AISettingsModal = ({ onClose, defaultTab = 'ai' }) => {
           </button>
         </div>
 
-        <div className="lumina-modal-body">
+        <div className="openui-modal-body">
           {tab === 'ai' && (
             <>
               {/* Provider */}
@@ -353,7 +353,7 @@ const AISettingsModal = ({ onClose, defaultTab = 'ai' }) => {
           )}
         </div>
 
-        <div className="lumina-modal-footer">
+        <div className="openui-modal-footer">
           {tab === 'ai' ? (
             <>
               <button

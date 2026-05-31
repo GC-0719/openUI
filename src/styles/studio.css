@@ -1,6 +1,6 @@
 /*
   Studio styles are intentionally hardcoded — they must not depend on
-  lumina.css CSS variables, which are briefly absent during Vite HMR
+  openui.css CSS variables, which are briefly absent during Vite HMR
   when the user saves a kit file.
 */
 
@@ -717,7 +717,7 @@
 
 .studio-editor-textarea {
   flex: 1;
-  /* explicit dark bg — NOT transparent — so HMR on lumina.css can't flash white */
+  /* explicit dark bg — NOT transparent — so HMR on openui.css can't flash white */
   background: #09090b;
   border: none;
   outline: none;

@@ -2,14 +2,14 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'l-alert',
+  selector: 'ou-alert',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div *ngIf="!dismissed" [class]="'l-alert l-alert-' + variant">
-      <span *ngIf="title" class="l-alert-title">{{ title }}</span>
-      <span class="l-alert-msg"><ng-content></ng-content></span>
-      <button *ngIf="dismissible" class="l-alert-close" (click)="dismiss()">✕</button>
+    <div *ngIf="!dismissed" [class]="'ou-alert ou-alert-' + variant">
+      <span *ngIf="title" class="ou-alert-title">{{ title }}</span>
+      <span class="ou-alert-msg"><ng-content></ng-content></span>
+      <button *ngIf="dismissible" class="ou-alert-close" (click)="dismiss()">✕</button>
     </div>
   `,
 })

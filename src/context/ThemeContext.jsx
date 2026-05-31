@@ -2,9 +2,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const ThemeContext = createContext(null);
 
-const STORAGE_KEY = 'lumina-theme-overrides';
-const STYLE_ID = 'lumina-theme-override';
-const COMP_STYLE_ID = 'lumina-component-override';
+const STORAGE_KEY = 'openui-theme-overrides';
+const STYLE_ID = 'openui-theme-override';
+const COMP_STYLE_ID = 'openui-component-override';
 
 export const ThemeProvider = ({ children }) => {
   const [cssVars, setCssVars] = useState(() => {

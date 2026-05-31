@@ -3,7 +3,7 @@ import { Loader2 } from 'lucide-react';
 
 export const Button = ({ children, variant = 'primary', size = 'md', className = '', icon: Icon, as: Component = 'button', loading = false, ...props }) => (
   <Component
-    className={`l-btn l-btn-${variant} l-btn-${size} ${className}`}
+    className={`ou-btn ou-btn-${variant} ou-btn-${size} ${className}`}
     disabled={loading || props.disabled}
     {...props}
   >

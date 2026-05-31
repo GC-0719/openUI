@@ -63,7 +63,7 @@ export const Tooltip = ({
   const tip = visible && content
     ? createPortal(
         <div
-          className={`l-tooltip animate-fade-in ${className}`}
+          className={`ou-tooltip animate-fade-in ${className}`}
           style={{
             ...tipStyle,
             background: 'rgba(0,0,0,0.9)',
@@ -87,7 +87,7 @@ export const Tooltip = ({
   return (
     <div
       ref={triggerRef}
-      className="l-tooltip-wrapper"
+      className="ou-tooltip-wrapper"
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
       style={{ position: 'relative', display: 'inline-block', ...style }}

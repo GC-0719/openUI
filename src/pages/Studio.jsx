@@ -15,7 +15,7 @@ import '../styles/docs.css';
 const KitSettingsModal = lazy(() => import('../components/studio/KitSettingsModal'));
 const AISettingsModal = lazy(() => import('../components/docs/AISettingsModal'));
 const ExportModal = lazy(() => import('../components/docs/ExportModal'));
-const angularPreviewEnabled = import.meta.env.VITE_LUMINA_ANGULAR === '1';
+const angularPreviewEnabled = import.meta.env.VITE_OPENUI_ANGULAR === '1';
 
 const Studio = () => {
   const { kit } = useAI();
@@ -440,8 +440,8 @@ const Studio = () => {
       {/* ── Top Bar ── */}
       <div className="studio-topbar">
         <Link to="/" className="studio-topbar-brand">
-          <div className="logo-sq">L</div>
-          <span>Lumina</span>
+          <div className="logo-sq">◍</div>
+          <span>openUI</span>
         </Link>
         <div className="studio-topbar-sep" />
 

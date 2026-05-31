@@ -7,21 +7,21 @@ export interface AccordionItem {
 }
 
 @Component({
-  selector: 'l-accordion',
+  selector: 'ou-accordion',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="l-accordion">
-      <div *ngFor="let item of items; let i = index" class="l-accordion-item">
+    <div class="ou-accordion">
+      <div *ngFor="let item of items; let i = index" class="ou-accordion-item">
         <button
-          class="l-accordion-trigger"
+          class="ou-accordion-trigger"
           (click)="toggle(i)"
           [attr.aria-expanded]="openIndex === i"
         >
           {{ item.title }}
-          <span class="l-accordion-icon">{{ openIndex === i ? '−' : '+' }}</span>
+          <span class="ou-accordion-icon">{{ openIndex === i ? '−' : '+' }}</span>
         </button>
-        <div *ngIf="openIndex === i" class="l-accordion-content">
+        <div *ngIf="openIndex === i" class="ou-accordion-content">
           <p>{{ item.content }}</p>
         </div>
       </div>

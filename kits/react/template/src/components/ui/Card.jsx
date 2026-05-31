@@ -8,9 +8,9 @@ export const Card = ({
   style = {},
   ...props 
 }) => {
-  const baseClass = 'l-card';
-  const variantClass = variant !== 'default' ? `l-card-${variant}` : '';
-  const hoverClass = hover ? 'l-card-hover' : '';
+  const baseClass = 'ou-card';
+  const variantClass = variant !== 'default' ? `ou-card-${variant}` : '';
+  const hoverClass = hover ? 'ou-card-hover' : '';
 
   return (
     <div 

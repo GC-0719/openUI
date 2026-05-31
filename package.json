@@ -4,12 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "LUMINA_ANGULAR=1 VITE_LUMINA_ANGULAR=1 vite",
+    "dev": "OPENUI_ANGULAR=1 VITE_OPENUI_ANGULAR=1 vite",
     "dev:react": "vite",
-    "dev:angular": "LUMINA_ANGULAR=1 VITE_LUMINA_ANGULAR=1 vite",
-    "build": "LUMINA_ANGULAR=1 VITE_LUMINA_ANGULAR=1 vite build",
+    "dev:angular": "OPENUI_ANGULAR=1 VITE_OPENUI_ANGULAR=1 vite",
+    "build": "OPENUI_ANGULAR=1 VITE_OPENUI_ANGULAR=1 vite build",
     "build:react": "vite build",
-    "build:angular": "LUMINA_ANGULAR=1 VITE_LUMINA_ANGULAR=1 vite build",
+    "build:angular": "OPENUI_ANGULAR=1 VITE_OPENUI_ANGULAR=1 vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

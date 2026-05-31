@@ -34,7 +34,7 @@ export const Navbar = ({
 
   return (
     <header 
-      className={`l-navbar ${isGlass ? 'l-navbar-glass' : ''} ${className}`}
+      className={`ou-navbar ${isGlass ? 'ou-navbar-glass' : ''} ${className}`}
       style={{ ...baseStyle, ...style }}
       {...props}
     >
@@ -45,7 +45,7 @@ export const Navbar = ({
 
 export const NavbarBrand = ({ children, className = '', style = {}, ...props }) => (
   <div 
-    className={`l-navbar-brand ${className}`} 
+    className={`ou-navbar-brand ${className}`} 
     style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0, ...style }}
     {...props}
   >
@@ -55,7 +55,7 @@ export const NavbarBrand = ({ children, className = '', style = {}, ...props }) 
 
 export const NavbarActions = ({ children, className = '', style = {}, ...props }) => (
   <div 
-    className={`l-navbar-actions ${className}`} 
+    className={`ou-navbar-actions ${className}`} 
     style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0, ...style }}
     {...props}
   >

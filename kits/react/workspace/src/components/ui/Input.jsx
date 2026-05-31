@@ -8,9 +8,9 @@ export const Input = ({
   style = {},
   ...props 
 }) => {
-  const baseClass = 'l-input-wrapper';
-  const variantClass = variant === 'glass' ? 'l-input-glass' : '';
-  const errorClass = error ? 'l-input-error' : '';
+  const baseClass = 'ou-input-wrapper';
+  const variantClass = variant === 'glass' ? 'ou-input-glass' : '';
+  const errorClass = error ? 'ou-input-error' : '';
 
   return (
     <div className={`${baseClass} ${variantClass} ${errorClass} ${className}`} style={{ position: 'relative', width: '100%', ...style }}>
@@ -20,7 +20,7 @@ export const Input = ({
         </div>
       )}
       <input 
-        className="l-input" 
+        className="ou-input" 
         style={{ 
           width: '100%', 
           paddingLeft: Icon ? '40px' : '16px',

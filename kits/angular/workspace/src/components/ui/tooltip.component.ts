@@ -2,13 +2,13 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'l-tooltip',
+  selector: 'ou-tooltip',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <span class="l-tooltip-wrap">
+    <span class="ou-tooltip-wrap">
       <ng-content></ng-content>
-      <span [class]="'l-tooltip l-tooltip-' + position">{{ text }}</span>
+      <span [class]="'ou-tooltip ou-tooltip-' + position">{{ text }}</span>
     </span>
   `,
   styles: [`:host { display: inline-block; }`],

@@ -20,7 +20,7 @@ export const Avatar = ({
 
   return (
     <div 
-      className={`l-avatar ${ring ? 'l-avatar-ring' : ''} ${className}`}
+      className={`ou-avatar ${ring ? 'ou-avatar-ring' : ''} ${className}`}
       style={{ 
         width: finalSize, 
         height: finalSize, 

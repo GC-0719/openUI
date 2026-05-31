@@ -15,7 +15,7 @@ const SUGGESTIONS = [
   'Build a pricing page with three plan cards and a feature comparison',
 ];
 
-const WELCOME = `Hi! I'm Lumina Agent.\n\nDescribe any UI you want and I'll build it — pages, components, or both. I can create multiple pages in one go and edit existing files.\n\nWhat would you like to build?`;
+const WELCOME = `Hi! I'm openUI Agent.\n\nDescribe any UI you want and I'll build it — pages, components, or both. I can create multiple pages in one go and edit existing files.\n\nWhat would you like to build?`;
 
 const renderText = (text) =>
   text.split('\n').map((line, i, arr) => {
@@ -267,7 +267,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       <div className="ai-agent-header">
         <div className="ai-agent-title">
           <span className="ai-prism-logo">◆</span>
-          <span>Lumina Agent</span>
+          <span>openUI Agent</span>
           {enabledMCP > 0 && (
             <button
               className={`ai-mcp-indicator${showBackend ? ' active' : ''}`}
@@ -342,7 +342,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
           <div className="ai-configure-prompt">
             <div className="ai-configure-icon"><Sparkles size={20} /></div>
             <p className="ai-configure-title">Connect an AI model</p>
-            <p className="ai-configure-desc">Add your API key to start building with Lumina Agent.</p>
+            <p className="ai-configure-desc">Add your API key to start building with openUI Agent.</p>
             <button className="ai-configure-btn" onClick={() => onOpenSettings?.('ai')}>
               <Settings size={14} /> Configure AI
             </button>
@@ -357,7 +357,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
                   <div key={i} className="ai-msg ai-msg-assistant">
                     <div className="ai-msg-label">
                       <span className="ai-msg-label-prism">◆</span>
-                      <span className="ai-msg-label-name">Lumina Agent</span>
+                      <span className="ai-msg-label-name">openUI Agent</span>
                     </div>
                     <div className="ai-msg-body">{renderText(msg.text)}</div>
                     <FileChangeBadge changes={msg.changes} onNavigate={onNavigatePage} />
@@ -387,7 +387,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
               <div className="ai-msg ai-msg-thinking">
                 <div className="ai-msg-label">
                   <span className="ai-msg-label-prism">◆</span>
-                  <span className="ai-msg-label-name">Lumina Agent</span>
+                  <span className="ai-msg-label-name">openUI Agent</span>
                 </div>
                 <div className="ai-thinking-row">
                   <span className="ai-thinking-text">{autoFixing ? 'Auto-fixing' : mode === 'ask' ? 'Thinking' : mode === 'plan' ? 'Planning' : 'Building'}</span>

@@ -2,17 +2,17 @@ import { Component, Input, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'l-dropdown',
+  selector: 'ou-dropdown',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="l-dropdown-wrap" style="position:relative;display:inline-flex">
+    <div class="ou-dropdown-wrap" style="position:relative;display:inline-flex">
       <div (click)="open = !open">
         <ng-content select="[trigger]"></ng-content>
       </div>
       <div
         *ngIf="open"
-        [class]="'l-dropdown-menu l-dropdown-' + align"
+        [class]="'ou-dropdown-menu ou-dropdown-' + align"
         style="position:absolute;top:calc(100% + 6px);z-index:100"
         [style.right]="align === 'right' ? '0' : 'auto'"
       >
@@ -34,11 +34,11 @@ export class DropdownComponent {
 }
 
 @Component({
-  selector: 'l-dropdown-item',
+  selector: 'ou-dropdown-item',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <button [class]="'l-dropdown-item' + (danger ? ' danger' : '')">
+    <button [class]="'ou-dropdown-item' + (danger ? ' danger' : '')">
       <ng-content></ng-content>
     </button>
   `,
@@ -48,9 +48,9 @@ export class DropdownItemComponent {
 }
 
 @Component({
-  selector: 'l-dropdown-divider',
+  selector: 'ou-dropdown-divider',
   standalone: true,
   imports: [CommonModule],
-  template: `<div class="l-dropdown-divider"></div>`,
+  template: `<div class="ou-dropdown-divider"></div>`,
 })
 export class DropdownDividerComponent {}

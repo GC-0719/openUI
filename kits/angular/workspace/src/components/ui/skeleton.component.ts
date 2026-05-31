@@ -2,12 +2,12 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'l-skeleton',
+  selector: 'ou-skeleton',
   standalone: true,
   imports: [CommonModule],
   template: `
     <div
-      class="l-skeleton"
+      class="ou-skeleton"
       [style.width]="width"
       [style.height]="height"
       [style.border-radius]="radius"

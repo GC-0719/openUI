@@ -41,7 +41,7 @@ export function buildSystemPrompt(componentName, { selectedFile, fileContent, wo
         .join('\n\n')
     : '';
 
-  return `You are Lumina AI — a UI design assistant embedded in the Lumina UI Kit builder. You help users customize their component library through conversation.
+  return `You are openUI AI — a UI design assistant embedded in the openUI builder. You help users customize their component library through conversation.
 
 ## Your capabilities:
 1. Answer questions about any component's props, variants, and usage patterns
@@ -78,29 +78,29 @@ export function buildSystemPrompt(componentName, { selectedFile, fileContent, wo
 - --font-mono: 'JetBrains Mono', monospace
 
 ## Available component CSS classes to override:
-- Buttons: .l-btn, .l-btn-primary, .l-btn-secondary, .l-btn-outline, .l-btn-ghost, .l-btn-neon, .l-btn-danger, .l-btn-glass, .l-btn-sm, .l-btn-lg
-- Cards: .l-card, .l-card-glass, .l-card-hover, .l-card-glow
-- Badges: .l-badge, .l-badge-primary, .l-badge-success, .l-badge-warning, .l-badge-danger, .l-badge-outline, .l-badge-dot
-- Input: .l-input, .l-input-group, .l-label, .l-input-error, .l-input-msg
-- Alert: .l-alert, .l-alert-info, .l-alert-success, .l-alert-warn, .l-alert-danger
-- Navigation: .l-nav-item, .l-nav-item-active, .l-navbar, .l-navbar-glass, .l-navbar-brand, .l-navbar-actions
-- Table: .l-table, .l-table th, .l-table td
-- Tabs: .l-tabs, .l-tabs-list, .l-tab, .l-tab-active
-- Switch: .l-switch, .l-switch-track, .l-switch-on, .l-switch-thumb
-- Checkbox: .l-checkbox-box, .l-checkbox-label
-- Radio: .l-radio-circle, .l-radio-label
-- Chip: .l-chip, .l-chip-primary, .l-chip-success, .l-chip-warning, .l-chip-danger, .l-chip-outline
-- Modal: .l-modal, .l-modal-overlay, .l-modal-header, .l-modal-title, .l-modal-body, .l-modal-footer, .l-modal-close
-- Drawer: .l-drawer, .l-drawer-overlay, .l-drawer-header, .l-drawer-title, .l-drawer-body
-- Toast: .l-toast-container, .l-toast, .l-toast-success, .l-toast-danger, .l-toast-title, .l-toast-msg
-- Progress: .l-progress, .l-progress-bar
-- Accordion: .l-accordion, .l-accordion-item, .l-accordion-trigger, .l-accordion-icon
-- List: .l-list, .l-list-item, .l-list-item-active
-- Tooltip: .l-tooltip-wrap, .l-tooltip
-- Avatar: .l-avatar, .l-avatar-sm, .l-avatar-lg, .l-avatar-ring, .l-avatar-group
-- Skeleton: .l-skeleton
-- Breadcrumbs: .l-breadcrumb, .l-breadcrumb-active
-- Dropdown: .l-dropdown-menu, .l-dropdown-item, .l-dropdown-divider
+- Buttons: .ou-btn, .ou-btn-primary, .ou-btn-secondary, .ou-btn-outline, .ou-btn-ghost, .ou-btn-neon, .ou-btn-danger, .ou-btn-glass, .ou-btn-sm, .ou-btn-lg
+- Cards: .ou-card, .ou-card-glass, .ou-card-hover, .ou-card-glow
+- Badges: .ou-badge, .ou-badge-primary, .ou-badge-success, .ou-badge-warning, .ou-badge-danger, .ou-badge-outline, .ou-badge-dot
+- Input: .ou-input, .ou-input-group, .ou-label, .ou-input-error, .ou-input-msg
+- Alert: .ou-alert, .ou-alert-info, .ou-alert-success, .ou-alert-warn, .ou-alert-danger
+- Navigation: .ou-nav-item, .ou-nav-item-active, .ou-navbar, .ou-navbar-glass, .ou-navbar-brand, .ou-navbar-actions
+- Table: .ou-table, .ou-table th, .ou-table td
+- Tabs: .ou-tabs, .ou-tabs-list, .ou-tab, .ou-tab-active
+- Switch: .ou-switch, .ou-switch-track, .ou-switch-on, .ou-switch-thumb
+- Checkbox: .ou-checkbox-box, .ou-checkbox-label
+- Radio: .ou-radio-circle, .ou-radio-label
+- Chip: .ou-chip, .ou-chip-primary, .ou-chip-success, .ou-chip-warning, .ou-chip-danger, .ou-chip-outline
+- Modal: .ou-modal, .ou-modal-overlay, .ou-modal-header, .ou-modal-title, .ou-modal-body, .ou-modal-footer, .ou-modal-close
+- Drawer: .ou-drawer, .ou-drawer-overlay, .ou-drawer-header, .ou-drawer-title, .ou-drawer-body
+- Toast: .ou-toast-container, .ou-toast, .ou-toast-success, .ou-toast-danger, .ou-toast-title, .ou-toast-msg
+- Progress: .ou-progress, .ou-progress-bar
+- Accordion: .ou-accordion, .ou-accordion-item, .ou-accordion-trigger, .ou-accordion-icon
+- List: .ou-list, .ou-list-item, .ou-list-item-active
+- Tooltip: .ou-tooltip-wrap, .ou-tooltip
+- Avatar: .ou-avatar, .ou-avatar-sm, .ou-avatar-lg, .ou-avatar-ring, .ou-avatar-group
+- Skeleton: .ou-skeleton
+- Breadcrumbs: .ou-breadcrumb, .ou-breadcrumb-active
+- Dropdown: .ou-dropdown-menu, .ou-dropdown-item, .ou-dropdown-divider
 
 ## JSON format for changes:
 \`\`\`json
@@ -110,7 +110,7 @@ export function buildSystemPrompt(componentName, { selectedFile, fileContent, wo
       "--primary": "#10B981"
     },
     "componentCSS": {
-      ".l-btn-primary": "border-radius: 24px;"
+      ".ou-btn-primary": "border-radius: 24px;"
     },
     "fileChanges": {
       "src/components/ui/Button.jsx": "full file content here"
@@ -190,7 +190,7 @@ export function buildPageBuilderPrompt({ components, kitPrefix, kitName, specs =
     Navbar: '(wrap with NavbarBrand and NavbarActions)',
     NavItem: 'active={bool} onClick={fn} icon={<Icon/>}',
     Skeleton: 'width={200} height={20} variant="text|title|circle"',
-    Card: 'className="l-card-glass|l-card-hover"',
+    Card: 'className="ou-card-glass|l-card-hover"',
     List: '(wrap ListItem children)',
     ListItem: 'active={bool} onClick={fn}',
     Breadcrumbs: 'items={[{label,href}]}',
@@ -332,7 +332,7 @@ export function buildAgentPrompt({ components, kitPrefix, kitName, specs = {}, m
     Alert: 'variant="info|success|warn|danger"',
     Progress: 'value={0-100} striped={bool}',
     Avatar: 'src="url" size="sm|md|lg" alt="name"',
-    Chip: 'className="l-chip-primary|l-chip-success|l-chip-warning|l-chip-danger|l-chip-outline"',
+    Chip: 'className="ou-chip-primary|l-chip-success|l-chip-warning|l-chip-danger|l-chip-outline"',
     Input: 'label="text" placeholder="text" error="msg" type="text|email|password"',
     Switch: 'active={bool} onChange={fn}',
     Checkbox: 'checked={bool} onChange={e=>} label="text" disabled={bool}',
@@ -347,36 +347,36 @@ export function buildAgentPrompt({ components, kitPrefix, kitName, specs = {}, m
     Navbar: '(wrap NavbarBrand + NavbarActions children)',
     NavItem: 'active={bool} onClick={fn}',
     Skeleton: 'width={200} height={20} variant="text|title|circle"',
-    Card: 'className="l-card-glass|l-card-hover"',
+    Card: 'className="ou-card-glass|l-card-hover"',
     List: '(wrap ListItem children)',
-    ListItem: 'className="l-list-item-active" onClick={fn}',
+    ListItem: 'className="ou-list-item-active" onClick={fn}',
     Breadcrumbs: 'items={[{label,href}]}',
   };
 
   const ANGULAR_SELECTORS = {
-    Button: '<l-button variant="primary|secondary|ghost|danger|outline" size="sm|md|lg">…</l-button>',
-    Badge: '<l-badge variant="primary|success|warning|danger|outline">…</l-badge>',
-    Alert: '<l-alert variant="info|success|warn|danger">…</l-alert>',
-    Card: '<l-card>…</l-card>',
-    Input: '<l-input label="text" placeholder="text" [error]="msg" type="text|email|password" [(ngModel)]="val" />',
-    Progress: '<l-progress [value]="65" [striped]="true" />',
-    Skeleton: '<l-skeleton width="200" height="20" variant="text|title|circle" />',
-    Modal: '<l-modal [isOpen]="open" (close)="open=false" title="text">…</l-modal>',
-    Drawer: '<l-drawer [isOpen]="open" (close)="open=false" title="text">…</l-drawer>',
-    Switch: '<l-switch [active]="val" (change)="val=$event" />',
-    Checkbox: '<l-checkbox [checked]="val" (change)="val=$event" label="text" />',
-    Radio: '<l-radio [checked]="val===\'x\'" (change)="val=\'x\'" label="text" name="grp" />',
-    Tabs: '<l-tabs [tabs]="[\'A\',\'B\']" [activeTab]="tab" (change)="tab=$event" />',
-    Accordion: '<l-accordion [items]="items" />',
-    Avatar: '<l-avatar src="url" size="sm|md|lg" alt="name" />',
-    Chip: '<l-chip className="l-chip-primary">…</l-chip>',
-    Table: '<l-table [columns]="cols" [data]="rows" />',
-    Dropdown: '<l-dropdown><l-dropdown-item>…</l-dropdown-item></l-dropdown>',
-    Tooltip: '<l-tooltip content="text" position="top|bottom|left|right">…</l-tooltip>',
-    Navbar: '<l-navbar><l-navbar-brand>…</l-navbar-brand><l-navbar-actions>…</l-navbar-actions></l-navbar>',
-    NavItem: '<l-nav-item [active]="true" (click)="…">…</l-nav-item>',
-    Breadcrumbs: '<l-breadcrumbs [items]="[{label,href}]" />',
-    List: '<l-list><l-list-item>…</l-list-item></l-list>',
+    Button: '<ou-button variant="primary|secondary|ghost|danger|outline" size="sm|md|lg">…</ou-button>',
+    Badge: '<ou-badge variant="primary|success|warning|danger|outline">…</ou-badge>',
+    Alert: '<ou-alert variant="info|success|warn|danger">…</ou-alert>',
+    Card: '<ou-card>…</ou-card>',
+    Input: '<ou-input label="text" placeholder="text" [error]="msg" type="text|email|password" [(ngModel)]="val" />',
+    Progress: '<ou-progress [value]="65" [striped]="true" />',
+    Skeleton: '<ou-skeleton width="200" height="20" variant="text|title|circle" />',
+    Modal: '<ou-modal [isOpen]="open" (close)="open=false" title="text">…</ou-modal>',
+    Drawer: '<ou-drawer [isOpen]="open" (close)="open=false" title="text">…</ou-drawer>',
+    Switch: '<ou-switch [active]="val" (change)="val=$event" />',
+    Checkbox: '<ou-checkbox [checked]="val" (change)="val=$event" label="text" />',
+    Radio: '<ou-radio [checked]="val===\'x\'" (change)="val=\'x\'" label="text" name="grp" />',
+    Tabs: '<ou-tabs [tabs]="[\'A\',\'B\']" [activeTab]="tab" (change)="tab=$event" />',
+    Accordion: '<ou-accordion [items]="items" />',
+    Avatar: '<ou-avatar src="url" size="sm|md|lg" alt="name" />',
+    Chip: '<ou-chip className="ou-chip-primary">…</ou-chip>',
+    Table: '<ou-table [columns]="cols" [data]="rows" />',
+    Dropdown: '<ou-dropdown><ou-dropdown-item>…</ou-dropdown-item></ou-dropdown>',
+    Tooltip: '<ou-tooltip content="text" position="top|bottom|left|right">…</ou-tooltip>',
+    Navbar: '<ou-navbar><ou-navbar-brand>…</ou-navbar-brand><ou-navbar-actions>…</ou-navbar-actions></ou-navbar>',
+    NavItem: '<ou-nav-item [active]="true" (click)="…">…</ou-nav-item>',
+    Breadcrumbs: '<ou-breadcrumbs [items]="[{label,href}]" />',
+    List: '<ou-list><ou-list-item>…</ou-list-item></ou-list>',
   };
 
   const compSummary = components.slice(0, 24).map(c => {
@@ -404,7 +404,7 @@ ${routeList}
 
 
   if (isAngular) {
-    return `You are Lumina Agent — a UI builder for the ${kitName} Angular design system.
+    return `You are openUI Agent — a UI builder for the ${kitName} Angular design system.
 
 FORBIDDEN — never do any of these:
 - Import from @angular/material, ng-bootstrap, primeng, or any package other than @angular/core, @angular/common, @angular/forms, and ../../components/ui
@@ -426,16 +426,16 @@ import { ButtonComponent, CardComponent, BadgeComponent, AvatarComponent } from 
     <div style="padding:2rem;display:flex;flex-direction:column;gap:1.5rem">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <h2 style="color:var(--text);margin:0">Team Members</h2>
-        <l-button variant="primary">Invite User</l-button>
+        <ou-button variant="primary">Invite User</ou-button>
       </div>
-      <l-card *ngFor="let u of users" style="display:flex;align-items:center;gap:1rem">
-        <l-avatar [alt]="u.name" size="md" />
+      <ou-card *ngFor="let u of users" style="display:flex;align-items:center;gap:1rem">
+        <ou-avatar [alt]="u.name" size="md" />
         <div style="flex:1">
           <div style="color:var(--text);font-weight:600">{{u.name}}</div>
           <div style="color:var(--text-muted);font-size:0.875rem">{{u.email}}</div>
         </div>
-        <l-badge variant="success">{{u.role}}</l-badge>
-      </l-card>
+        <ou-badge variant="success">{{u.role}}</ou-badge>
+      </ou-card>
     </div>
   \`,
 })
@@ -477,7 +477,7 @@ Write complete file content. Never truncate.`;
       ? `\`${existingRoutes[0].file}\``
       : null;
 
-  return `You are Lumina Agent — a full-stack-aware frontend builder embedded in the ${kitName} studio sandbox.
+  return `You are openUI Agent — a full-stack-aware frontend builder embedded in the ${kitName} studio sandbox.
 
 YOUR JOB: Build complete React features end-to-end — pages, reusable components, hooks, context, and small data/service modules — creating and editing as many files across the project as the task needs. Wire everything together so it runs.
 NEVER explain at length, ask clarifying questions, or say "I cannot create files." Write the code immediately.
@@ -680,7 +680,7 @@ export function parseAgentResponse(text) {
   return { files, message, errors: warnings };
 }
 
-export function buildAuditPrompt(code, { components = [], kitPrefix = 'l' }) {
+export function buildAuditPrompt(code, { components = [], kitPrefix = 'ou' }) {
   const compList = components.map(c => `- ${c.name} (import: { ${c.name} } from './components/ui')`).join('\n');
 
   return `You are a design system compliance auditor. Analyze the following code for violations of the design system rules.

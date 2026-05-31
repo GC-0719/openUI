@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: 'l-radio',
+  selector: 'ou-radio',
   standalone: true,
   imports: [CommonModule],
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => RadioComponent), multi: true }],
   template: `
-    <label class="l-radio">
+    <label class="ou-radio">
       <input
         type="radio"
         [name]="name"
@@ -17,8 +17,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
         [disabled]="disabled"
         (change)="onSelect()"
       />
-      <span class="l-radio-circle"></span>
-      <span *ngIf="label" class="l-radio-label">{{ label }}</span>
+      <span class="ou-radio-circle"></span>
+      <span *ngIf="label" class="ou-radio-label">{{ label }}</span>
     </label>
   `,
 })

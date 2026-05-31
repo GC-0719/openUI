@@ -53,16 +53,16 @@ const KitSettingsModal = ({ onClose }) => {
   const unchanged = name === kit.kitName && prefix === kit.kitPrefix;
 
   return (
-    <div className="lumina-modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="lumina-modal" style={{ width: '460px' }}>
-        <div className="lumina-modal-header">
-          <span className="lumina-modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <div className="openui-modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="openui-modal" style={{ width: '460px' }}>
+        <div className="openui-modal-header">
+          <span className="openui-modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Pen size={15} /> Kit Settings
           </span>
-          <button className="lumina-modal-close" onClick={onClose}><X size={16} /></button>
+          <button className="openui-modal-close" onClick={onClose}><X size={16} /></button>
         </div>
 
-        <div className="lumina-modal-body">
+        <div className="openui-modal-body">
           <div className="kit-settings-grid">
             <div className="ai-settings-section">
               <label className="ai-settings-label">Kit Name</label>
@@ -70,7 +70,7 @@ const KitSettingsModal = ({ onClose }) => {
                 className="ai-settings-input"
                 value={name}
                 onChange={e => setName(e.target.value)}
-                placeholder="Lumina UI"
+                placeholder="openUI"
               />
             </div>
             <div className="ai-settings-section">
@@ -98,7 +98,7 @@ const KitSettingsModal = ({ onClose }) => {
             <span style={{ color: 'var(--text-dim)', fontSize: '11px' }}>Preview:</span>
             <div className="kit-prefix-preview">
               {['btn-primary', 'card', 'badge-success', 'input'].map(cls => (
-                <code key={cls}>.{prefix || 'l'}-{cls}</code>
+                <code key={cls}>.{prefix || 'ou'}-{cls}</code>
               ))}
             </div>
           </div>
@@ -107,7 +107,7 @@ const KitSettingsModal = ({ onClose }) => {
             <div className="kit-rename-warning" style={{ marginTop: '14px' }}>
               <AlertTriangle size={14} style={{ flexShrink: 0, marginTop: '1px' }} />
               <span>
-                This will find-and-replace <strong>{kit.kitPrefix}-</strong> → <strong>{prefix || 'l'}-</strong> across
+                This will find-and-replace <strong>{kit.kitPrefix}-</strong> → <strong>{prefix || 'ou'}-</strong> across
                 all component JSX files, styles, and the live demo. Make sure your dev server is running.
               </span>
             </div>
@@ -133,7 +133,7 @@ const KitSettingsModal = ({ onClose }) => {
           )}
         </div>
 
-        <div className="lumina-modal-footer">
+        <div className="openui-modal-footer">
           <button className="ai-settings-cancel" onClick={onClose}>Cancel</button>
           <button
             className="ai-settings-save"

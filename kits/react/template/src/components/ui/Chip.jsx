@@ -10,11 +10,11 @@ export const Chip = ({
 }) => {
   return (
     <div 
-      className={`l-chip ${className}`}
+      className={`ou-chip ${className}`}
       style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 12px', borderRadius: '100px', background: 'var(--surface-raised)', border: '1px solid var(--border)', fontSize: '13px', ...style }}
       {...props}
     >
-      {Icon && <Icon size={14} className="l-chip-icon" />}
+      {Icon && <Icon size={14} className="ou-chip-icon" />}
       <span>{children}</span>
       {onDelete && (
         <button 
