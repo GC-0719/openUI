@@ -1,6 +1,16 @@
-# openUI
+<p align="center">
+  <img src=".github/banner.svg" alt="openUI — a local-first AI sandbox for building production-ready frontends" width="100%" />
+</p>
 
-**A local-first AI sandbox for building production-ready frontends.**
+<p align="center">
+  <a href="https://github.com/GC-0719/openUI/actions/workflows/ci.yml"><img src="https://github.com/GC-0719/openUI/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" />
+  <img src="https://img.shields.io/badge/node-%3E%3D20-3c873a.svg" alt="Node >=20" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB.svg" alt="React 19" />
+  <img src="https://img.shields.io/badge/Angular-21-DD0031.svg" alt="Angular 21" />
+</p>
+
+# openUI
 
 openUI is a studio you run on your own machine where an AI agent builds complete
 React apps from a design-system kit — creating pages, components, hooks, and
