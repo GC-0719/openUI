@@ -16,7 +16,7 @@
 # openUI
 
 openUI is a studio you run on your own machine where an AI agent builds complete
-React apps from a design-system kit — creating pages, components, hooks, and
+Frontend from a design-system kit — creating pages, components, hooks, and
 services across a real project tree, wired to *your* backend through
 [MCP](https://modelcontextprotocol.io). Edit files in a built-in IDE, preview
 the running app live, then export or publish your kit under your own name.
