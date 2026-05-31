@@ -8,6 +8,7 @@ import RunLocally from './pages/RunLocally';
 import './styles/openui.css';
 
 const Studio = React.lazy(() => import('./pages/Studio'));
+const Docs = React.lazy(() => import('./pages/Docs'));
 
 // The studio needs the local dev-server backend (file CRUD, AI proxy, MCP, live
 // preview), which only exists under `npm run dev`. A production build (e.g. the
@@ -26,6 +27,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/studio" element={<Navigate to="/studio/react" replace />} />
               <Route path="/studio/:framework" element={studioElement} />
+              <Route path="/docs" element={<Suspense fallback={null}><Docs /></Suspense>} />
+              <Route path="/docs/:component" element={<Suspense fallback={null}><Docs /></Suspense>} />
             </Routes>
           </Router>
         </ToastProvider>

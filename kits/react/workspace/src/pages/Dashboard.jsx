@@ -213,12 +213,12 @@ const Dashboard = () => {
         <div className="ou-demo-content">
 
           {/* Page title row */}
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <div className="ou-demo-page-header">
             <div>
               <h1 className="ou-demo-page-title">Cloud Console</h1>
               <p className="ou-demo-page-sub">Live infrastructure health · openUI Core v2.4</p>
             </div>
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <div className="ou-demo-page-actions">
               <Tooltip content="Refresh metrics">
                 <button className="ou-demo-icon-btn" style={{ borderRadius: '8px', width: 'auto', padding: '0 12px', gap: '6px', display: 'flex', alignItems: 'center', fontSize: '13px', color: 'var(--text-muted)' }} onClick={handleRefresh}>
                   <RefreshCw size={14} /> Refresh

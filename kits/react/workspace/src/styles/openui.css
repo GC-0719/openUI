@@ -258,11 +258,12 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes progress-stripes { from { background-position: 1rem 0; } to { background-position: 0 0; } }
 
 /* 11. TABS (.ou-tabs) */
-.ou-tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--border); }
-.ou-tab { padding: 12px 4px; color: var(--text-muted); font-size: 14px; cursor: pointer; position: relative; transition: var(--transition); }
+/* pill style; matches the React <Tabs> component so both frameworks look identical */
+.ou-tabs { display: flex; gap: 4px; background: var(--surface-raised); padding: 4px; border-radius: 10px; max-width: 100%; }
+.ou-tabs-list { display: flex; gap: 4px; flex: 1; min-width: 0; }
+.ou-tab { appearance: none; -webkit-appearance: none; border: none; background: transparent; font-family: inherit; padding: 8px 16px; border-radius: 8px; color: var(--text-muted); font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: var(--transition); }
 .ou-tab:hover { color: var(--text); }
-.ou-tab-active { color: var(--primary); font-weight: 600; }
-.ou-tab-active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--primary); }
+.ou-tab.active, .ou-tab-active { background: var(--surface); color: var(--text); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
 /* 13. SKELETON (.ou-skeleton) */
 .ou-skeleton { background: var(--surface-raised); border-radius: var(--radius-sm); position: relative; overflow: hidden; }
@@ -382,7 +383,7 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 768px) {
   .ou-navbar { padding: 12px 16px; height: auto; flex-wrap: wrap; gap: 10px; }
   .ou-navbar-actions { gap: 12px; flex-wrap: wrap; }
-  .ou-tabs { gap: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .ou-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .ou-table th, .ou-table td { padding: 8px; font-size: 13px; }
   .ou-drawer { max-width: 100vw; }
   .ou-modal { padding: 22px; }
@@ -391,4 +392,13 @@ h1, h2, h3, h4, h5, h6 {
   .ou-card { padding: 16px; }
   .ou-btn { padding: 9px 16px; }
   .ou-modal { padding: 18px; }
+}
+
+/* ── Responsive components (audit) ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Wide tables scroll horizontally instead of overflowing the page */
+  .ou-table { display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+  .ou-breadcrumbs { flex-wrap: wrap; row-gap: 4px; }
+  .ou-navbar-brand, .ou-navbar-actions { flex-wrap: wrap; }
+  .ou-avatar-group { flex-wrap: wrap; }
 }

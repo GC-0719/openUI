@@ -118,12 +118,12 @@ import {
           <div class="ou-demo-content">
 
             <!-- Page title -->
-            <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:8px">
+            <div class="ou-demo-page-header">
               <div>
                 <h1 class="ou-demo-page-title">Cloud Console</h1>
                 <p class="ou-demo-page-sub">Live infrastructure health · openUI Core v2.4</p>
               </div>
-              <div style="display:flex;gap:10px">
+              <div class="ou-demo-page-actions">
                 <ou-button variant="outline" size="sm">Export</ou-button>
                 <ou-button variant="primary" size="sm" (click)="showDeployToast()">Deploy</ou-button>
               </div>
@@ -379,14 +379,14 @@ export class AppComponent {
 
   activeNav = 'dashboard';
   navOpen = false;
-  centerTab = 'overview';
+  centerTab = 'Overview';
   loading = true;
   isModalOpen = false;
   isDrawerOpen = false;
   autoScale = true;
   autoBackup = false;
 
-  centerTabs = ['overview', 'network', 'activity'];
+  centerTabs = ['Overview', 'Network', 'Activity'];
 
   nodeColumns: TableColumn[] = [
     { key: 'id', label: 'Node ID' },

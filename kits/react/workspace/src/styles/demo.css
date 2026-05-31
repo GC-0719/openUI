@@ -458,3 +458,19 @@
   .ou-demo-header { flex-wrap: wrap; height: auto; gap: 10px; }
   .ou-demo-header-right { width: 100%; justify-content: space-between; }
 }
+
+/* ── Demo page header (responsive) ───────────────────────────────────────── */
+.ou-demo-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.ou-demo-page-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 768px) {
+  .ou-demo-page-header { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .ou-demo-page-actions { width: 100%; }
+  .ou-demo-page-title { font-size: clamp(20px, 6vw, 28px); }
+}

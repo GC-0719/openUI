@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   ArrowRight,
   Bot,
@@ -123,6 +123,7 @@ export default function Home() {
         <nav className="lp-nav-links">
           <a href="#features">Features</a>
           <a href="#how">How it works</a>
+          <Link to="/docs">Components</Link>
           <a href="#frameworks">Frameworks</a>
         </nav>
         <div className="lp-nav-actions">
