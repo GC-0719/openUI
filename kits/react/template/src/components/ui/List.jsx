@@ -1,4 +1,3 @@
-import React from 'react';
 
 export const List = ({ children, className = '', style = {}, ...props }) => (
   <ul className={`ou-list ${className}`} style={{ listStyle: 'none', padding: 0, margin: 0, ...style }} {...props}>

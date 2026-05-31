@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Zap, Save, Plus, Trash2, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { useAI } from '../../context/AIContext';
 import { componentsMeta, angularComponentsMeta } from '../../data/components-meta.js';

@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   Zap, Download, Trash2, Mail, Lock, User,
   Search, Bell, Settings, Check, X, Info, AlertTriangle,
   Home, Code, Layers, ExternalLink, ChevronDown,
-  ArrowRight, Eye, EyeOff, Send,
+  ArrowRight, Eye, EyeOff,
   Shield, Terminal, LogOut,
   Plus, MoreHorizontal, Activity, Database,
-  Globe, Package, RefreshCw, Star, Copy,
+  Globe, Package, RefreshCw, Copy,
   CreditCard, Filter, Cpu, Inbox
 } from 'lucide-react';
 

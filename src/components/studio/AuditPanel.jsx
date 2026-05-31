@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { ShieldCheck, AlertCircle, AlertTriangle, Info, Copy, Check, FileCode } from 'lucide-react';
 import { useAI } from '../../context/AIContext';
 import { callAI, buildAuditPrompt } from '../../services/aiService';

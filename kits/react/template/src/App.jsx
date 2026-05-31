@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, useParams } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import ComponentShowcase from './pages/ComponentShowcase';

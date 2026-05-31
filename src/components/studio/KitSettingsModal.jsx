@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { X, AlertTriangle, Check, Loader, Pen } from 'lucide-react';
 import { useAI } from '../../context/AIContext';
 

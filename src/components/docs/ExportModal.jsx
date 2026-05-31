@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { X, Download, Github, Check, AlertCircle, ExternalLink, Loader, Cpu, Copy } from 'lucide-react';
 import JSZip from 'jszip';
 import { useTheme } from '../../context/ThemeContext';

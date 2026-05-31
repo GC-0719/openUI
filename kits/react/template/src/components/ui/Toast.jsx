@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { X, CheckCircle, AlertCircle, Info, Bell } from 'lucide-react';
 
 export const ToastProvider = ({ children }) => {

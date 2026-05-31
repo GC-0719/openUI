@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Check, AlertCircle, ExternalLink, Eye, EyeOff, Plus, Trash2, Wifi, WifiOff, Cpu, Server, Zap, RefreshCw } from 'lucide-react';
 import { useAI, AI_PROVIDERS } from '../../context/AIContext';
 

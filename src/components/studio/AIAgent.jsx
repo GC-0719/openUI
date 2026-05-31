@@ -164,7 +164,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       let finalChanges = null;
       let autoFixCount = 0;
 
-      // eslint-disable-next-line no-constant-condition
+       
       while (true) {
         const rawText = await callAI({ ...settings, systemPrompt, messages: conversationTail });
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Home, BarChart2, Users, Settings, Bell, Search,
   Plus, MoreHorizontal, ChevronDown, Check, Info,
