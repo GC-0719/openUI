@@ -3,10 +3,27 @@
 openUI ships two kinds of npm packages: the **bundled kit** (`@openui/react`)
 and **user-exported kits** (named after the user's own kit + scope).
 
-## Prerequisites
-- An npm account, and for scoped packages the org/scope must exist
-  (e.g. `npm org create openui`).
-- `npm login`. CI publishing uses an `NPM_TOKEN` secret.
+## First-time setup (one-time)
+The packages are **scoped** as `@openui/*`. A scope is a namespace you must own
+on npm. Two options:
+
+1. **Create a free `@openui` org** (recommended — the name is currently
+   available): sign in at npmjs.com → *Add Organization* → name it `openui`
+   (free "public packages" plan). Or from the CLI: `npm org create openui`.
+2. **Use your own username scope** instead: rename the packages to
+   `@<your-npm-username>/react` and `@<your-npm-username>/angular` in
+   `kits/react/template/package.json` and `kits/angular/template/package.json`.
+
+Then authenticate locally:
+
+```bash
+npm login          # opens a browser to your npm account
+```
+
+For automated releases via GitHub Actions, add an **`NPM_TOKEN`** repo secret
+(npmjs.com → *Access Tokens* → *Generate* → "Automation"; then GitHub repo →
+*Settings → Secrets and variables → Actions → New repository secret*). The
+tag-triggered `.github/workflows/release.yml` publishes both packages.
 
 ## Publish the bundled `@openui/react`
 From `kits/react/template/`:
