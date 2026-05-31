@@ -19,7 +19,7 @@ import { useAI } from '../context/AIContext';
 import '../styles/home.css';
 
 // Set when the public repo lands (Milestone 4).
-const GITHUB_URL = 'https://github.com/openui/openui';
+const GITHUB_URL = 'https://github.com/GC-0719/openUI';
 
 const ReactLogo = () => (
   <svg width="26" height="26" viewBox="0 0 100 100" fill="none">

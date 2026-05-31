@@ -35,7 +35,7 @@
   "keywords": ["react", "ui", "components", "design-system", "openui"],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openui/openui.git",
+    "url": "git+https://github.com/GC-0719/openUI.git",
     "directory": "kits/react/template"
   }
 }

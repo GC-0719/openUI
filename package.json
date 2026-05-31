@@ -5,13 +5,13 @@
   "type": "module",
   "description": "A local-first AI sandbox for building production-ready frontends, wired to your backend via MCP.",
   "license": "MIT",
-  "homepage": "https://github.com/openui/openui#readme",
+  "homepage": "https://github.com/GC-0719/openUI#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openui/openui.git"
+    "url": "git+https://github.com/GC-0719/openUI.git"
   },
   "bugs": {
-    "url": "https://github.com/openui/openui/issues"
+    "url": "https://github.com/GC-0719/openUI/issues"
   },
   "author": "openUI contributors",
   "keywords": [
