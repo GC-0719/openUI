@@ -36,9 +36,9 @@ export default defineConfig([
       'react-hooks/exhaustive-deps': 'warn',
     },
   },
-  // Node-context files: Vite configs, build scripts, ESLint config.
+  // Node-context files: Vite configs, build scripts, the prod server.
   {
-    files: ['*.config.js', '**/vite.*.config.js', 'vite.config.js'],
+    files: ['*.config.js', '**/vite.*.config.js', 'vite.config.js', 'server.js'],
     languageOptions: { globals: { ...globals.node } },
   },
 ])

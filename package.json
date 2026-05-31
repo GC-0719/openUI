@@ -35,9 +35,11 @@
     "build:react": "vite build",
     "build:angular": "OPENUI_ANGULAR=1 VITE_OPENUI_ANGULAR=1 vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node server.js"
   },
   "dependencies": {
+    "express": "^5.2.1",
     "framer-motion": "^12.38.0",
     "jszip": "^3.10.1",
     "lucide-react": "^0.477.0",

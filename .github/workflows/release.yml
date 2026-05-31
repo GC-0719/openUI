@@ -1,11 +1,19 @@
-name: Release @openui/react
+name: Release @openedui packages
 
-# Publishes the bundled kit package when a version tag is pushed.
-# Requires an NPM_TOKEN repository secret (and the @openui npm org to exist).
+# Publishes the kit packages to npm WITH PROVENANCE when a version tag (v*) is
+# pushed. Provenance adds a verified "Built and signed on GitHub Actions" badge
+# on npm that links each package back to this repo + commit.
+#
+# Requires an NPM_TOKEN repo secret = a granular token with read-write on the
+# @openedui scope and "bypass 2FA for publish" enabled.
 on:
   push:
     tags:
       - 'v*'
+
+permissions:
+  contents: read
+  id-token: write # required for npm provenance (OIDC)
 
 jobs:
   publish:
@@ -17,14 +25,14 @@ jobs:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
-      - name: Publish @openui/react
+      - name: Publish @openedui/react
         working-directory: kits/react/template
-        run: npm publish --access public
+        run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Build @openui/angular
+      - name: Build @openedui/angular
         run: npm run build --prefix kits/angular/template
-      - name: Publish @openui/angular
-        run: npm publish kits/angular/template/dist --access public
+      - name: Publish @openedui/angular
+        run: npm publish kits/angular/template/dist --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

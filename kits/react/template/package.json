@@ -1,6 +1,6 @@
 {
   "name": "@openedui/react",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "openUI — a 24-component React design system kit (the kit bundled with the openUI studio).",
   "license": "MIT",
   "type": "module",

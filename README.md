@@ -3,6 +3,7 @@
 </p>
 
 <p align="center">
+  <a href="https://openui.live"><img src="https://img.shields.io/badge/live-openui.live-6366F1.svg" alt="Live site" /></a>
   <a href="https://github.com/GC-0719/openUI/actions/workflows/ci.yml"><img src="https://github.com/GC-0719/openUI/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" />
   <img src="https://img.shields.io/badge/node-%3E%3D20-3c873a.svg" alt="Node >=20" />
@@ -114,6 +115,15 @@ import '@openedui/angular/styles.css';
 In the studio, **Export** lets you download a full project ZIP (with a
 publishable `package/` named after your kit + optional npm scope), push to
 GitHub, or generate an MCP server. See [RELEASING.md](RELEASING.md).
+
+## Deployment
+
+[**openui.live**](https://openui.live) hosts the **landing site** (static build,
+auto-deployed from `main` via Railway). The **studio itself runs locally** —
+its file/AI/MCP backend lives in the dev server and is intentionally never
+exposed publicly — so the `/studio` route on the hosted site links you back here
+to run it. `server.js` serves the production build (`npm run build:react` →
+`npm start`).
 
 ## Contributing
 
