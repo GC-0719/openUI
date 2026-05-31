@@ -36,6 +36,7 @@ const Studio = () => {
   const [showExplorer, setShowExplorer] = useState(true);
   const [explorerWidth, setExplorerWidth] = useState(220);
   const [showAgent, setShowAgent] = useState(true);
+  const [agentWidth, setAgentWidth] = useState(340);
   const [isDragging, setIsDragging] = useState(false);
 
   // Generated pages from agent
@@ -59,12 +60,14 @@ const Studio = () => {
   const isComponentFile = activeFilePath?.includes('/components/ui/') ?? false;
 
   // ── Resize drag ──────────────────────────────────────────────────────────
-  const startDrag = useCallback((e) => {
+  // Generic horizontal drag. `dir` = +1 when the handle is on the panel's right
+  // edge (explorer), -1 when on its left edge (agent panel).
+  const makeDrag = useCallback((getWidth, setWidth, dir, min, max) => (e) => {
     e.preventDefault();
     const startX = e.clientX;
-    const startWidth = explorerWidth;
+    const startWidth = getWidth();
     setIsDragging(true);
-    const onMove = (e) => setExplorerWidth(Math.max(160, Math.min(480, startWidth + (e.clientX - startX))));
+    const onMove = (ev) => setWidth(Math.max(min, Math.min(max, startWidth + dir * (ev.clientX - startX))));
     const onUp = () => {
       setIsDragging(false);
       document.removeEventListener('mousemove', onMove);
@@ -72,7 +75,10 @@ const Studio = () => {
     };
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
-  }, [explorerWidth]);
+  }, []);
+
+  const startDrag = makeDrag(() => explorerWidth, setExplorerWidth, 1, 160, 480);
+  const startAgentDrag = makeDrag(() => agentWidth, setAgentWidth, -1, 300, 620);
 
   // ── Reset open files when switching framework ────────────────────────────
   useEffect(() => {
@@ -652,7 +658,9 @@ const Studio = () => {
 
         {/* ── AI Agent panel ── */}
         {showAgent && (
-          <div className="studio-ai-panel">
+          <>
+            <div className={`studio-resize-handle${isDragging ? ' dragging' : ''}`} onMouseDown={startAgentDrag} />
+            <div className="studio-ai-panel" style={{ width: agentWidth }}>
             <AIAgent
               framework={framework}
               onFilesWritten={handleFilesWritten}
@@ -664,7 +672,8 @@ const Studio = () => {
               canUndo={undoStack.length > 0}
               workspaceRefreshKey={filesVersion}
             />
-          </div>
+            </div>
+          </>
         )}
       </div>
 

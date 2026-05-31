@@ -411,6 +411,7 @@ FORBIDDEN — never do any of these:
 - Use raw <button>, <input>, <select>, <table> — always use the kit component instead
 - Use hardcoded colors (#hex, rgb()) — always use CSS variables: var(--primary), var(--surface), var(--text)
 - Leave placeholder comments like "// rest of component"
+- Fixed pixel widths on containers/pages or hardcoded grid column counts — layouts MUST be responsive (mobile → desktop): use \`grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))\`, \`flex-wrap: wrap\`, \`clamp()\` type, and \`max-width\` + \`width: 100%\`. The kit CSS is already responsive.
 
 REQUIRED output format — one fenced block per file with path in the fence:
 \`\`\`ts:src/app/pages/users.component.ts
@@ -528,11 +529,14 @@ ${compSummary}
 - \`lucide-react\` for icons
 - Your OWN files via relative imports (hooks, context, lib/services, other components you create)
 ${barrelCtx}
-## Layout (inline styles only — no Tailwind):
-- Flex: \`style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}\`
-- Grid: \`style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}\`
+## Layout (inline styles only — no Tailwind) — MUST be responsive (mobile → desktop):
+- Flex that reflows: \`style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}\`
+- Fluid grid — NEVER hardcode column counts; use auto-fit so it collapses on small screens: \`style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' }}\`
+- Fluid type: \`style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }}\`
+- Constrain content with \`maxWidth\` + \`width: '100%'\` — never a fixed pixel width on a container/page
 - Colors: var(--primary), var(--bg), var(--surface), var(--surface-raised), var(--text), var(--text-muted), var(--border)
 - CSS prefix: \`${kitPrefix}-\` for className variants (e.g. className="${kitPrefix}-card-glass")
+The kit's CSS is already responsive — pages you build must work from 360px wide to desktop.
 
 ## Project structure (create files anywhere under src/ as needed):
 - Pages → \`src/pages/PageName.jsx\` — PascalCase, **default export**, kept FLAT (no subfolders). Auto-routed at \`#/ai/PageName\` — no route registration needed.

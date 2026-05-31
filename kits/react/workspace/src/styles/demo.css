@@ -415,3 +415,18 @@
   font-size: 11px;
   color: var(--text-dim);
 }
+
+/* ── Responsive demo layout (openUI) ────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .ou-demo-stats { grid-template-columns: repeat(2, 1fr); }
+  .ou-demo-body { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .ou-demo-layout { flex-direction: column; height: auto; overflow: visible; }
+  .ou-demo-sidebar { width: 100%; height: auto; overflow: visible; border-right: none; border-bottom: 1px solid var(--border); }
+  .ou-demo-main { overflow: visible; }
+  .ou-demo-header { flex-wrap: wrap; height: auto; gap: 10px; }
+  .ou-demo-header-right { width: 100%; justify-content: space-between; }
+  .ou-demo-content { padding: 20px 16px; }
+  .ou-demo-stats { grid-template-columns: 1fr; }
+}
