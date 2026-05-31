@@ -15,6 +15,11 @@ const ExportModal = ({ onClose }) => {
   const [githubResult, setGithubResult] = useState(null);
   const [error, setError] = useState('');
   const [progress, setProgress] = useState('');
+  const [scope, setScope] = useState('');
+
+  const slug = kit.kitName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || 'my-ui-kit';
+  const scopeClean = scope.replace(/[^a-z0-9-]/gi, '').toLowerCase();
+  const publishName = scopeClean ? `@${scopeClean}/${slug}` : slug;
 
   const fetchFiles = async () => {
     const res = await fetch('/api/export', {
@@ -25,6 +30,7 @@ const ExportModal = ({ onClose }) => {
         componentCSS,
         kitName: kit.kitName,
         kitPrefix: kit.kitPrefix,
+        scope: scopeClean,
       }),
     });
     const data = await res.json();
@@ -212,12 +218,24 @@ const ExportModal = ({ onClose }) => {
                 Download the complete openUI as a ZIP file. Includes all source files, components, styles, and your current theme.
               </p>
               <ul className="export-checklist">
-                <li><Check size={12} /> All React components (<code>src/components/ui/</code>)</li>
+                <li><Check size={12} /> Full project source (<code>src/</code> — pages, components, hooks, lib)</li>
                 <li><Check size={12} /> CSS system (<code>src/styles/</code>)</li>
-                <li><Check size={12} /> Live demo dashboard</li>
-                <li><Check size={12} /> Docs site with AI chat</li>
+                <li><Check size={12} /> Publishable npm package (<code>package/</code>) named <code>{publishName}</code></li>
+                <li><Check size={12} /> MCP server (<code>mcp-server/</code>)</li>
                 {hasOverrides && <li><Check size={12} style={{ color: 'var(--secondary)' }} /> AI theme overrides baked in</li>}
               </ul>
+              <div className="ai-settings-section">
+                <label className="ai-settings-label">npm scope <span style={{ opacity: 0.5 }}>(optional)</span></label>
+                <input
+                  className="ai-settings-input"
+                  placeholder="your-org → @your-org/{slug}"
+                  value={scope}
+                  onChange={e => setScope(e.target.value)}
+                />
+                <span className="ai-settings-hint">
+                  Your kit publishes as <code>{publishName}</code>. Run <code>cd package &amp;&amp; npm install &amp;&amp; npm publish</code>.
+                </span>
+              </div>
               <button
                 className="export-action-btn"
                 onClick={downloadZip}

@@ -1,0 +1,41 @@
+{
+  "name": "@openui/react",
+  "version": "0.1.0",
+  "description": "openUI — a 24-component React design system kit (the kit bundled with the openUI studio).",
+  "license": "MIT",
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/openui-react.js",
+  "module": "./dist/openui-react.js",
+  "exports": {
+    ".": {
+      "import": "./dist/openui-react.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "sideEffects": ["**/*.css"],
+  "scripts": {
+    "build": "vite build --config vite.lib.config.js",
+    "prepack": "npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "dependencies": {
+    "lucide-react": "^0.477.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.1",
+    "vite": "^8.0.10"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": ["react", "ui", "components", "design-system", "openui"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openui/openui.git",
+    "directory": "kits/react/template"
+  }
+}

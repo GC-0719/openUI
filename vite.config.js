@@ -1187,7 +1187,7 @@ Variants: ${(variants || []).join(', ')}`;
     server.middlewares.use('/api/export', async (req, res) => {
       if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
       try {
-        const { cssVars = {}, componentCSS = {}, kitName = 'My UI Kit', kitPrefix = 'ou' } =
+        const { cssVars = {}, componentCSS = {}, kitName = 'My UI Kit', kitPrefix = 'ou', scope = '' } =
           JSON.parse(await readBody(req) || '{}');
 
         const wsRoot = path.join(cwd, WORKSPACE);
@@ -1197,6 +1197,8 @@ Variants: ${(variants || []).join(', ')}`;
         const readPath = (wsRelPath) => {
           const full = path.join(wsRoot, wsRelPath);
           if (!fs.existsSync(full)) return;
+          const bn = path.basename(full);
+          if (bn.startsWith('._') || bn === '.DS_Store' || bn === 'node_modules') return;
           const stat = fs.statSync(full);
           if (stat.isDirectory()) {
             for (const f of fs.readdirSync(full)) readPath(`${wsRelPath}/${f}`);
@@ -1205,10 +1207,9 @@ Variants: ${(variants || []).join(', ')}`;
           }
         };
 
-        // Read everything from workspace
-        for (const p of ['src/components/ui', 'src/pages/Dashboard.jsx', 'src/styles/openui.css', 'src/styles/demo.css']) {
-          readPath(p);
-        }
+        // Read the entire workspace src/ — includes agent-built pages, hooks,
+        // lib/services, components, and styles, not just the kit defaults.
+        readPath('src');
 
         // Bake CSS overrides
         const varRules = Object.entries(cssVars).map(([k, v]) => `  ${k}: ${v};`).join('\n');
@@ -1220,24 +1221,73 @@ Variants: ${(variants || []).join(', ')}`;
             (cssRules ? `\n${cssRules}\n` : '');
         }
 
-        const pkgName = kitName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-        const cssImport = varRules || cssRules ? `\nimport './styles/theme-overrides.css';` : '';
+        // Names derived from the user's kit name + optional npm scope.
+        const slug = kitName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || 'my-ui-kit';
+        const scopeClean = String(scope || '').replace(/[^a-z0-9-]/gi, '').toLowerCase();
+        const pkgName = slug;
+        const publishName = scopeClean ? `@${scopeClean}/${slug}` : slug;
 
-        files['src/main.jsx'] =
-          `import { StrictMode } from 'react';\nimport { createRoot } from 'react-dom/client';\nimport './styles/openui.css';${cssImport}\nimport App from './App.jsx';\n\ncreateRoot(document.getElementById('root')).render(<StrictMode><App /></StrictMode>);\n`;
+        // Inject the theme-overrides import into the workspace main.jsx (kept as-is otherwise).
+        if ((varRules || cssRules) && files['src/main.jsx']) {
+          files['src/main.jsx'] = files['src/main.jsx'].replace(
+            /(import '\.\/styles\/openui\.css';\n)/,
+            `$1import './styles/theme-overrides.css';\n`
+          );
+        }
+        // Fallbacks if the workspace didn't carry an entry/App.
+        if (!files['src/main.jsx']) {
+          const cssImport = varRules || cssRules ? `\nimport './styles/theme-overrides.css';` : '';
+          files['src/main.jsx'] =
+            `import { StrictMode } from 'react';\nimport { createRoot } from 'react-dom/client';\nimport './styles/openui.css';${cssImport}\nimport App from './App.jsx';\n\ncreateRoot(document.getElementById('root')).render(<StrictMode><App /></StrictMode>);\n`;
+        }
+        if (!files['src/App.jsx']) files['src/App.jsx'] = WORKSPACE_APP;
 
-        files['src/App.jsx'] = WORKSPACE_APP;
         files['index.html'] =
           `<!doctype html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <title>${kitName}</title>\n</head>\n<body>\n  <div id="root"></div>\n  <script type="module" src="/src/main.jsx"></script>\n</body>\n</html>\n`;
 
         files['vite.config.js'] = `import { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\n\nexport default defineConfig({ plugins: [react()] });\n`;
 
         files['package.json'] = JSON.stringify({
-          name: pkgName, private: true, version: '1.0.0', type: 'module',
+          name: pkgName, private: true, version: '0.1.0', type: 'module',
           scripts: { dev: 'vite', build: 'vite build', preview: 'vite preview' },
           dependencies: { 'lucide-react': '^0.477.0', react: '^19.0.0', 'react-dom': '^19.0.0', 'react-router-dom': '^7.0.0' },
-          devDependencies: { '@vitejs/plugin-react': '^4.0.0', vite: '^6.0.0' },
+          devDependencies: { '@vitejs/plugin-react': '^6.0.1', vite: '^8.0.0' },
         }, null, 2);
+
+        // ── Publishable component-library sub-package (npm, named after the kit) ──
+        files['package/package.json'] = JSON.stringify({
+          name: publishName, version: '0.1.0',
+          description: `${kitName} — a React component kit.`,
+          license: 'MIT', type: 'module', files: ['dist'],
+          main: `./dist/${slug}.js`, module: `./dist/${slug}.js`,
+          exports: { '.': { import: `./dist/${slug}.js` }, './styles.css': './dist/styles.css' },
+          sideEffects: ['**/*.css'],
+          scripts: { build: 'vite build --config vite.lib.config.js', prepack: 'npm run build' },
+          peerDependencies: { react: '>=18', 'react-dom': '>=18' },
+          dependencies: { 'lucide-react': '^0.477.0' },
+          devDependencies: { '@vitejs/plugin-react': '^6.0.1', vite: '^8.0.0' },
+          publishConfig: { access: 'public' },
+        }, null, 2);
+
+        files['package/vite.lib.config.js'] =
+          `import { defineConfig } from 'vite';\n` +
+          `import react from '@vitejs/plugin-react';\n` +
+          `import { copyFileSync } from 'fs';\n\n` +
+          `// Builds ../src/components/ui into ESM and ships the kit stylesheet as styles.css.\n` +
+          `export default defineConfig({\n` +
+          `  plugins: [react(), { name: 'copy-styles', closeBundle() { copyFileSync('../src/styles/openui.css', 'dist/styles.css'); } }],\n` +
+          `  publicDir: false,\n` +
+          `  build: {\n` +
+          `    emptyOutDir: true,\n` +
+          `    lib: { entry: '../src/components/ui/index.jsx', formats: ['es'], fileName: () => '${slug}.js' },\n` +
+          `    rollupOptions: { external: ['react', 'react-dom', 'react/jsx-runtime', 'lucide-react'] },\n` +
+          `  },\n});\n`;
+
+        files['package/README.md'] =
+          `# ${publishName}\n\nReact component kit exported from openUI.\n\n` +
+          `## Install\n\n\`\`\`bash\nnpm install ${publishName}\n\`\`\`\n\n` +
+          `## Use\n\n\`\`\`jsx\nimport { Button, Card, Badge } from '${publishName}';\nimport '${publishName}/styles.css';\n\`\`\`\n\n` +
+          `## Publish (from this folder)\n\n\`\`\`bash\nnpm install\nnpm publish${scopeClean ? '' : ''}\n\`\`\`\n`;
 
         // ── MCP Server bundle ──────────────────────────────────────────────────
         const specsPath = path.join(cwd, 'src/data/ai-specs.json');
