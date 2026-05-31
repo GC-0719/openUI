@@ -15,10 +15,9 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      # Lint is informational while legacy findings are being cleaned up.
+      # Gates on errors; ~117 non-correctness warnings remain as a cleanup backlog.
       - name: Lint
         run: npm run lint
-        continue-on-error: true
       - name: Build (React studio)
         run: npm run build:react
       - name: Build (@openui/react package)
