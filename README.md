@@ -72,7 +72,7 @@ src/                 The studio app (React 19 + Vite + react-router)
   components/studio/ FileExplorer, CodeEditor, AIAgent, preview, audit…
   services/          aiService (prompts/parsing), mcpClientService
 kits/
-  react/{template,workspace}    24-component React kit (publishable @openui/react)
+  react/{template,workspace}    24-component React kit (publishable @openedui/react)
   angular/{template,workspace}  Angular kit
 vite.config.js       Custom dev-server backend: /api/ai, workspace file CRUD,
                      MCP bridge, /api/export (zip + generated MCP server)
@@ -86,20 +86,20 @@ and the preview iframe renders the running workspace app.
 
 **React:**
 ```bash
-npm install @openui/react
+npm install @openedui/react
 ```
 ```jsx
-import { Button, Card, Badge } from '@openui/react';
-import '@openui/react/styles.css';
+import { Button, Card, Badge } from '@openedui/react';
+import '@openedui/react/styles.css';
 ```
 
 **Angular** (standalone components):
 ```bash
-npm install @openui/angular
+npm install @openedui/angular
 ```
 ```ts
-import { ButtonComponent, CardComponent } from '@openui/angular';
-import '@openui/angular/styles.css';
+import { ButtonComponent, CardComponent } from '@openedui/angular';
+import '@openedui/angular/styles.css';
 ```
 
 ## Export & publish your kit

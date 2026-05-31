@@ -1,20 +1,11 @@
 # Releasing
 
-openUI ships two kinds of npm packages: the **bundled kit** (`@openui/react`)
+openUI ships two kinds of npm packages: the **bundled kit** (`@openedui/react`)
 and **user-exported kits** (named after the user's own kit + scope).
 
 ## First-time setup (one-time)
-The packages are **scoped** as `@openui/*`. A scope is a namespace you must own
-on npm. Two options:
-
-1. **Create a free `@openui` org** (recommended — the name is currently
-   available): sign in at npmjs.com → *Add Organization* → name it `openui`
-   (free "public packages" plan). Or from the CLI: `npm org create openui`.
-2. **Use your own username scope** instead: rename the packages to
-   `@<your-npm-username>/react` and `@<your-npm-username>/angular` in
-   `kits/react/template/package.json` and `kits/angular/template/package.json`.
-
-Then authenticate locally:
+The packages publish under the **`@openedui`** npm org (already created).
+Authenticate locally:
 
 ```bash
 npm login          # opens a browser to your npm account
@@ -25,7 +16,7 @@ For automated releases via GitHub Actions, add an **`NPM_TOKEN`** repo secret
 *Settings → Secrets and variables → Actions → New repository secret*). The
 tag-triggered `.github/workflows/release.yml` publishes both packages.
 
-## Publish the bundled `@openui/react`
+## Publish the bundled `@openedui/react`
 From `kits/react/template/`:
 
 ```bash
@@ -35,19 +26,19 @@ npm publish          # `prepack` runs the Vite library build automatically
 ```
 
 This builds `dist/openui-react.js` (ESM) + `dist/styles.css` and publishes
-`@openui/react`. Bump `version` in `kits/react/template/package.json` first.
+`@openedui/react`. Bump `version` in `kits/react/template/package.json` first.
 
 Consumers then:
 
 ```bash
-npm install @openui/react
+npm install @openedui/react
 ```
 ```jsx
-import { Button, Card } from '@openui/react';
-import '@openui/react/styles.css';
+import { Button, Card } from '@openedui/react';
+import '@openedui/react/styles.css';
 ```
 
-## Publish the bundled `@openui/angular`
+## Publish the bundled `@openedui/angular`
 From `kits/angular/template/` (ng-packagr builds an Angular Package Format
 bundle into `dist/`, which is what gets published):
 
@@ -59,8 +50,8 @@ npm publish kits/angular/template/dist --access public
 Consumers import the standalone components and the kit stylesheet:
 
 ```ts
-import { ButtonComponent, CardComponent } from '@openui/angular';
-import '@openui/angular/styles.css';
+import { ButtonComponent, CardComponent } from '@openedui/angular';
+import '@openedui/angular/styles.css';
 ```
 
 ## Publish a user-exported kit (publish-by-name)
