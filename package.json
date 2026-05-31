@@ -1,8 +1,32 @@
 {
-  "name": "uikit",
+  "name": "openui",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
+  "description": "A local-first AI sandbox for building production-ready frontends, wired to your backend via MCP.",
+  "license": "MIT",
+  "homepage": "https://github.com/openui/openui#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openui/openui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/openui/openui/issues"
+  },
+  "author": "openUI contributors",
+  "keywords": [
+    "ai",
+    "design-system",
+    "ui",
+    "react",
+    "angular",
+    "mcp",
+    "sandbox",
+    "code-generation"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "OPENUI_ANGULAR=1 VITE_OPENUI_ANGULAR=1 vite",
     "dev:react": "vite",

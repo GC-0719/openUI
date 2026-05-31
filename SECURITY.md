@@ -1,0 +1,28 @@
+# Security Policy
+
+## openUI is a local development tool
+
+openUI's dev server (`vite.config.js`) is powerful by design and is intended to
+run **only on your local machine, for your own use**:
+
+- It **reads and writes files** under the kit workspace (`/api/write-file`,
+  `/api/create-folder`, `/api/rename-path`, `/api/delete-path`). A path-traversal
+  guard keeps writes inside the workspace, but the surface is still a local
+  filesystem API.
+- It can **spawn MCP server processes over stdio** (`/api/mcp-bridge`), executing
+  the command you configure. Only connect MCP servers you trust.
+- It **proxies AI requests** with the API key you provide.
+
+**Do not expose the dev server to a network, a public host, or untrusted input.**
+Do not run it as a hosted/multi-tenant service. Treat connected MCP commands and
+AI keys as you would any local secret.
+
+## Reporting a vulnerability
+
+Please report security issues privately to **gopichandyaragarla@gmail.com**
+rather than opening a public issue. Include reproduction steps and impact. We
+aim to acknowledge reports within a few days.
+
+## Supported versions
+
+openUI is pre-1.0; fixes land on `main`.
