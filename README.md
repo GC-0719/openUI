@@ -5,6 +5,8 @@
 <p align="center">
   <a href="https://openui.live"><img src="https://img.shields.io/badge/live-openui.live-6366F1.svg" alt="Live site" /></a>
   <a href="https://github.com/GC-0719/openUI/actions/workflows/ci.yml"><img src="https://github.com/GC-0719/openUI/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://www.npmjs.com/package/@openedui/react"><img src="https://img.shields.io/npm/v/@openedui/react?label=%40openedui%2Freact&color=cb3837&logo=npm" alt="@openedui/react on npm" /></a>
+  <a href="https://www.npmjs.com/package/@openedui/angular"><img src="https://img.shields.io/npm/v/@openedui/angular?label=%40openedui%2Fangular&color=cb3837&logo=npm" alt="@openedui/angular on npm" /></a>
   <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" />
   <img src="https://img.shields.io/badge/node-%3E%3D20-3c873a.svg" alt="Node >=20" />
   <img src="https://img.shields.io/badge/React-19-61DAFB.svg" alt="React 19" />

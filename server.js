@@ -10,6 +10,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dist = path.join(__dirname, 'dist');
 const app = express();
 
+// Canonical host: 301 www.openui.live → openui.live (one canonical URL for SEO).
+app.use((req, res, next) => {
+  const host = req.headers.host || '';
+  if (host.startsWith('www.')) {
+    return res.redirect(301, `https://${host.slice(4)}${req.url}`);
+  }
+  next();
+});
+
 // Basic security headers.
 app.use((_req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
