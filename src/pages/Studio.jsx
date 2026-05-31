@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { Eye, Code2, Download, Settings, RotateCcw, RefreshCcw, PanelLeft, X, Sparkles, ShieldCheck, Bot } from 'lucide-react';
+import { Eye, Code2, Download, Settings, RotateCcw, RefreshCcw, PanelLeft, X, Sparkles, ShieldCheck, Bot, Monitor, Laptop, Tablet, Smartphone } from 'lucide-react';
 import { useAI } from '../context/AIContext';
 import AIAgent from '../components/studio/AIAgent';
 import FileExplorer from '../components/studio/FileExplorer';
@@ -39,6 +39,7 @@ const Studio = () => {
   const [showAgent, setShowAgent] = useState(true);
   const [agentWidth, setAgentWidth] = useState(340);
   const [isDragging, setIsDragging] = useState(false);
+  const [previewW, setPreviewW] = useState(null); // null = full width; else device px
 
   // Generated pages from agent
   const [agentPages, setAgentPages] = useState([]);
@@ -547,6 +548,25 @@ const Studio = () => {
               </div>
             </div>
             <div className="studio-center-actions">
+              {centerTab === 'preview' && (
+                <div className="studio-size-bar" title="Preview at different screen sizes">
+                  {[
+                    { w: null, Icon: Monitor, label: 'Full width' },
+                    { w: 1280, Icon: Laptop, label: 'Desktop · 1280' },
+                    { w: 768, Icon: Tablet, label: 'Tablet · 768' },
+                    { w: 390, Icon: Smartphone, label: 'Mobile · 390' },
+                  ].map(({ w, Icon, label }) => (
+                    <button
+                      key={label}
+                      className={`studio-size-btn${previewW === w ? ' active' : ''}`}
+                      onClick={() => setPreviewW(w)}
+                      title={label}
+                    >
+                      <Icon size={13} />
+                    </button>
+                  ))}
+                </div>
+              )}
               {centerTab === 'preview' && !isComponentFile && (
                 <button className="studio-icon-btn" onClick={handleRun} title="Reload preview">
                   <RotateCcw size={13} />
@@ -643,12 +663,15 @@ const Studio = () => {
               ) : isComponentFile && !activeAgentPage ? (
                 <ComponentPreview filePath={activeFilePath} previewKey={previewKey} framework={framework} />
               ) : (
-                <iframe
-                  key={`${previewKey}-${activeAgentPage}`}
-                  src={previewSrc}
-                  className="studio-preview-frame"
-                  title="Kit Preview"
-                />
+                <div className={`studio-preview-stage${previewW ? ' framed' : ''}`}>
+                  <iframe
+                    key={`${previewKey}-${activeAgentPage}`}
+                    src={previewSrc}
+                    className="studio-preview-frame"
+                    title="Kit Preview"
+                    style={previewW ? { width: previewW, maxWidth: '100%' } : undefined}
+                  />
+                </div>
               )}
             </div>
 

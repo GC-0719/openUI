@@ -34,9 +34,23 @@ import {
       <div class="ou-demo-layout">
 
         <!-- ── SIDEBAR ── -->
-        <aside class="ou-demo-sidebar">
+        <aside class="ou-demo-sidebar" [class.open]="navOpen">
           <div class="ou-demo-brand">
-            <div class="logo-sq">L</div>
+            <svg width="28" height="28" viewBox="0 0 32 32" fill="none" style="flex-shrink:0">
+              <defs>
+                <linearGradient id="ouDemoLogo" x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#6366F1" />
+                  <stop offset="1" stop-color="#8B5CF6" />
+                </linearGradient>
+              </defs>
+              <rect width="32" height="32" rx="9" fill="url(#ouDemoLogo)" />
+              <rect x="6.5" y="9.5" width="19" height="13.5" rx="3.2" fill="#fff" />
+              <rect x="6.5" y="9.5" width="6.6" height="13.5" rx="3.2" fill="#6366F1" fill-opacity="0.14" />
+              <circle cx="9.8" cy="13.2" r="1.05" fill="#6366F1" fill-opacity="0.7" />
+              <rect x="15.4" y="13.4" width="7.6" height="1.9" rx="0.95" fill="#6366F1" fill-opacity="0.55" />
+              <rect x="15.4" y="17.6" width="5" height="1.9" rx="0.95" fill="#6366F1" fill-opacity="0.32" />
+              <path d="M24.3 3.4l.97 2.33 2.33.97-2.33.97-.97 2.33-.97-2.33L20.03 6.7l2.33-.97z" fill="#fff" />
+            </svg>
             <div>
               <div class="ou-demo-brand-name">openUI</div>
             </div>
@@ -70,12 +84,19 @@ import {
           </div>
         </aside>
 
+        <div class="ou-demo-nav-backdrop" *ngIf="navOpen" (click)="navOpen = false"></div>
+
         <!-- ── MAIN ── -->
         <main class="ou-demo-main">
 
           <!-- ── NAVBAR ── -->
           <ou-navbar>
             <ou-navbar-brand>
+              <button type="button" class="ou-demo-burger" (click)="navOpen = true" aria-label="Open menu">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+              </button>
               <ou-breadcrumbs [items]="['Organization', 'System Intel', 'Dashboard']"></ou-breadcrumbs>
             </ou-navbar-brand>
             <ou-navbar-actions>
@@ -357,6 +378,7 @@ export class AppComponent {
   private toast = inject(ToastService);
 
   activeNav = 'dashboard';
+  navOpen = false;
   centerTab = 'overview';
   loading = true;
   isModalOpen = false;

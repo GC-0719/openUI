@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Home, BarChart2, Users, Settings, Bell, Search,
-  Plus, MoreHorizontal, ChevronDown, Check, Info,
+  Menu, Plus, MoreHorizontal, ChevronDown, Check, Info,
   AlertTriangle, Shield, Zap, Globe, Mail,
   ArrowUpRight, ArrowDownRight, Download, Terminal,
   Layers, Trash2, Code, Moon, Sun, TrendingUp,
@@ -64,6 +64,7 @@ const Dashboard = () => {
   const [isSwitchOn, setIsSwitchOn] = useState(true);
   const [isAutoBackup, setIsAutoBackup] = useState(false);
   const [activeBar, setActiveBar] = useState(5);
+  const [navOpen, setNavOpen] = useState(false);
   const [theme, setTheme] = useState(
     localStorage.getItem('openui-theme') ||
     (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
@@ -100,11 +101,25 @@ const Dashboard = () => {
     <div className="ou-demo-layout">
 
       {/* ── SIDEBAR ── */}
-      <aside className="ou-demo-sidebar">
+      <aside className={`ou-demo-sidebar${navOpen ? ' open' : ''}`}>
         <div className="ou-demo-brand">
-          <div className="logo-sq">L</div>
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none" style={{ flexShrink: 0 }}>
+            <defs>
+              <linearGradient id="ouDemoLogo" x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#6366F1" />
+                <stop offset="1" stopColor="#8B5CF6" />
+              </linearGradient>
+            </defs>
+            <rect width="32" height="32" rx="9" fill="url(#ouDemoLogo)" />
+            <rect x="6.5" y="9.5" width="19" height="13.5" rx="3.2" fill="#fff" />
+            <rect x="6.5" y="9.5" width="6.6" height="13.5" rx="3.2" fill="#6366F1" fillOpacity="0.14" />
+            <circle cx="9.8" cy="13.2" r="1.05" fill="#6366F1" fillOpacity="0.7" />
+            <rect x="15.4" y="13.4" width="7.6" height="1.9" rx="0.95" fill="#6366F1" fillOpacity="0.55" />
+            <rect x="15.4" y="17.6" width="5" height="1.9" rx="0.95" fill="#6366F1" fillOpacity="0.32" />
+            <path d="M24.3 3.4l.97 2.33 2.33.97-2.33.97-.97 2.33-.97-2.33L20.03 6.7l2.33-.97z" fill="#fff" />
+          </svg>
           <div>
-            <div className="ou-demo-brand-name">Mina</div>
+            <div className="ou-demo-brand-name">openUI</div>
           </div>
           <span className="ou-demo-brand-tag">PRO</span>
         </div>
@@ -147,11 +162,16 @@ const Dashboard = () => {
         </div>
       </aside>
 
+      {navOpen && <div className="ou-demo-nav-backdrop" onClick={() => setNavOpen(false)} />}
+
       {/* ── MAIN ── */}
       <main className="ou-demo-main">
 
         {/* ── HEADER ── */}
         <header className="ou-demo-header">
+          <button type="button" className="ou-demo-burger" onClick={() => setNavOpen(true)} aria-label="Open menu">
+            <Menu size={18} />
+          </button>
           <Breadcrumbs items={['Organization', 'System Intel', 'Dashboard']} />
 
           <div className="ou-demo-header-right">

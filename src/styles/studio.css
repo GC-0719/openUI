@@ -398,6 +398,56 @@
   background: #09090b;
 }
 
+/* ── Preview stage (responsive size selector) ────────────────────────────── */
+.studio-preview-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+  background: #09090b;
+}
+.studio-preview-stage.framed {
+  padding: 18px;
+  background: #0a0a0c;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.studio-preview-stage.framed .studio-preview-frame {
+  height: 100%;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  box-shadow: 0 16px 50px rgba(0,0,0,0.55);
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.studio-size-bar {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  margin-right: 6px;
+}
+.studio-size-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: rgba(248,248,248,0.5);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.studio-size-btn:hover { background: rgba(255,255,255,0.07); color: #f8f8f8; }
+.studio-size-btn.active { background: rgba(99,102,241,0.16); color: #6366f1; }
+
 /* ── AI panel (right) ────────────────────────────────────────────────────── */
 .studio-ai-panel {
   width: 320px; /* fallback — overridden by inline style when resizing */
