@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { X, CheckCircle, AlertCircle, Info, Bell } from 'lucide-react';
 
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
+  const nextId = useRef(0);
 
   const addToast = (toast) => {
-    const id = Math.random().toString(36).substr(2, 9);
+    const id = `toast-${nextId.current++}`;
     setToasts((prev) => [...prev, { ...toast, id }]);
     if (toast.duration !== 0) {
       setTimeout(() => removeToast(id), toast.duration || 3000);

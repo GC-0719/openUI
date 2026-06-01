@@ -1,4 +1,3 @@
-import React from 'react';
 
 export const Table = ({ children, className = '', style = {}, ...props }) => {
   return (
