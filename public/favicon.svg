@@ -1,15 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
   <defs>
     <linearGradient id="g" x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#6366F1"/>
-      <stop offset="1" stop-color="#8B5CF6"/>
+      <stop stop-color="#2DD4BF"/>
+      <stop offset="0.5" stop-color="#06B6D4"/>
+      <stop offset="1" stop-color="#6366F1"/>
     </linearGradient>
   </defs>
   <rect width="32" height="32" rx="9" fill="url(#g)"/>
   <rect x="6.5" y="9.5" width="19" height="13.5" rx="3.2" fill="#ffffff"/>
-  <rect x="6.5" y="9.5" width="6.6" height="13.5" rx="3.2" fill="#6366F1" fill-opacity="0.14"/>
-  <circle cx="9.8" cy="13.2" r="1.05" fill="#6366F1" fill-opacity="0.7"/>
-  <rect x="15.4" y="13.4" width="7.6" height="1.9" rx="0.95" fill="#6366F1" fill-opacity="0.55"/>
-  <rect x="15.4" y="17.6" width="5" height="1.9" rx="0.95" fill="#6366F1" fill-opacity="0.32"/>
+  <rect x="6.5" y="9.5" width="6.6" height="13.5" rx="3.2" fill="#0891B2" fill-opacity="0.16"/>
+  <circle cx="9.8" cy="13.2" r="1.05" fill="#0891B2" fill-opacity="0.75"/>
+  <rect x="15.4" y="13.4" width="7.6" height="1.9" rx="0.95" fill="#0891B2" fill-opacity="0.6"/>
+  <rect x="15.4" y="17.6" width="5" height="1.9" rx="0.95" fill="#0891B2" fill-opacity="0.34"/>
   <path d="M24.3 3.4l.97 2.33 2.33.97-2.33.97-.97 2.33-.97-2.33L20.03 6.7l2.33-.97z" fill="#ffffff"/>
 </svg>

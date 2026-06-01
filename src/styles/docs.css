@@ -1084,6 +1084,68 @@ pre {
 
 .ai-mcp-indicator.active { background: rgba(16,185,129,0.2); border-color: rgba(16,185,129,0.6); }
 
+/* ── Agent memory indicator + panel ──────────────────────────────────────── */
+.ai-mem-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  border: 1px solid rgba(34,211,238,0.3);
+  background: rgba(34,211,238,0.08);
+  color: #22D3EE;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ai-mem-indicator:hover { background: rgba(34,211,238,0.16); border-color: rgba(34,211,238,0.5); }
+.ai-mem-indicator.active { background: rgba(34,211,238,0.22); border-color: rgba(34,211,238,0.6); }
+.ai-mem-forget {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+.ai-mem-forget:hover { color: #f87171; border-color: rgba(248,113,113,0.5); }
+.ai-mem-list {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.ai-mem-list li {
+  position: relative;
+  padding: 6px 9px 6px 20px;
+  border-radius: 7px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text);
+}
+.ai-mem-list li::before {
+  content: '';
+  position: absolute;
+  left: 9px;
+  top: 11px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #22D3EE;
+}
+
 /* ── Backend (MCP) context panel ─────────────────────────────────────────── */
 .ai-backend-panel {
   margin: 0 10px 8px;

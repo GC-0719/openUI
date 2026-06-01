@@ -80,16 +80,50 @@ async function* sseLines(body) {
   if (buf.trim()) yield buf.trim();
 }
 
+// ── Prompt caching (claude) ──────────────────────────────────────────────────
+// The agent sends a large, stable system prompt (component list, kit context,
+// workspace tree, memory) plus a growing message history. Mark the system block
+// and the last message as ephemeral cache breakpoints: repeated requests in a
+// session (continuation rounds, auto-fix retries, multi-turn) reuse the prefix
+// at ~0.1x cost. Render order is system → messages, so the system breakpoint
+// caches the whole preamble; the last-message breakpoint extends the cached
+// prefix incrementally each turn. (Anthropic caches a prefix — any byte change
+// invalidates everything after, but our system prompt has no timestamps/UUIDs.)
+function cacheSystem(systemPrompt) {
+  if (!systemPrompt) return undefined;
+  return [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }];
+}
+function cacheMessages(messages) {
+  if (!Array.isArray(messages) || messages.length === 0) return messages;
+  const out = messages.map(m => ({ ...m }));
+  const last = out[out.length - 1];
+  if (typeof last.content === 'string') {
+    last.content = [{ type: 'text', text: last.content, cache_control: { type: 'ephemeral' } }];
+  } else if (Array.isArray(last.content) && last.content.length) {
+    const blocks = last.content.map(b => ({ ...b }));
+    blocks[blocks.length - 1] = { ...blocks[blocks.length - 1], cache_control: { type: 'ephemeral' } };
+    last.content = blocks;
+  }
+  return out;
+}
+function logClaudeCache(usage) {
+  if (!usage) return;
+  const read = usage.cache_read_input_tokens || 0;
+  const write = usage.cache_creation_input_tokens || 0;
+  if (read || write) console.log(`[openui] claude cache → read ${read} · write ${write} · fresh ${usage.input_tokens || 0}`);
+}
+
 // One non-streaming completion. Returns { text, truncated }.
 async function aiProviderOnce({ provider, model, apiKey, baseUrl, systemPrompt, messages }) {
   if (provider === 'claude') {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-      body: JSON.stringify({ model, system: systemPrompt, messages, max_tokens: AI_MAX_TOKENS.claude }),
+      body: JSON.stringify({ model, system: cacheSystem(systemPrompt), messages: cacheMessages(messages), max_tokens: AI_MAX_TOKENS.claude }),
     });
     const d = await r.json();
     if (d.error) throw new Error(d.error.message);
+    logClaudeCache(d.usage);
     return { text: d.content?.[0]?.text || '', truncated: d.stop_reason === 'max_tokens' };
   }
   if (provider === 'openai') {
@@ -170,7 +204,7 @@ async function aiStreamOnce({ provider, model, apiKey, baseUrl, systemPrompt, me
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-      body: JSON.stringify({ model, system: systemPrompt, messages, max_tokens: AI_MAX_TOKENS.claude, stream: true }),
+      body: JSON.stringify({ model, system: cacheSystem(systemPrompt), messages: cacheMessages(messages), max_tokens: AI_MAX_TOKENS.claude, stream: true }),
     });
     if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(d.error?.message || `Claude error ${r.status}`); }
     let truncated = false;
@@ -178,7 +212,8 @@ async function aiStreamOnce({ provider, model, apiKey, baseUrl, systemPrompt, me
       if (!line.startsWith('data:')) continue;
       const payload = line.slice(5).trim();
       let ev; try { ev = JSON.parse(payload); } catch { continue; }
-      if (ev.type === 'content_block_delta' && ev.delta?.text) onDelta(ev.delta.text);
+      if (ev.type === 'message_start') logClaudeCache(ev.message?.usage);
+      else if (ev.type === 'content_block_delta' && ev.delta?.text) onDelta(ev.delta.text);
       else if (ev.type === 'message_delta' && ev.delta?.stop_reason === 'max_tokens') truncated = true;
       else if (ev.type === 'error') throw new Error(ev.error?.message || 'Claude stream error');
     }
@@ -860,6 +895,68 @@ const openuiDevPlugin = {
         }
       } catch { /* fall through */ }
       json(res, 503, { error: 'Cannot reach local server — is it running?' });
+    });
+
+    // ── Agent long-term memory ────────────────────────────────────────────────
+    // Per-kit durable facts the agent learns by use, persisted to disk so the
+    // agent gets better across sessions/restarts. GET returns facts; POST either
+    // replaces them ({facts}) or appends+dedupes+caps ({add}).
+    const MEMORY_DIR = path.join(cwd, '.openui-agent');
+    const MEMORY_CAP = 60;
+    const memoryFile = (kit) => path.join(MEMORY_DIR, `memory-${kit === 'angular' ? 'angular' : 'react'}.json`);
+    const readMemory = (kit) => {
+      try { return JSON.parse(fs.readFileSync(memoryFile(kit), 'utf-8')); }
+      catch { return { facts: [], updatedAt: null }; }
+    };
+    const writeMemory = (kit, data) => {
+      fs.mkdirSync(MEMORY_DIR, { recursive: true });
+      fs.writeFileSync(memoryFile(kit), JSON.stringify(data, null, 2));
+    };
+    server.middlewares.use('/api/agent-memory', async (req, res) => {
+      try {
+        const url = new URL(req.url, 'http://localhost');
+        if (req.method === 'GET') {
+          const kit = url.searchParams.get('kit') || 'react';
+          json(res, 200, readMemory(kit));
+          return;
+        }
+        if (req.method === 'POST') {
+          const body = JSON.parse(await readBody(req));
+          const kit = body.kit === 'angular' ? 'angular' : 'react';
+          const store = readMemory(kit);
+          let facts = Array.isArray(store.facts) ? store.facts : [];
+          if (Array.isArray(body.facts)) {
+            // full replace
+            facts = body.facts;
+          } else if (Array.isArray(body.add)) {
+            // append, dedupe by normalized text, cap (keep most recent)
+            const seen = new Set(facts.map(f => (f.text || '').trim().toLowerCase()));
+            for (const raw of body.add) {
+              const text = (typeof raw === 'string' ? raw : raw?.text || '').trim();
+              if (!text) continue;
+              const key = text.toLowerCase();
+              if (seen.has(key)) continue;
+              seen.add(key);
+              facts.push({ text, createdAt: new Date().toISOString() });
+            }
+          }
+          if (facts.length > MEMORY_CAP) facts = facts.slice(facts.length - MEMORY_CAP);
+          const data = { facts, updatedAt: new Date().toISOString() };
+          writeMemory(kit, data);
+          json(res, 200, data);
+          return;
+        }
+        if (req.method === 'DELETE') {
+          const kit = url.searchParams.get('kit') || 'react';
+          const data = { facts: [], updatedAt: new Date().toISOString() };
+          writeMemory(kit, data);
+          json(res, 200, data);
+          return;
+        }
+        json(res, 405, { error: 'GET/POST/DELETE only' });
+      } catch (err) {
+        json(res, 500, { error: err.message });
+      }
     });
 
     // ── Read a workspace file ─────────────────────────────────────────────────

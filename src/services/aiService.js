@@ -359,8 +359,14 @@ Available components: ${compList}${existingPagesList}${openFileCtx}
 Format the plan as numbered sections with sub-bullets. Be specific about file paths and component names.`;
 }
 
-export function buildAgentPrompt({ components, kitPrefix, kitName, specs = {}, mcpContext = '', activeFilePath = null, activeFileContent = null, framework = 'react', workspaceTree = [], barrelContent = '', existingRoutes = [], navFile = null, pageFiles = {} }) {
+export function buildAgentPrompt({ components, kitPrefix, kitName, specs = {}, mcpContext = '', activeFilePath = null, activeFileContent = null, framework = 'react', workspaceTree = [], barrelContent = '', existingRoutes = [], navFile = null, pageFiles = {}, memory = '' }) {
   const isAngular = framework === 'angular';
+
+  // Long-term memory: durable facts learned from past sessions (stable across
+  // requests → lives in the cached system-prompt prefix).
+  const memoryCtx = memory && memory.trim()
+    ? `\n## PROJECT MEMORY — what you've learned about this project across past sessions. Honor these conventions and preferences:\n${memory.trim()}\n`
+    : '';
 
   const REACT_PROP_HINTS = {
     Button: 'variant="primary|secondary|outline|ghost|neon|danger|glass" size="sm|md|lg" loading={bool}',
@@ -441,7 +447,7 @@ ${routeList}
 
   if (isAngular) {
     return `You are openUI Agent — a UI builder for the ${kitName} Angular design system.
-
+${memoryCtx}
 FORBIDDEN — never do any of these:
 - Import from @angular/material, ng-bootstrap, primeng, or any package other than @angular/core, @angular/common, @angular/forms, and ../../components/ui
 - Use raw <button>, <input>, <select>, <table> — always use the kit component instead
@@ -529,7 +535,7 @@ Write complete file content. Never truncate.`;
 
 YOUR JOB: Build complete React features end-to-end — pages, reusable components, hooks, context, and small data/service modules — creating and editing as many files across the project as the task needs. Wire everything together so it runs.
 NEVER explain at length, ask clarifying questions, or say "I cannot create files." Write the code immediately.
-
+${memoryCtx}
 OUTPUT FORMAT — mandatory for every response. One fenced block per file (you may output several):
 \`\`\`jsx:src/pages/SignIn.jsx
 import React, { useState } from 'react';
@@ -763,6 +769,22 @@ export function parseAgentResponse(text) {
     .replace(/```[\w./:\- ]*\n[\s\S]*$/, '')    // an unclosed trailing fence (truncated / mid-stream)
     .trim();
   return { files, message, errors: warnings };
+}
+
+// After a successful build, extract 0-3 durable facts worth remembering for
+// future requests (the agent's "training" signal). Returns a JSON array prompt.
+export function buildMemoryExtractionPrompt({ kitName = 'openUI' } = {}) {
+  return `You maintain a long-term memory for a ${kitName} frontend project. From the latest build, extract 0-3 DURABLE facts worth remembering for FUTURE requests.
+
+Good facts (durable, reusable): the app's domain/purpose, entity/data-model names and their fields, naming or file-structure conventions the project follows, the user's stated preferences, recurring design choices to keep consistent.
+Bad facts (do NOT record): one-off task details, restatements of the request, generic/obvious statements, anything specific to just this single change.
+
+Rules:
+- Each fact: ONE short, specific, self-contained sentence.
+- If nothing durable is worth remembering, return an empty array.
+- Respond with ONLY a JSON array of strings — no markdown, no prose, no code fences.
+
+Example: ["The app manages inventory items with fields name, price, category, and status.", "Data is persisted to localStorage via a useStore hook seeded from a JSON file."]`;
 }
 
 export function buildAuditPrompt(code, { components = [], kitPrefix = 'ou' }) {

@@ -34,3 +34,6 @@ kit-workspace/
 
 # Local Claude Code config
 .claude/
+
+# Agent long-term memory (local, per-machine)
+.openui-agent/

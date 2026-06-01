@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowUp, Settings, RotateCcw, FileCode, Layers, Sparkles, Undo2, Database } from 'lucide-react';
+import { ArrowUp, Settings, RotateCcw, FileCode, Layers, Sparkles, Undo2, Database, Brain, Trash2 } from 'lucide-react';
 import { useAI, AI_PROVIDERS } from '../../context/AIContext';
-import { callAI, buildAgentPrompt, buildAskPrompt, buildPlanPrompt, parseAgentResponse } from '../../services/aiService';
+import { callAI, buildAgentPrompt, buildAskPrompt, buildPlanPrompt, parseAgentResponse, buildMemoryExtractionPrompt } from '../../services/aiService';
 import { fetchMCPContext, formatMCPContext } from '../../services/mcpClientService';
 import { componentsMeta } from '../../data/components-meta.js';
 
@@ -94,6 +94,22 @@ const FileChangeBadge = ({ changes, onNavigate }) => {
   );
 };
 
+// Context-window management: keep the most recent turns within a char budget
+// (~12K tokens). Durable facts live in long-term memory, so dropping old chat
+// is low-loss — and it keeps the cached system-prompt prefix the dominant cost.
+const CONTEXT_CHAR_BUDGET = 48000;
+function trimForContext(history) {
+  const out = [];
+  let total = 0;
+  for (let i = history.length - 1; i >= 0; i--) {
+    const len = (history[i].content || '').length;
+    if (out.length && total + len > CONTEXT_CHAR_BUDGET) break;
+    out.unshift(history[i]);
+    total += len;
+  }
+  return out;
+}
+
 const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSettings, activeFilePath, activeFileContent, onUndo, canUndo, workspaceRefreshKey = 0 }) => {
   const { settings, kit, specs, mcpServers } = useAI();
   const [messages, setMessages] = useState([{ role: 'assistant', text: WELCOME, changes: null }]);
@@ -108,8 +124,13 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
   const [mcpLoading, setMcpLoading] = useState(false);
   const [showBackend, setShowBackend] = useState(false);
   const [workspaceCtx, setWorkspaceCtx] = useState({ tree: [], barrel: '', routes: [], navFile: null, pageFiles: {} });
+  const [memory, setMemory] = useState({ facts: [], updatedAt: null });
+  const [showMemory, setShowMemory] = useState(false);
   const endRef = useRef(null);
   const textareaRef = useRef(null);
+  const historyKitRef = useRef(framework); // which framework the current `messages` belong to
+
+  const chatKey = (fw) => `openui:chat:${fw}`;
 
   useEffect(() => {
     const enabled = (mcpServers || []).filter(s => s.enabled);
@@ -136,9 +157,29 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
     return { tree, barrel: files[barrelKey] || '', routes: data.routes || [], navFile: data.navFile || null, pageFiles };
   };
 
+  // Persist chat history per framework so it survives reloads. Guarded by a ref
+  // so a framework switch doesn't write the outgoing conversation under the new
+  // key before the load effect runs. (Defined BEFORE the load effect so on a
+  // switch it sees the stale ref and skips, then the load effect updates the ref.)
   useEffect(() => {
+    if (historyKitRef.current !== framework) return;
+    try {
+      if (messages.length > 1) localStorage.setItem(chatKey(framework), JSON.stringify(messages.slice(-80)));
+      else localStorage.removeItem(chatKey(framework));
+    } catch { /* ignore quota errors */ }
+  }, [messages, framework]);
+
+  // On framework change / mount: load persisted history + memory + workspace context.
+  useEffect(() => {
+    historyKitRef.current = framework;
     setWorkspaceCtx({ tree: [], barrel: '', routes: [], navFile: null, pageFiles: {} });
-    setMessages([{ role: 'assistant', text: WELCOME, changes: null }]);
+    let saved = null;
+    try { const s = localStorage.getItem(chatKey(framework)); if (s) saved = JSON.parse(s); } catch { /* ignore bad JSON */ }
+    setMessages(saved && saved.length ? saved : [{ role: 'assistant', text: WELCOME, changes: null }]);
+    fetch(`/api/agent-memory?kit=${framework}`)
+      .then(r => r.json())
+      .then(d => setMemory(d && Array.isArray(d.facts) ? d : { facts: [], updatedAt: null }))
+      .catch(() => {});
     fetch(`/api/workspace-context?kit=${framework}`)
       .then(r => r.json())
       .then(data => setWorkspaceCtx(parseWorkspaceData(data, framework)))
@@ -177,7 +218,10 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
         .filter(m => m.role !== 'system')
         .map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.text }));
       const firstUserIdx = rawHistory.findIndex(m => m.role === 'user');
-      const history = firstUserIdx >= 0 ? rawHistory.slice(firstUserIdx) : [];
+      const fullHistory = firstUserIdx >= 0 ? rawHistory.slice(firstUserIdx) : [];
+      const history = trimForContext(fullHistory);
+
+      const memoryText = (memory.facts || []).map(f => `- ${f.text}`).join('\n');
 
       const ctxArgs = {
         components: COMPONENTS_META,
@@ -185,6 +229,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
         kitName: kit.kitName,
         specs,
         mcpContext,
+        memory: memoryText,
         activeFilePath,
         activeFileContent,
         framework,
@@ -206,6 +251,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       let finalMessage = '';
       let finalChanges = null;
       let autoFixCount = 0;
+      let builtFiles = null; // files successfully written this turn → feed the memory learner
 
        
       while (true) {
@@ -282,6 +328,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
 
           finalChanges = { fileChanges: Object.fromEntries(paths.map(p => [p, true])) };
           finalMessage = message || `Updated ${paths.map(p => p.split('/').pop()).join(', ')}.`;
+          builtFiles = files;
         } else {
           finalMessage = message || rawText;
         }
@@ -292,11 +339,51 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       setStreamingText('');
       setAutoFixing(false);
       setMessages(prev => [...prev, { role: 'assistant', text: finalMessage, changes: finalChanges, mode }]);
+
+      // Learn from a successful build — fire-and-forget so it never blocks the UI.
+      if (isEditMode && builtFiles) learnFromBuild(userMsg, builtFiles);
     } catch (err) {
       setError(err.message);
       setStreamingText('');
     }
     setLoading(false);
+  };
+
+  // The "training" loop: after a successful build, ask the model for up to 3
+  // durable facts and append them to long-term memory (deduped + capped server-side).
+  const learnFromBuild = async (userMsg, files) => {
+    try {
+      const summary = Object.keys(files)
+        .map(p => `${p}:\n${(files[p] || '').slice(0, 500)}`)
+        .join('\n\n')
+        .slice(0, 6000);
+      const raw = await callAI({
+        ...settings,
+        systemPrompt: buildMemoryExtractionPrompt({ kitName: kit.kitName }),
+        messages: [{ role: 'user', content: `User request:\n${userMsg}\n\nFiles created/updated:\n${summary}` }],
+      });
+      const arr = raw.match(/\[[\s\S]*\]/);
+      if (!arr) return;
+      let facts;
+      try { facts = JSON.parse(arr[0]); } catch { return; }
+      const clean = (Array.isArray(facts) ? facts : []).filter(f => typeof f === 'string' && f.trim()).slice(0, 3);
+      if (!clean.length) return;
+      const res = await fetch('/api/agent-memory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kit: framework, add: clean }),
+      });
+      const data = await res.json();
+      if (data && Array.isArray(data.facts)) setMemory(data);
+    } catch { /* best-effort; never disrupt the build */ }
+  };
+
+  const forgetMemory = async () => {
+    try {
+      const res = await fetch(`/api/agent-memory?kit=${framework}`, { method: 'DELETE' });
+      const data = await res.json();
+      setMemory(data && Array.isArray(data.facts) ? data : { facts: [], updatedAt: null });
+    } catch { /* ignore */ }
   };
 
   const handleKey = (e) => {
@@ -328,6 +415,16 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
             >
               <span className="ai-mcp-indicator-dot" />
               {enabledMCP} MCP
+            </button>
+          )}
+          {memory.facts.length > 0 && (
+            <button
+              className={`ai-mem-indicator${showMemory ? ' active' : ''}`}
+              onClick={() => setShowMemory(v => !v)}
+              title="What the agent has learned about this project"
+            >
+              <Brain size={11} />
+              {memory.facts.length} learned
             </button>
           )}
         </div>
@@ -385,6 +482,24 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
             );
           })}
           <div className="ai-backend-hint">The agent uses these tools, field names, and live data to build matching UI.</div>
+        </div>
+      )}
+
+      {/* Long-term memory — what the agent has learned and applies to every build */}
+      {showMemory && memory.facts.length > 0 && (
+        <div className="ai-backend-panel">
+          <div className="ai-backend-title">
+            <Brain size={12} /> Project memory
+            <button className="ai-mem-forget" onClick={forgetMemory} title="Forget everything learned">
+              <Trash2 size={11} /> Forget all
+            </button>
+          </div>
+          <ul className="ai-mem-list">
+            {memory.facts.map((f, i) => (
+              <li key={i}>{f.text}</li>
+            ))}
+          </ul>
+          <div className="ai-backend-hint">Learned automatically from your builds. Injected into every request so the agent improves over time.</div>
         </div>
       )}
 

@@ -35,8 +35,8 @@
   border-radius: 9px;
   font-size: 17px;
   color: #fff;
-  background: linear-gradient(135deg, #6366F1, #8b5cf6);
-  box-shadow: 0 4px 16px rgba(99,102,241,0.4);
+  background: linear-gradient(135deg, #06B6D4, #6366F1);
+  box-shadow: 0 4px 16px rgba(6,182,212,0.4);
 }
 .lp-logo-sm { width: 24px; height: 24px; font-size: 13px; border-radius: 7px; }
 
@@ -58,10 +58,10 @@
 }
 .lp-primary-btn {
   color: #fff;
-  background: linear-gradient(135deg, #6366F1, #7c5cf6);
-  box-shadow: 0 6px 20px rgba(99,102,241,0.35);
+  background: linear-gradient(135deg, #06B6D4, #6366F1);
+  box-shadow: 0 6px 20px rgba(6,182,212,0.35);
 }
-.lp-primary-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(99,102,241,0.45); }
+.lp-primary-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(8,145,178,0.45); }
 .lp-ghost-btn {
   color: #f8f8f8;
   background: rgba(255,255,255,0.04);
@@ -124,7 +124,7 @@
   margin: 0 0 22px;
 }
 .lp-title-accent {
-  background: linear-gradient(120deg, #818cf8, #c084fc 60%, #f472b6);
+  background: linear-gradient(120deg, #2DD4BF, #22D3EE 50%, #818CF8);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
