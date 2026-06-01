@@ -1,12 +1,48 @@
-export async function callAI({ provider, model, apiKey, baseUrl, messages, systemPrompt }) {
+// Call the local AI proxy. Pass { stream: true, onToken } to receive tokens live
+// (onToken(deltaText, fullTextSoFar)); the full text is still returned at the end.
+// Without `stream`, behaves exactly as before (single JSON response).
+export async function callAI({ provider, model, apiKey, baseUrl, messages, systemPrompt, stream = false, onToken } = {}) {
   const res = await fetch('/api/ai', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ provider, model, apiKey, baseUrl, messages, systemPrompt }),
+    body: JSON.stringify({ provider, model, apiKey, baseUrl, messages, systemPrompt, stream }),
   });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error);
-  return data.text;
+
+  if (!stream) {
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    return data.text;
+  }
+
+  // Streaming: read Server-Sent Events ({ delta } | { done } | { error }).
+  if (!res.ok || !res.body) {
+    let msg = `AI request failed (${res.status})`;
+    try { const d = await res.json(); if (d.error) msg = d.error; } catch { /* keep default */ }
+    throw new Error(msg);
+  }
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = '';
+  let full = '';
+  let streamError = null;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    let idx;
+    while ((idx = buf.indexOf('\n\n')) >= 0) {
+      const frame = buf.slice(0, idx);
+      buf = buf.slice(idx + 2);
+      const dataLine = frame.split('\n').find(l => l.startsWith('data:'));
+      if (!dataLine) continue;
+      let ev; try { ev = JSON.parse(dataLine.slice(5).trim()); } catch { continue; }
+      if (ev.delta) { full += ev.delta; onToken?.(ev.delta, full); }
+      else if (ev.error) { streamError = ev.error; }
+      // ev.done → loop ends when the stream closes
+    }
+  }
+  if (streamError) throw new Error(streamError);
+  return full;
 }
 
 export function buildSystemPrompt(componentName, { selectedFile, fileContent, workspaceContext, kitName, kitPrefix, cssVars, componentCSS, spec, mcpContext } = {}) {
@@ -552,6 +588,37 @@ ${routesCtx}${navFileCtx}
 - Extract shared logic into hooks/lib instead of duplicating it across pages.
 ${existingRoutes.length === 0 ? '- No pages exist yet — build a small nav so every page you create is reachable.' : ''}
 
+## MULTI-FILE BUILDS (CRITICAL):
+- Output EVERY file the feature needs in ONE response — each in its own fenced \`\`\`jsx:path\`\`\` (or \`\`\`js:path\`\`\`) block.
+- Emit files in dependency order: data/seed → hooks → reusable components → the page that imports them.
+- NEVER import a file you do not also create in the same response. If a page imports \`useStore\`, \`ItemFormModal\`, and \`StatsBar\`, you MUST include all of those fenced blocks too.
+- Write COMPLETE files — every function body and every closing brace/tag. You have a large output budget and the response auto-continues if it runs long, so there is NO reason to truncate or leave "// ..." placeholders.
+
+## DATA & "JSON FILE" STORAGE (the running preview cannot write files at runtime):
+- The preview runs in the browser, so it CANNOT write to a .json file on disk. To "use a JSON file as storage", do this instead:
+  1. Create a seed \`src/data/<name>.json\` holding the initial records (imported, never written to).
+  2. Create a hook \`src/hooks/use<Name>.js\` that loads from localStorage (falling back to the seed JSON on first run) and persists EVERY create/update/delete back to localStorage. Expose \`{ items, addItem, editItem, deleteItem, resetAll }\`.
+  3. Give each record a stable id (\`crypto.randomUUID()\`).
+- Canonical hook to follow:
+\`\`\`js:src/hooks/useStore.js
+import { useState, useEffect } from 'react';
+import seed from '../data/items.json';
+const KEY = 'openui:items';
+export default function useStore() {
+  const [items, setItems] = useState(() => {
+    try { const saved = localStorage.getItem(KEY); return saved ? JSON.parse(saved) : seed; }
+    catch { return seed; }
+  });
+  useEffect(() => { localStorage.setItem(KEY, JSON.stringify(items)); }, [items]);
+  const addItem = (data) => setItems(prev => [{ id: crypto.randomUUID(), ...data }, ...prev]);
+  const editItem = (id, data) => setItems(prev => prev.map(it => (it.id === id ? { ...it, ...data } : it)));
+  const deleteItem = (id) => setItems(prev => prev.filter(it => it.id !== id));
+  const resetAll = () => setItems(seed);
+  return { items, addItem, editItem, deleteItem, resetAll };
+}
+\`\`\`
+This localStorage-over-seed-JSON pattern is the correct way to satisfy any "store data in a JSON file" CRUD request in this sandbox.
+
 ## FORBIDDEN:
 - New npm dependencies (anything beyond react, react-router-dom, lucide-react, the kit, and your own relative files) — use the browser \`fetch\` API for data
 - Tailwind classes (bg-*, text-*, p-*, m-*, etc.)
@@ -691,7 +758,10 @@ export function parseAgentResponse(text) {
     }
   }
 
-  const message = text.replace(/```[\s\S]*?```\n?/g, '').trim();
+  const message = text
+    .replace(/```[\s\S]*?```\n?/g, '')          // closed fenced blocks
+    .replace(/```[\w./:\- ]*\n[\s\S]*$/, '')    // an unclosed trailing fence (truncated / mid-stream)
+    .trim();
   return { files, message, errors: warnings };
 }
 

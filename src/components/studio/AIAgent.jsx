@@ -17,7 +17,8 @@ const SUGGESTIONS = [
 
 const WELCOME = `Hi! I'm openUI Agent.\n\nDescribe any UI you want and I'll build it — pages, components, or both. I can create multiple pages in one go and edit existing files.\n\nWhat would you like to build?`;
 
-const renderText = (text) =>
+// Render a prose run: **bold** and `inline code`.
+const renderProse = (text) =>
   text.split('\n').map((line, i, arr) => {
     const parts = line.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((seg, j) => {
       if (seg.startsWith('**') && seg.endsWith('**')) return <strong key={j}>{seg.slice(2, -2)}</strong>;
@@ -26,6 +27,47 @@ const renderText = (text) =>
     });
     return <React.Fragment key={i}>{parts}{i < arr.length - 1 && <br />}</React.Fragment>;
   });
+
+// A fenced code block. `lang` may be "jsx" or a path-annotated "jsx:src/pages/Foo.jsx".
+const CodeBlock = ({ lang = '', code, streaming = false }) => {
+  const path = lang.includes(':') ? lang.slice(lang.indexOf(':') + 1) : '';
+  const label = path || lang || 'code';
+  return (
+    <div className={`ai-code-block${streaming ? ' streaming' : ''}`}>
+      <div className="ai-code-block-head">
+        <FileCode size={11} />
+        <span className="ai-code-block-name">{label}</span>
+        {streaming && <span className="ai-code-writing">writing…</span>}
+      </div>
+      <pre className="ai-code-block-pre"><code>{code}</code></pre>
+    </div>
+  );
+};
+
+// Fence-aware message renderer. Code fences (```lang or ```lang:path) become <pre>
+// blocks — so single backticks of template literals INSIDE code are never treated as
+// inline code and stripped. An unclosed trailing fence (mid-stream) renders live.
+const renderMessage = (text) => {
+  if (!text) return null;
+  const out = [];
+  const fence = /```([\w./:\- ]*)\n([\s\S]*?)```/g;
+  let last = 0, m;
+  while ((m = fence.exec(text)) !== null) {
+    if (m.index > last) out.push(<span key={`p${out.length}`}>{renderProse(text.slice(last, m.index))}</span>);
+    out.push(<CodeBlock key={`c${out.length}`} lang={m[1].trim()} code={m[2].replace(/\n$/, '')} />);
+    last = fence.lastIndex;
+  }
+  const tail = text.slice(last);
+  const open = tail.match(/```([\w./:\- ]*)\n([\s\S]*)$/);
+  if (open) {
+    const before = tail.slice(0, open.index);
+    if (before.trim()) out.push(<span key={`p${out.length}`}>{renderProse(before)}</span>);
+    out.push(<CodeBlock key={`c${out.length}`} lang={open[1].trim()} code={open[2]} streaming />);
+  } else if (tail) {
+    out.push(<span key={`p${out.length}`}>{renderProse(tail)}</span>);
+  }
+  return out;
+};
 
 const FileChangeBadge = ({ changes, onNavigate }) => {
   if (!changes?.fileChanges) return null;
@@ -58,6 +100,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
   const [input, setInput] = useState('');
   const [mode, setMode] = useState('edit'); // 'ask' | 'plan' | 'edit'
   const [loading, setLoading] = useState(false);
+  const [streamingText, setStreamingText] = useState('');
   const [autoFixing, setAutoFixing] = useState(false);
   const [error, setError] = useState('');
   const [mcpContext, setMcpContext] = useState('');
@@ -166,7 +209,14 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
 
        
       while (true) {
-        const rawText = await callAI({ ...settings, systemPrompt, messages: conversationTail });
+        setStreamingText('');
+        const rawText = await callAI({
+          ...settings,
+          systemPrompt,
+          messages: conversationTail,
+          stream: true,
+          onToken: (_delta, full) => setStreamingText(full),
+        });
 
         if (!isEditMode) {
           finalMessage = rawText.replace(/```[\s\S]*?```\n?/g, '').trim() || rawText;
@@ -239,10 +289,12 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       }
 
       if (!finalMessage) finalMessage = '…';
+      setStreamingText('');
       setAutoFixing(false);
       setMessages(prev => [...prev, { role: 'assistant', text: finalMessage, changes: finalChanges, mode }]);
     } catch (err) {
       setError(err.message);
+      setStreamingText('');
     }
     setLoading(false);
   };
@@ -359,7 +411,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
                       <span className="ai-msg-label-prism">◆</span>
                       <span className="ai-msg-label-name">openUI Agent</span>
                     </div>
-                    <div className="ai-msg-body">{renderText(msg.text)}</div>
+                    <div className="ai-msg-body">{renderMessage(msg.text)}</div>
                     <FileChangeBadge changes={msg.changes} onNavigate={onNavigatePage} />
                     {msg.changes && i === lastChangedIdx && canUndo && (
                       <button className="agent-undo-btn" onClick={onUndo} title="Undo these changes">
@@ -383,7 +435,18 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
               </div>
             )}
 
-            {loading && (
+            {loading && streamingText && (
+              <div className="ai-msg ai-msg-assistant ai-msg-streaming">
+                <div className="ai-msg-label">
+                  <span className="ai-msg-label-prism">◆</span>
+                  <span className="ai-msg-label-name">openUI Agent</span>
+                  <span className="ai-streaming-cursor" />
+                </div>
+                <div className="ai-msg-body">{renderMessage(streamingText)}</div>
+              </div>
+            )}
+
+            {loading && !streamingText && (
               <div className="ai-msg ai-msg-thinking">
                 <div className="ai-msg-label">
                   <span className="ai-msg-label-prism">◆</span>
