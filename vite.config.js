@@ -23,6 +23,7 @@ import {
   validateExternalRoot,
 } from './server/workspaceBind.js';
 import { getGitStatusForKit } from './server/gitStatus.js';
+import { scaffoldMcpServer } from './server/mcpScaffold.js';
 
 function copyPath(src, dest) {
   if (!fs.existsSync(src)) return;
@@ -981,6 +982,24 @@ const openuiDevPlugin = {
         } else {
           json(res, 200, { files, routes: [], navFile: null });
         }
+      } catch (err) {
+        json(res, 500, { error: err.message });
+      }
+    });
+
+    // ── MCP wizard — scaffold server from OpenAPI or Prisma ───────────────────
+    server.middlewares.use('/api/mcp-wizard/scaffold', async (req, res) => {
+      if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
+      try {
+        const body = JSON.parse(await readBody(req) || '{}');
+        const result = scaffoldMcpServer({
+          source: body.source,
+          spec: body.spec,
+          serverName: body.serverName,
+          baseUrl: body.baseUrl,
+        });
+        if (!result.ok) { json(res, 400, result); return; }
+        json(res, 200, result);
       } catch (err) {
         json(res, 500, { error: err.message });
       }

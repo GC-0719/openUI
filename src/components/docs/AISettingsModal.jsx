@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { X, Check, AlertCircle, ExternalLink, Eye, EyeOff, Plus, Trash2, Wifi, WifiOff, Cpu, Server, Zap, RefreshCw } from 'lucide-react';
+import { X, Check, AlertCircle, ExternalLink, Eye, EyeOff, Plus, Trash2, Wifi, WifiOff, Cpu, Server, Zap, RefreshCw, Wand2 } from 'lucide-react';
 import { useAI, AI_PROVIDERS } from '../../context/AIContext';
+import MCPWizardModal from '../studio/MCPWizardModal';
 
 const LOCAL_PRESETS = [
   { label: 'Ollama', url: 'http://localhost:11434/v1' },
@@ -27,6 +28,7 @@ const AISettingsModal = ({ onClose, defaultTab = 'ai' }) => {
   const [servers, setServers] = useState(() => (mcpServers || []).map(s => ({ ...s })));
   const [testingServer, setTestingServer] = useState(null);
   const [serverTestResults, setServerTestResults] = useState({});
+  const [showMcpWizard, setShowMcpWizard] = useState(false);
 
   useEffect(() => { updateMcpServers(servers); }, [servers]);
 
@@ -275,6 +277,13 @@ const AISettingsModal = ({ onClose, defaultTab = 'ai' }) => {
                 <p className="ai-settings-hint" style={{ marginBottom: '12px' }}>
                   Connect backend MCP servers so the AI reads your API schemas and data models when generating UI.
                 </p>
+                <button
+                  type="button"
+                  className="mcp-wizard-launch-btn"
+                  onClick={() => setShowMcpWizard(true)}
+                >
+                  <Wand2 size={14} /> MCP wizard — scaffold from OpenAPI or Prisma
+                </button>
 
                 {servers.length === 0 && (
                   <div className="ai-mcp-empty">
@@ -378,6 +387,15 @@ const AISettingsModal = ({ onClose, defaultTab = 'ai' }) => {
           )}
         </div>
       </div>
+
+      {showMcpWizard && (
+        <MCPWizardModal
+          onClose={() => setShowMcpWizard(false)}
+          onAddServer={(entry) => {
+            setServers(prev => [...prev, { id: Date.now(), ...entry }]);
+          }}
+        />
+      )}
     </div>
   );
 };

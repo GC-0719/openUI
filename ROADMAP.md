@@ -39,13 +39,13 @@ openUI is a **local-first AI studio** that writes into a **real project tree**, 
 - [x] **Agent memory** UI: edit/remove single facts, not only “forget all”
 - [x] Snapshot tests for `buildAgentPrompt` (regression guard)
 
-### 0.4.x — Workflow & uniqueness
+### 0.4.x — Workflow & uniqueness *(complete)*
 
 - [x] **Open in existing repo** — point workspace at a user folder (with strict path guard)
 - [x] **Git status** in file tree (modified / untracked badges)
 - [x] **Diff preview** before applying agent file batch
 - [x] **Starter templates** (dashboard, auth, settings) as one-click agent seeds
-- [ ] **MCP wizard** — scaffold a minimal MCP server from OpenAPI or Prisma schema
+- [x] **MCP wizard** — scaffold a minimal MCP server from OpenAPI or Prisma schema
 
 ### 0.5.x — Kits & publishing
 

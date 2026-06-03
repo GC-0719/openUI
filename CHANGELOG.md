@@ -7,6 +7,7 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 ## [Unreleased]
 
 ### Added
+- **MCP wizard** (AI Settings → MCP) — scaffold a stdio MCP server from **OpenAPI JSON** (HTTP proxy tools) or **Prisma schema** (model introspection); download ZIP, copy Claude config, add to studio MCP list.
 - **Starter templates** in the agent panel — Dashboard, Auth, and Settings seeds with **Plan** (checklist first) or **Build** (Edit mode) for React and Angular workspaces.
 - **Git status in file tree** — `M` / `U` / `S` badges for modified, untracked, and staged files when the workspace is inside a git repo (`/api/git-status`).
 - **Open existing project** — link `kits/<framework>/workspace` to an absolute folder on disk (symlink + path validation); studio folder button and `/api/workspace-bind`.
