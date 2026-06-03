@@ -24,6 +24,11 @@ import {
 } from './server/workspaceBind.js';
 import { getGitStatusForKit } from './server/gitStatus.js';
 import { scaffoldMcpServer } from './server/mcpScaffold.js';
+import {
+  readMergedSpecs,
+  registerCustomComponent,
+  writeWorkspaceSpec,
+} from './server/customComponent.js';
 
 function copyPath(src, dest) {
   if (!fs.existsSync(src)) return;
@@ -1054,8 +1059,9 @@ const openuiDevPlugin = {
     server.middlewares.use('/api/read-specs', (req, res) => {
       if (req.method !== 'GET') { json(res, 405, { error: 'GET only' }); return; }
       try {
-        const specsPath = path.join(cwd, 'src/data/ai-specs.json');
-        const specs = fs.existsSync(specsPath) ? JSON.parse(fs.readFileSync(specsPath, 'utf-8')) : {};
+        const url = new URL(req.url, 'http://localhost');
+        const kit = url.searchParams.get('kit') || 'react';
+        const specs = readMergedSpecs(cwd, kit);
         json(res, 200, { specs });
       } catch (err) {
         json(res, 500, { error: err.message });
@@ -1066,12 +1072,29 @@ const openuiDevPlugin = {
     server.middlewares.use('/api/write-spec', async (req, res) => {
       if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
       try {
-        const { componentId, aiSpec } = JSON.parse(await readBody(req));
-        const specsPath = path.join(cwd, 'src/data/ai-specs.json');
-        const existing = fs.existsSync(specsPath) ? JSON.parse(fs.readFileSync(specsPath, 'utf-8')) : {};
-        existing[componentId] = aiSpec;
-        fs.writeFileSync(specsPath, JSON.stringify(existing, null, 2), 'utf-8');
+        const { componentId, aiSpec, kit, scope } = JSON.parse(await readBody(req));
+        if (scope === 'workspace' && safeKit(kit)) {
+          writeWorkspaceSpec(cwd, kit, componentId, aiSpec);
+        } else {
+          const specsPath = path.join(cwd, 'src/data/ai-specs.json');
+          const existing = fs.existsSync(specsPath) ? JSON.parse(fs.readFileSync(specsPath, 'utf-8')) : {};
+          existing[componentId] = aiSpec;
+          fs.writeFileSync(specsPath, JSON.stringify(existing, null, 2), 'utf-8');
+        }
         json(res, 200, { ok: true });
+      } catch (err) {
+        json(res, 500, { error: err.message });
+      }
+    });
+
+    // ── Register custom kit component (file + barrel + spec) ─────────────────
+    server.middlewares.use('/api/register-component', async (req, res) => {
+      if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
+      try {
+        const { name, kit = 'react' } = JSON.parse(await readBody(req));
+        const result = registerCustomComponent(cwd, kit, name);
+        if (!result.ok) { json(res, 400, result); return; }
+        json(res, 200, result);
       } catch (err) {
         json(res, 500, { error: err.message });
       }

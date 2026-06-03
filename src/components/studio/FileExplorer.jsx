@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ChevronRight, ChevronDown, FileCode, FileText, Folder, FolderOpen,
-  Layers, Settings2, FilePlus, FolderPlus, Pencil, Trash2, RefreshCcw,
+  Layers, Settings2, FilePlus, FolderPlus, Pencil, Trash2, RefreshCcw, Boxes,
 } from 'lucide-react';
+import AddComponentModal from './AddComponentModal';
 import { apiPost } from '../../utils/api';
 import { useToast } from '../../../kits/react/workspace/src/components/ui/Toast';
 
@@ -42,9 +43,10 @@ const GIT_BADGE = {
   staged: { label: 'S', title: 'Staged' },
 };
 
-const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework = 'react', refreshKey = 0, onMutate }) => {
+const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework = 'react', refreshKey = 0, onMutate, onSpecsRefresh }) => {
   const { addToast } = useToast();
   const [files, setFiles] = useState([]);
+  const [showAddComponent, setShowAddComponent] = useState(false);
   const [gitFiles, setGitFiles] = useState({});
   const [gitAvailable, setGitAvailable] = useState(false);
   const [collapsed, setCollapsed] = useState(() => new Set());
@@ -207,6 +209,13 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
           {gitAvailable && <span className="studio-explorer-git-hint" title="Git status shown for changed files">git</span>}
         </span>
         <div style={{ display: 'flex', gap: 2 }}>
+          <button
+            className="studio-icon-btn"
+            onClick={() => setShowAddComponent(true)}
+            title="New kit component (barrel + spec)"
+          >
+            <Boxes size={14} />
+          </button>
           <button className="studio-icon-btn" onClick={() => createFile('src')} title="New file in src/"><FilePlus size={14} /></button>
           <button className="studio-icon-btn" onClick={() => createFolder('src')} title="New folder in src/"><FolderPlus size={14} /></button>
           {framework === 'react' && (
@@ -226,6 +235,24 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
           ? <div className="studio-tree-empty">No files</div>
           : renderDir(tree, 0)}
       </div>
+
+      {showAddComponent && (
+        <AddComponentModal
+          framework={framework}
+          onClose={() => setShowAddComponent(false)}
+          onCreated={(info) => {
+            loadFiles();
+            onMutate?.({ type: 'create', path: info.path });
+            onSelect?.(info.path);
+            onSpecsRefresh?.();
+            addToast({
+              title: `${info.name} created`,
+              message: 'Barrel updated · spec seeded · open Spec tab to refine.',
+              variant: 'success',
+            });
+          }}
+        />
+      )}
     </aside>
   );
 };

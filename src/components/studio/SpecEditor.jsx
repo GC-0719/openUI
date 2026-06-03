@@ -155,7 +155,11 @@ const SpecEditor = ({ filePath, framework = 'react' }) => {
           return { name: p.name, props, whenToUse: p.whenToUse };
         }),
       };
-      await updateSpec(compId, aiSpec);
+      const isKitComponent = filePath?.includes('/components/ui/');
+      await updateSpec(compId, aiSpec, {
+        kit: framework,
+        scope: isKitComponent ? 'workspace' : 'global',
+      });
       setSavedAt(Date.now());
     } finally {
       setSaving(false);

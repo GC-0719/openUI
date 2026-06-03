@@ -47,12 +47,12 @@ openUI is a **local-first AI studio** that writes into a **real project tree**, 
 - [x] **Starter templates** (dashboard, auth, settings) as one-click agent seeds
 - [x] **MCP wizard** — scaffold a minimal MCP server from OpenAPI or Prisma schema
 
-### 0.5.x — Kits & publishing
+### 0.5.x — Kits & publishing *(complete)*
 
 - [x] Semver-stable `@openedui/react` / `@openedui/angular` APIs
 - [x] Changelog + migration guide for kit consumers
 - [x] Visual regression or Storybook-style kit gallery in CI
-- [ ] Documented **custom component** flow (add to workspace → auto-barrel → spec JSON)
+- [x] Documented **custom component** flow (add to workspace → auto-barrel → spec JSON)
 
 ### 0.9.x — Release candidate
 

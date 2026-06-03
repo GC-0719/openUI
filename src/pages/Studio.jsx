@@ -83,6 +83,10 @@ const Studio = () => {
     loadWorkspaceBind();
   }, [loadWorkspaceBind]);
 
+  useEffect(() => {
+    retrySpecsLoad(framework);
+  }, [framework, retrySpecsLoad]);
+
   const handleWorkspaceBound = useCallback(() => {
     setOpenFiles([]);
     setActiveFilePath(null);
@@ -699,6 +703,7 @@ const Studio = () => {
               framework={framework}
               refreshKey={filesVersion}
               onMutate={handleTreeMutate}
+              onSpecsRefresh={() => retrySpecsLoad(framework)}
             />
             <div className={`studio-resize-handle${isDragging ? ' dragging' : ''}`} onMouseDown={startDrag} />
           </>

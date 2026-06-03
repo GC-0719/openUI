@@ -128,6 +128,7 @@ GitHub, or generate an MCP server. See [RELEASING.md](RELEASING.md).
 | **Use your own repo in the studio** | Studio → folder icon → enter an **absolute path** to your project. openUI symlinks `kits/<framework>/workspace` after validating the path (see [SECURITY.md](SECURITY.md)). |
 | **Git badges in the file tree** | When the workspace is inside a git repo, changed files show **M** (modified), **U** (untracked), or **S** (staged). Requires `git` on your PATH. |
 | **MCP wizard** | AI Settings → MCP → **MCP wizard** — paste OpenAPI JSON or a Prisma schema, download the generated server, `npm install`, add the stdio command to MCP settings. |
+| **Custom components** | File explorer → boxes icon — creates UI file, barrel export, and AI spec. [docs/CUSTOM_COMPONENTS.md](docs/CUSTOM_COMPONENTS.md) |
 | **Local LLM (Ollama)** | Set base URL + model in AI Settings. API key is optional. Audit and Spec tools use the same settings. |
 | **MCP servers** | Only connect commands you trust. See [SECURITY.md](SECURITY.md). |
 

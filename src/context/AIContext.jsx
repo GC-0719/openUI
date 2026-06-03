@@ -78,9 +78,9 @@ export const AIProvider = ({ children }) => {
 
   const updateMcpServers = useCallback((servers) => setMcpServers(servers), []);
 
-  const loadSpecs = useCallback(() => {
+  const loadSpecs = useCallback((kit = 'react') => {
     setSpecsError('');
-    fetch('/api/read-specs')
+    fetch(`/api/read-specs?kit=${kit}`)
       .then(r => {
         if (!r.ok) throw new Error(`Could not load AI specs (${r.status})`);
         return r.json();
@@ -93,7 +93,7 @@ export const AIProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    queueMicrotask(() => loadSpecs());
+    queueMicrotask(() => loadSpecs('react'));
   }, [loadSpecs]);
 
   const updateSettings = (updates) => setSettings(prev => ({ ...prev, ...updates }));
@@ -103,11 +103,11 @@ export const AIProvider = ({ children }) => {
     ? Boolean(settings.baseUrl?.trim() && settings.model?.trim())
     : Boolean(settings.apiKey?.trim());
 
-  const updateSpec = useCallback(async (componentId, aiSpec) => {
+  const updateSpec = useCallback(async (componentId, aiSpec, { kit = 'react', scope = 'workspace' } = {}) => {
     await fetch('/api/write-spec', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ componentId, aiSpec }),
+      body: JSON.stringify({ componentId, aiSpec, kit, scope }),
     });
     setSpecs(prev => ({ ...prev, [componentId]: aiSpec }));
   }, []);
