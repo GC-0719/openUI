@@ -7,6 +7,7 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 ## [Unreleased]
 
 ### Added
+- **Starter templates** in the agent panel — Dashboard, Auth, and Settings seeds with **Plan** (checklist first) or **Build** (Edit mode) for React and Angular workspaces.
 - **Git status in file tree** — `M` / `U` / `S` badges for modified, untracked, and staged files when the workspace is inside a git repo (`/api/git-status`).
 - **Open existing project** — link `kits/<framework>/workspace` to an absolute folder on disk (symlink + path validation); studio folder button and `/api/workspace-bind`.
 - **Agent diff preview** — review per-file line diffs before applying an Edit-mode file batch; auto-fix retries skip the modal.

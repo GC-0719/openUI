@@ -13,6 +13,7 @@ import {
 } from '../../services/aiService';
 import PlanChecklist from './PlanChecklist';
 import AgentMemoryPanel from './AgentMemoryPanel';
+import StarterTemplates from './StarterTemplates';
 import { apiFetch, apiPost } from '../../utils/api';
 import { fetchMCPContext, formatMCPContext } from '../../services/mcpClientService';
 import { componentsMeta } from '../../data/components-meta.js';
@@ -416,6 +417,16 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
     );
   };
 
+  const runStarterPlan = async (template) => {
+    setMode('plan');
+    await executeTurn(`[${template.name} starter]\n\n${template.prompt}`, { activeMode: 'plan' });
+  };
+
+  const runStarterBuild = async (template) => {
+    setMode('edit');
+    await executeTurn(`[${template.name} starter]\n\n${template.prompt}`, { activeMode: 'edit' });
+  };
+
   // The "training" loop: after a successful build, ask the model for up to 3
   // durable facts and append them to long-term memory (deduped + capped server-side).
   const learnFromBuild = async (userMsg, files) => {
@@ -611,12 +622,20 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
             );
             })()}
 
-            {messages.length === 1 && !input && (
-              <div className="ai-quick-actions">
-                {SUGGESTIONS.map(s => (
-                  <button key={s} className="ai-quick-action" onClick={() => setInput(s)}>{s}</button>
-                ))}
-              </div>
+            {messages.length === 1 && !input && !loading && (
+              <>
+                <StarterTemplates
+                  framework={framework}
+                  onPlan={runStarterPlan}
+                  onBuild={runStarterBuild}
+                  disabled={loading}
+                />
+                <div className="ai-quick-actions">
+                  {SUGGESTIONS.map(s => (
+                    <button key={s} className="ai-quick-action" onClick={() => setInput(s)}>{s}</button>
+                  ))}
+                </div>
+              </>
             )}
 
             {loading && streamingText && (

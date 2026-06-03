@@ -44,7 +44,7 @@ openUI is a **local-first AI studio** that writes into a **real project tree**, 
 - [x] **Open in existing repo** — point workspace at a user folder (with strict path guard)
 - [x] **Git status** in file tree (modified / untracked badges)
 - [x] **Diff preview** before applying agent file batch
-- [ ] **Starter templates** (dashboard, auth, settings) as one-click agent seeds
+- [x] **Starter templates** (dashboard, auth, settings) as one-click agent seeds
 - [ ] **MCP wizard** — scaffold a minimal MCP server from OpenAPI or Prisma schema
 
 ### 0.5.x — Kits & publishing
