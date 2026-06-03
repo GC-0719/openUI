@@ -27,7 +27,7 @@ openUI is a **local-first AI studio** that writes into a **real project tree**, 
 - [x] `server/` module split from `vite.config.js`
 - [x] Studio toasts instead of `alert()` for file ops
 - [x] Specs load retry + clearer banners
-- [ ] Undo/redo and reset-template use `apiPost` + error feedback
+- [x] Undo/redo and reset-template use `apiPost` + error feedback
 - [ ] Ratchet ESLint warnings down in touched files
 
 ### 0.3.x — Agent quality & design-system depth

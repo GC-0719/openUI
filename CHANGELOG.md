@@ -12,6 +12,7 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 ### Changed
 - File explorer errors use in-app toasts instead of browser `alert()`.
 - Studio top bar: clickable **Specs unavailable — retry** when AI specs fail to load.
+- Undo, redo, and workspace reset use `apiPost` with toasts; history stacks only advance on success.
 
 ## [0.2.0] - 2026-06-03
 

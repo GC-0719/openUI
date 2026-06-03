@@ -11,6 +11,7 @@ import AuditPanel from '../components/studio/AuditPanel';
 import ErrorBoundary from '../components/studio/ErrorBoundary';
 import { BrandLogo, Wordmark } from '../components/BrandLogo';
 import { apiFetch, apiPost } from '../utils/api';
+import { useToast } from '../../kits/react/workspace/src/components/ui/Toast';
 import '../styles/studio.css';
 import '../styles/docs.css';
 
@@ -21,6 +22,7 @@ const angularPreviewEnabled = import.meta.env.VITE_OPENUI_ANGULAR === '1';
 
 const Studio = () => {
   const { kit, specsError, retrySpecsLoad } = useAI();
+  const { addToast } = useToast();
   const [saveError, setSaveError] = useState('');
   const { framework: fwParam } = useParams();
   const navigate = useNavigate();
@@ -201,17 +203,21 @@ const Studio = () => {
   const handleResetTemplate = async () => {
     if (!window.confirm('Reset the workspace to the original template? All your edits will be lost.')) return;
     setResetting(true);
+    setSaveError('');
     try {
-      await fetch('/api/reset-template', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kit: framework }),
-      });
+      await apiPost('/api/reset-template', { kit: framework });
       setOpenFiles([]);
       setActiveFilePath(null);
       setAgentPages([]);
       setActiveAgentPage(null);
+      setUndoStack([]);
+      setRedoStack([]);
+      setFilesVersion(v => v + 1);
       setPreviewKey(k => k + 1);
+      addToast({ title: 'Workspace reset', message: 'Restored from template.', variant: 'success' });
+    } catch (err) {
+      setSaveError(err.message);
+      addToast({ title: 'Reset failed', message: err.message, variant: 'error' });
     } finally {
       setResetting(false);
     }
@@ -292,54 +298,60 @@ const Studio = () => {
   }, [framework]);
 
   // ── Undo / Redo ──────────────────────────────────────────────────────────
+  const applyHistoryEntry = useCallback(async (entry, mode) => {
+    const failures = [];
+    for (const c of entry.changes) {
+      try {
+        if (mode === 'undo' && c.before === null) {
+          await apiPost('/api/delete-file', { path: c.path, kit: framework });
+          setOpenFiles(prev => prev.filter(f => f.path !== c.path));
+          if (activeFilePath === c.path) setActiveFilePath(null);
+        } else {
+          const content = mode === 'undo' ? c.before : c.after;
+          await apiPost('/api/write-file', { path: c.path, content, kit: framework });
+          setOpenFiles(prev => prev.map(f =>
+            f.path === c.path ? { ...f, content, dirty: false, pendingContent: null } : f
+          ));
+        }
+      } catch (err) {
+        failures.push(`${c.path.split('/').pop()}: ${err.message}`);
+      }
+    }
+    if (failures.length) {
+      const msg = failures.join(' · ');
+      setSaveError(msg);
+      addToast({
+        title: mode === 'undo' ? 'Undo failed' : 'Redo failed',
+        message: msg,
+        variant: 'error',
+      });
+      return false;
+    }
+    setSaveError('');
+    setFilesVersion(v => v + 1);
+    setPreviewKey(k => k + 1);
+    return true;
+  }, [framework, activeFilePath, addToast]);
+
   const undo = useCallback(async () => {
     const stack = undoRef.current;
     if (!stack.length) return;
     const entry = stack[stack.length - 1];
-    await Promise.all(
-      entry.changes.map(c => {
-        if (c.before === null) {
-          // File was newly created — delete it on undo
-          return fetch('/api/delete-file', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ path: c.path, kit: framework }),
-          }).then(() => setOpenFiles(prev => prev.filter(f => f.path !== c.path)));
-        }
-        return fetch('/api/write-file', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ path: c.path, content: c.before, kit: framework }),
-        }).then(() => setOpenFiles(prev => prev.map(f =>
-          f.path === c.path ? { ...f, content: c.before, dirty: false, pendingContent: null } : f
-        )));
-      })
-    );
+    const ok = await applyHistoryEntry(entry, 'undo');
+    if (!ok) return;
     setRedoStack(prev => [...prev, entry]);
     setUndoStack(prev => prev.slice(0, -1));
-    setFilesVersion(v => v + 1);
-    setPreviewKey(k => k + 1);
-  }, [framework]);
+  }, [applyHistoryEntry]);
 
   const redo = useCallback(async () => {
     const stack = redoRef.current;
     if (!stack.length) return;
     const entry = stack[stack.length - 1];
-    await Promise.all(
-      entry.changes.map(c =>
-        fetch('/api/write-file', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ path: c.path, content: c.after, kit: framework }),
-        }).then(() => setOpenFiles(prev => prev.map(f =>
-          f.path === c.path ? { ...f, content: c.after, dirty: false, pendingContent: null } : f
-        )))
-      )
-    );
+    const ok = await applyHistoryEntry(entry, 'redo');
+    if (!ok) return;
     setUndoStack(prev => [...prev, entry]);
     setRedoStack(prev => prev.slice(0, -1));
-    setPreviewKey(k => k + 1);
-  }, [framework]);
+  }, [applyHistoryEntry]);
 
   // Keyboard shortcuts: ⌘Z / ⌘⇧Z — skip when focus is in a text input
   useEffect(() => {
