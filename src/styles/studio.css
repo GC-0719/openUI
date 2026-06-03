@@ -2302,6 +2302,53 @@
   font-size: 13px;
 }
 
+/* ── Backend offline banner (prod build without Vite APIs) ───────────────── */
+.studio-backend-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 16px;
+  background: rgba(251, 191, 36, 0.1);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.25);
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(248, 248, 248, 0.85);
+  flex-shrink: 0;
+}
+
+.studio-backend-banner-icon {
+  color: #fbbf24;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.studio-backend-banner-text code {
+  font-size: 11px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.studio-backend-banner-dismiss {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(248, 248, 248, 0.5);
+  cursor: pointer;
+}
+
+.studio-backend-banner-dismiss:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8f8f8;
+}
+
 /* ── Open existing workspace ─────────────────────────────────────────────── */
 .studio-workspace-link {
   font-size: 11px;

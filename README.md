@@ -50,7 +50,9 @@ OPENUI_AI_KEY=sk-ant-... npm run dev      # React studio
 # or open the studio and add your key in Settings
 ```
 
-Open the printed URL, click **Open the Studio**, and start building.
+Open the printed URL (e.g. `http://localhost:5173/studio/react`), click **Open the Studio**, and start building.
+
+> **Use `npm run dev` for the full studio.** `npm start` and [openui.live](https://openui.live) serve the marketing site only — no Audit tab backend, agent file writes, diff preview, workspace bind, or MCP APIs. If you see a “run locally” page or a yellow **Studio backend is offline** banner, switch to `npm run dev`.
 
 > **One install is enough.** A single root `npm install` is all you need to run
 > the studio and preview **both** kits — the React and Angular kits compile from

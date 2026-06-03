@@ -8,7 +8,10 @@ import CodeEditor from '../components/studio/CodeEditor';
 import ComponentPreview from '../components/studio/ComponentPreview';
 import SpecEditor from '../components/studio/SpecEditor';
 import AuditPanel from '../components/studio/AuditPanel';
+import AgentDiffPreview from '../components/studio/AgentDiffPreview';
+import StudioBackendBanner from '../components/studio/StudioBackendBanner';
 import ErrorBoundary from '../components/studio/ErrorBoundary';
+import { pingStudioBackend } from '../utils/studioBackendCheck';
 import { BrandLogo, Wordmark } from '../components/BrandLogo';
 import { apiFetch, apiPost } from '../utils/api';
 import { buildAgentFileDiffs } from '../utils/fileDiff';
@@ -20,7 +23,6 @@ const KitSettingsModal = lazy(() => import('../components/studio/KitSettingsModa
 const AISettingsModal = lazy(() => import('../components/docs/AISettingsModal'));
 const ExportModal = lazy(() => import('../components/docs/ExportModal'));
 const ThemeEditorModal = lazy(() => import('../components/studio/ThemeEditorModal'));
-const AgentDiffPreview = lazy(() => import('../components/studio/AgentDiffPreview'));
 const OpenWorkspaceModal = lazy(() => import('../components/studio/OpenWorkspaceModal'));
 const angularPreviewEnabled = import.meta.env.VITE_OPENUI_ANGULAR === '1';
 
@@ -45,6 +47,8 @@ const Studio = () => {
   const [workspaceBind, setWorkspaceBind] = useState(null);
   const [pendingAgentWrite, setPendingAgentWrite] = useState(null);
   const [applyingAgentDiff, setApplyingAgentDiff] = useState(false);
+  const [backendOnline, setBackendOnline] = useState(true);
+  const [backendBannerDismissed, setBackendBannerDismissed] = useState(false);
   const [previewKey, setPreviewKey] = useState(0);
   const [resetting, setResetting] = useState(false);
   const [showExplorer, setShowExplorer] = useState(true);
@@ -82,6 +86,14 @@ const Studio = () => {
   useEffect(() => {
     loadWorkspaceBind();
   }, [loadWorkspaceBind]);
+
+  useEffect(() => {
+    let cancelled = false;
+    pingStudioBackend(framework).then((ok) => {
+      if (!cancelled) setBackendOnline(ok);
+    });
+    return () => { cancelled = true; };
+  }, [framework, filesVersion]);
 
   useEffect(() => {
     retrySpecsLoad(framework);
@@ -510,7 +522,8 @@ const Studio = () => {
       guardExport
     );
 
-    if (!options.skipDiffPreview) {
+    const hasVisibleDiffs = diffs.some((d) => d.status !== 'unchanged');
+    if (!options.skipDiffPreview && hasVisibleDiffs) {
       return new Promise((resolve) => {
         setPendingAgentWrite({
           files: normalized,
@@ -686,6 +699,10 @@ const Studio = () => {
         </div>
       </div>
 
+      {!backendOnline && !backendBannerDismissed && (
+        <StudioBackendBanner onDismiss={() => setBackendBannerDismissed(true)} />
+      )}
+
       {/* ── Body ── */}
       <div className="studio-root" style={{ flex: 1, height: 0, cursor: isDragging ? 'col-resize' : undefined, userSelect: isDragging ? 'none' : undefined }}>
 
@@ -721,7 +738,7 @@ const Studio = () => {
                 <PanelLeft size={14} />
               </button>
               <div className="studio-topbar-sep" style={{ margin: '0 4px' }} />
-              <div className="studio-center-tabs">
+              <div className="studio-center-tabs" role="tablist" aria-label="Editor views">
                 <button className={`studio-center-tab ${centerTab === 'code' ? 'active' : ''}`} onClick={() => setCenterTab('code')}>
                   <Code2 size={13} /> Code
                 </button>

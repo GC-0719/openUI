@@ -29,6 +29,7 @@
   },
   "scripts": {
     "dev": "OPENUI_ANGULAR=1 VITE_OPENUI_ANGULAR=1 vite",
+    "studio": "vite",
     "dev:react": "vite",
     "dev:angular": "OPENUI_ANGULAR=1 VITE_OPENUI_ANGULAR=1 vite",
     "build": "OPENUI_ANGULAR=1 VITE_OPENUI_ANGULAR=1 vite build",

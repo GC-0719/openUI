@@ -5,17 +5,17 @@ import { ToastProvider } from '../kits/react/workspace/src/components/ui/Toast';
 import { ThemeProvider } from './context/ThemeContext';
 import { AIProvider } from './context/AIContext';
 import RunLocally from './pages/RunLocally';
+import { shouldMountStudio } from './utils/studioBackendCheck';
 import './styles/openui.css';
 
 const Studio = React.lazy(() => import('./pages/Studio'));
 const Docs = React.lazy(() => import('./pages/Docs'));
 
-// The studio needs the local dev-server backend (file CRUD, AI proxy, MCP, live
-// preview), which only exists under `npm run dev`. A production build (e.g. the
-// hosted site at openui.live) has no backend, so /studio shows RunLocally there.
-const studioElement = import.meta.env.PROD
-  ? <RunLocally />
-  : <Suspense fallback={null}><Studio /></Suspense>;
+// Full studio UI: `npm run dev`, or localhost with VITE_OPENUI_STUDIO=1 / vite preview.
+// Hosted openui.live / npm start without dev APIs → RunLocally (no Audit, diff, agent writes).
+const studioElement = shouldMountStudio()
+  ? <Suspense fallback={null}><Studio /></Suspense>
+  : <RunLocally />;
 
 function App() {
   return (
