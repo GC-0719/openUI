@@ -19,7 +19,7 @@ openUI is a **local-first AI studio** that writes into a **real project tree**, 
 
 ## Release train (pre-1.0)
 
-### 0.2.x — Reliability & trust *(in progress)*
+### 0.2.x — Reliability & trust
 
 - [x] API error surfacing (saves, writes, file tree)
 - [x] Vitest on parsers + path guards
@@ -43,7 +43,7 @@ openUI is a **local-first AI studio** that writes into a **real project tree**, 
 
 - [ ] **Open in existing repo** — point workspace at a user folder (with strict path guard)
 - [ ] **Git status** in file tree (modified / untracked badges)
-- [ ] **Diff preview** before applying agent file batch
+- [x] **Diff preview** before applying agent file batch
 - [ ] **Starter templates** (dashboard, auth, settings) as one-click agent seeds
 - [ ] **MCP wizard** — scaffold a minimal MCP server from OpenAPI or Prisma schema
 

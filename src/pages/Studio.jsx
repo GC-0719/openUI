@@ -11,6 +11,7 @@ import AuditPanel from '../components/studio/AuditPanel';
 import ErrorBoundary from '../components/studio/ErrorBoundary';
 import { BrandLogo, Wordmark } from '../components/BrandLogo';
 import { apiFetch, apiPost } from '../utils/api';
+import { buildAgentFileDiffs } from '../utils/fileDiff';
 import { useToast } from '../../kits/react/workspace/src/components/ui/Toast';
 import '../styles/studio.css';
 import '../styles/docs.css';
@@ -19,6 +20,7 @@ const KitSettingsModal = lazy(() => import('../components/studio/KitSettingsModa
 const AISettingsModal = lazy(() => import('../components/docs/AISettingsModal'));
 const ExportModal = lazy(() => import('../components/docs/ExportModal'));
 const ThemeEditorModal = lazy(() => import('../components/studio/ThemeEditorModal'));
+const AgentDiffPreview = lazy(() => import('../components/studio/AgentDiffPreview'));
 const angularPreviewEnabled = import.meta.env.VITE_OPENUI_ANGULAR === '1';
 
 const Studio = () => {
@@ -38,6 +40,8 @@ const Studio = () => {
   const [showAISettings, setShowAISettings] = useState(false);
   const [aiSettingsTab, setAiSettingsTab] = useState('ai');
   const [showExport, setShowExport] = useState(false);
+  const [pendingAgentWrite, setPendingAgentWrite] = useState(null);
+  const [applyingAgentDiff, setApplyingAgentDiff] = useState(false);
   const [previewKey, setPreviewKey] = useState(0);
   const [resetting, setResetting] = useState(false);
   const [showExplorer, setShowExplorer] = useState(true);
@@ -371,35 +375,39 @@ const Studio = () => {
   }, [undo, redo]);
 
   // ── Agent file writes ────────────────────────────────────────────────────
-  const handleFilesWritten = useCallback(async (files) => {
+  const augmentAgentBarrel = useCallback(async (files) => {
     const BARREL = framework === 'angular'
       ? 'src/components/ui/index.ts'
       : 'src/components/ui/index.jsx';
     const compExt = framework === 'angular' ? '.ts' : '.jsx';
     const barrelIndex = framework === 'angular' ? 'index.ts' : 'index.jsx';
 
-    // Auto-add new components to the barrel if the agent didn't write it
-    if (!files[BARREL]) {
-      const newCompPaths = Object.keys(files).filter(p =>
-        p.startsWith('src/components/ui/') && p.endsWith(compExt) && !p.endsWith(barrelIndex)
-      );
-      if (newCompPaths.length > 0) {
-        try {
-          const barrelData = await apiFetch(`/api/read-file?path=${encodeURIComponent(BARREL)}&kit=${framework}`);
-          let barrel = barrelData.content || '';
-          let updated = false;
-          for (const cp of newCompPaths) {
-            const name = cp.split('/').pop().replace(compExt, '');
-            if (!barrel.includes(`'./${name}'`) && !barrel.includes(`"./${name}"`)) {
-              barrel = barrel.trimEnd() + `\nexport * from './${name}';`;
-              updated = true;
-            }
-          }
-          if (updated) files = { ...files, [BARREL]: barrel };
-        } catch { /* barrel read failed — agent may have omitted exports */ }
-      }
-    }
+    if (files[BARREL]) return files;
 
+    const newCompPaths = Object.keys(files).filter(p =>
+      p.startsWith('src/components/ui/') && p.endsWith(compExt) && !p.endsWith(barrelIndex)
+    );
+    if (!newCompPaths.length) return files;
+
+    try {
+      const barrelData = await apiFetch(
+        `/api/read-file?path=${encodeURIComponent(BARREL)}&kit=${framework}`
+      );
+      let barrel = barrelData.content || '';
+      let updated = false;
+      for (const cp of newCompPaths) {
+        const name = cp.split('/').pop().replace(compExt, '');
+        if (!barrel.includes(`'./${name}'`) && !barrel.includes(`"./${name}"`)) {
+          barrel = barrel.trimEnd() + `\nexport * from './${name}';`;
+          updated = true;
+        }
+      }
+      if (updated) return { ...files, [BARREL]: barrel };
+    } catch { /* barrel read failed */ }
+    return files;
+  }, [framework]);
+
+  const commitAgentFiles = useCallback(async (files) => {
     const paths = await writeFiles(files);
 
     const parseErrors = [];
@@ -455,6 +463,48 @@ const Studio = () => {
     setPreviewKey(k => k + 1);
     return { parseErrors };
   }, [writeFiles, framework]);
+
+  const handleFilesWritten = useCallback(async (files, options = {}) => {
+    const augmented = await augmentAgentBarrel(files);
+    const { files: normalized, diffs } = await buildAgentFileDiffs(
+      framework,
+      augmented,
+      guardExport
+    );
+
+    if (!options.skipDiffPreview) {
+      return new Promise((resolve) => {
+        setPendingAgentWrite({
+          files: normalized,
+          diffs,
+          resolve,
+        });
+      });
+    }
+
+    return commitAgentFiles(normalized);
+  }, [augmentAgentBarrel, commitAgentFiles, framework, guardExport]);
+
+  const applyPendingAgentWrite = useCallback(async () => {
+    if (!pendingAgentWrite) return;
+    setApplyingAgentDiff(true);
+    try {
+      const result = await commitAgentFiles(pendingAgentWrite.files);
+      pendingAgentWrite.resolve(result);
+    } catch (err) {
+      pendingAgentWrite.resolve({ error: err.message });
+      addToast({ title: 'Apply failed', message: err.message, variant: 'error' });
+    } finally {
+      setApplyingAgentDiff(false);
+      setPendingAgentWrite(null);
+    }
+  }, [pendingAgentWrite, commitAgentFiles, addToast]);
+
+  const discardPendingAgentWrite = useCallback(() => {
+    if (!pendingAgentWrite || applyingAgentDiff) return;
+    pendingAgentWrite.resolve({ discarded: true });
+    setPendingAgentWrite(null);
+  }, [pendingAgentWrite, applyingAgentDiff]);
 
   const handleNavigatePage = useCallback((pageName) => {
     setActiveAgentPage(pageName);
@@ -809,6 +859,14 @@ const Studio = () => {
         )}
         {showAISettings && <AISettingsModal onClose={() => setShowAISettings(false)} defaultTab={aiSettingsTab} />}
         {showExport && <ExportModal onClose={() => setShowExport(false)} />}
+        {pendingAgentWrite && (
+          <AgentDiffPreview
+            diffs={pendingAgentWrite.diffs}
+            applying={applyingAgentDiff}
+            onApply={applyPendingAgentWrite}
+            onDiscard={discardPendingAgentWrite}
+          />
+        )}
       </Suspense>
     </div>
   );

@@ -335,7 +335,19 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
             continue;
           }
 
-          const result = await onFilesWritten?.(files);
+          const result = await onFilesWritten?.(files, {
+            skipDiffPreview: autoFixCount > 0,
+          });
+
+          if (result?.discarded) {
+            finalMessage = 'Changes discarded — nothing was written to disk.';
+            break;
+          }
+          if (result?.error) {
+            finalMessage = `Could not apply files: ${result.error}`;
+            break;
+          }
+
           const parseErrors = result?.parseErrors ?? [];
 
           if (parseErrors.length > 0 && autoFixCount < MAX_AUTO_FIX) {

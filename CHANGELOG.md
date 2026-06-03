@@ -7,6 +7,7 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 ## [Unreleased]
 
 ### Added
+- **Agent diff preview** — review per-file line diffs before applying an Edit-mode file batch; auto-fix retries skip the modal.
 - **`/api/validate-sources`** — TypeScript compiler checks for `.ts` files (Angular auto-fix); JSX still uses Vite probe.
 - **`buildAgentPrompt` regression tests** for React and Angular prompts.
 - **Agent memory panel** — edit, remove, or manually add individual facts; Memory toggle always available when AI is configured.
