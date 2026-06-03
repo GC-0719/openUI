@@ -37,6 +37,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "gallery:sync": "node scripts/generate-kit-gallery.mjs",
     "preview": "vite preview",
     "start": "node server.js"
   },

@@ -18,6 +18,8 @@ jobs:
       # Gates on errors; non-correctness warnings remain as a cleanup backlog.
       - name: Lint
         run: npm run lint
+      - name: Sync kit gallery index
+        run: npm run gallery:sync
       - name: Test
         run: npm test
       - name: Build (React studio)

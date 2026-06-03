@@ -7,6 +7,7 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 ## [Unreleased]
 
 ### Added
+- **Kit gallery** — `kits/gallery/` index (24 components), `npm run gallery:sync`, CI coverage tests for React/Angular showcase previews.
 - **Kit public API manifest** (`kits/public-api.manifest.json`) + CI tests — template/workspace barrels must match frozen `@openedui/react` / `@openedui/angular` exports (0.2.0).
 - **Kit stability & migration docs** — `kits/KIT_STABILITY.md`, `docs/KIT_MIGRATION.md`, per-kit CHANGELOGs.
 - **MCP wizard** (AI Settings → MCP) — scaffold a stdio MCP server from **OpenAPI JSON** (HTTP proxy tools) or **Prisma schema** (model introspection); download ZIP, copy Claude config, add to studio MCP list.

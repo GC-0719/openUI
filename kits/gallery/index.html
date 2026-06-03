@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>openUI Kit Gallery</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; background: #0f0f12; color: #f4f4f5; }
+    body { margin: 0; padding: 24px; }
+    h1 { font-size: 1.25rem; margin: 0 0 8px; }
+    p { color: #a1a1aa; font-size: 0.875rem; max-width: 52rem; line-height: 1.5; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 20px; }
+    .gallery-card {
+      display: flex; flex-direction: column; gap: 4px;
+      padding: 14px; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: inherit; text-decoration: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .gallery-card:hover { border-color: rgba(99,102,241,0.5); background: rgba(99,102,241,0.1); }
+    .gallery-card-name { font-weight: 600; font-size: 0.9rem; }
+    .gallery-card-hint { font-size: 0.65rem; color: #71717a; text-transform: uppercase; letter-spacing: 0.06em; }
+    .fw-tabs { display: flex; gap: 8px; margin: 16px 0 0; }
+    .fw-tab {
+      padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.12);
+      background: transparent; color: #a1a1aa; cursor: pointer; font-size: 12px;
+    }
+    .fw-tab.active { background: rgba(99,102,241,0.2); color: #e0e7ff; border-color: rgba(99,102,241,0.4); }
+  </style>
+</head>
+<body>
+  <h1>openUI Kit Gallery</h1>
+  <p>
+    Storybook-style index for all <strong>24</strong> public kit components.
+    Run <code>npm run dev</code> from the repo root, open this file via the dev server at
+    <code>/kits/gallery/</code>, pick a framework tab, then click a component to preview variants
+    (<code>?preview=ComponentName</code>).
+  </p>
+  <div class="fw-tabs">
+    <button type="button" class="fw-tab active" data-fw="react">React workspace</button>
+    <button type="button" class="fw-tab" data-fw="angular">Angular workspace</button>
+  </div>
+  <div class="gallery-grid" id="grid">
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Accordion" data-react="/kits/react/workspace/?preview=Accordion" data-angular="/kits/angular/workspace/?preview=Accordion">
+      <span class="gallery-card-name">Accordion</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Alert" data-react="/kits/react/workspace/?preview=Alert" data-angular="/kits/angular/workspace/?preview=Alert">
+      <span class="gallery-card-name">Alert</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Avatar" data-react="/kits/react/workspace/?preview=Avatar" data-angular="/kits/angular/workspace/?preview=Avatar">
+      <span class="gallery-card-name">Avatar</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Badge" data-react="/kits/react/workspace/?preview=Badge" data-angular="/kits/angular/workspace/?preview=Badge">
+      <span class="gallery-card-name">Badge</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Breadcrumbs" data-react="/kits/react/workspace/?preview=Breadcrumbs" data-angular="/kits/angular/workspace/?preview=Breadcrumbs">
+      <span class="gallery-card-name">Breadcrumbs</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Button" data-react="/kits/react/workspace/?preview=Button" data-angular="/kits/angular/workspace/?preview=Button">
+      <span class="gallery-card-name">Button</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Card" data-react="/kits/react/workspace/?preview=Card" data-angular="/kits/angular/workspace/?preview=Card">
+      <span class="gallery-card-name">Card</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Checkbox" data-react="/kits/react/workspace/?preview=Checkbox" data-angular="/kits/angular/workspace/?preview=Checkbox">
+      <span class="gallery-card-name">Checkbox</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Chip" data-react="/kits/react/workspace/?preview=Chip" data-angular="/kits/angular/workspace/?preview=Chip">
+      <span class="gallery-card-name">Chip</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Drawer" data-react="/kits/react/workspace/?preview=Drawer" data-angular="/kits/angular/workspace/?preview=Drawer">
+      <span class="gallery-card-name">Drawer</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Dropdown" data-react="/kits/react/workspace/?preview=Dropdown" data-angular="/kits/angular/workspace/?preview=Dropdown">
+      <span class="gallery-card-name">Dropdown</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Input" data-react="/kits/react/workspace/?preview=Input" data-angular="/kits/angular/workspace/?preview=Input">
+      <span class="gallery-card-name">Input</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=List" data-react="/kits/react/workspace/?preview=List" data-angular="/kits/angular/workspace/?preview=List">
+      <span class="gallery-card-name">List</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Modal" data-react="/kits/react/workspace/?preview=Modal" data-angular="/kits/angular/workspace/?preview=Modal">
+      <span class="gallery-card-name">Modal</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Navbar" data-react="/kits/react/workspace/?preview=Navbar" data-angular="/kits/angular/workspace/?preview=Navbar">
+      <span class="gallery-card-name">Navbar</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=NavItem" data-react="/kits/react/workspace/?preview=NavItem" data-angular="/kits/angular/workspace/?preview=NavItem">
+      <span class="gallery-card-name">NavItem</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Progress" data-react="/kits/react/workspace/?preview=Progress" data-angular="/kits/angular/workspace/?preview=Progress">
+      <span class="gallery-card-name">Progress</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Radio" data-react="/kits/react/workspace/?preview=Radio" data-angular="/kits/angular/workspace/?preview=Radio">
+      <span class="gallery-card-name">Radio</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Skeleton" data-react="/kits/react/workspace/?preview=Skeleton" data-angular="/kits/angular/workspace/?preview=Skeleton">
+      <span class="gallery-card-name">Skeleton</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Switch" data-react="/kits/react/workspace/?preview=Switch" data-angular="/kits/angular/workspace/?preview=Switch">
+      <span class="gallery-card-name">Switch</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Table" data-react="/kits/react/workspace/?preview=Table" data-angular="/kits/angular/workspace/?preview=Table">
+      <span class="gallery-card-name">Table</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Tabs" data-react="/kits/react/workspace/?preview=Tabs" data-angular="/kits/angular/workspace/?preview=Tabs">
+      <span class="gallery-card-name">Tabs</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Toast" data-react="/kits/react/workspace/?preview=Toast" data-angular="/kits/angular/workspace/?preview=Toast">
+      <span class="gallery-card-name">Toast</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a>
+
+    <a class="gallery-card" href="/kits/react/workspace/?preview=Tooltip" data-react="/kits/react/workspace/?preview=Tooltip" data-angular="/kits/angular/workspace/?preview=Tooltip">
+      <span class="gallery-card-name">Tooltip</span>
+      <span class="gallery-card-hint">Preview variants</span>
+    </a></div>
+  <script>
+    let fw = 'react';
+    function applyFramework() {
+      document.querySelectorAll('.gallery-card').forEach(card => {
+        card.href = fw === 'angular' ? card.dataset.angular : card.dataset.react;
+      });
+    }
+    document.querySelectorAll('.fw-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        fw = btn.dataset.fw;
+        document.querySelectorAll('.fw-tab').forEach(b => b.classList.toggle('active', b === btn));
+        applyFramework();
+      });
+    });
+    applyFramework();
+  </script>
+</body>
+</html>

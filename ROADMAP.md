@@ -51,7 +51,7 @@ openUI is a **local-first AI studio** that writes into a **real project tree**, 
 
 - [x] Semver-stable `@openedui/react` / `@openedui/angular` APIs
 - [x] Changelog + migration guide for kit consumers
-- [ ] Visual regression or Storybook-style kit gallery in CI
+- [x] Visual regression or Storybook-style kit gallery in CI
 - [ ] Documented **custom component** flow (add to workspace → auto-barrel → spec JSON)
 
 ### 0.9.x — Release candidate
