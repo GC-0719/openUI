@@ -76,6 +76,15 @@ openUI proxies your chosen provider through the local dev server (`/api/ai`):
 | Gemini     | in-app settings                              |
 | Local LLM  | Ollama / OpenAI-compatible base URL          |
 
+## Examples
+
+| Example | Description |
+|---------|-------------|
+| [examples/dashboard-react](examples/dashboard-react) | Dashboard starter in the studio or `@openedui/react` in your app |
+| [examples/mcp-postgres](examples/mcp-postgres) | Prisma schema + MCP wizard flow for Postgres-backed agents |
+
+Contributing? See [docs/GOOD_FIRST_ISSUES.md](docs/GOOD_FIRST_ISSUES.md).
+
 ## Architecture
 
 ```

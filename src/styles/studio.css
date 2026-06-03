@@ -2302,6 +2302,56 @@
   font-size: 13px;
 }
 
+/* ── File explorer filter + large-tree hints ─────────────────────────────── */
+.studio-explorer-count {
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(248, 248, 248, 0.35);
+  margin-left: 6px;
+}
+
+.studio-explorer-filter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.studio-explorer-filter-icon {
+  color: rgba(248, 248, 248, 0.35);
+  flex-shrink: 0;
+}
+
+.studio-explorer-filter-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 11px;
+  color: #f8f8f8;
+  font-family: inherit;
+}
+
+.studio-explorer-filter-input::placeholder {
+  color: rgba(248, 248, 248, 0.3);
+}
+
+.studio-explorer-filter-input:focus {
+  outline: 1px solid rgba(99, 102, 241, 0.45);
+}
+
+.studio-explorer-perf-hint {
+  font-size: 10px;
+  color: rgba(248, 248, 248, 0.35);
+  padding: 4px 10px 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  flex-shrink: 0;
+}
+
 /* ── Backend offline banner (prod build without Vite APIs) ───────────────── */
 .studio-backend-banner {
   display: flex;

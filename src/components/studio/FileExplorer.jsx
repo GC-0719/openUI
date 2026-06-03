@@ -1,33 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ChevronRight, ChevronDown, FileCode, FileText, Folder, FolderOpen,
-  Layers, Settings2, FilePlus, FolderPlus, Pencil, Trash2, RefreshCcw, Boxes,
+  Layers, Settings2, FilePlus, FolderPlus, Pencil, Trash2, RefreshCcw, Boxes, Search,
 } from 'lucide-react';
 import AddComponentModal from './AddComponentModal';
 import { apiPost } from '../../utils/api';
 import { useToast } from '../../../kits/react/workspace/src/components/ui/Toast';
-
-// ── Tree building ────────────────────────────────────────────────────────────
-// Turn a flat list of workspace-relative paths into a nested folder tree.
-// `.gitkeep` placeholders create the folder node but are not shown as files.
-function buildTree(paths) {
-  const root = { name: '', path: '', dirs: new Map(), files: [] };
-  for (const p of paths) {
-    const parts = p.split('/');
-    let node = root;
-    for (let i = 0; i < parts.length - 1; i++) {
-      const seg = parts[i];
-      if (!node.dirs.has(seg)) {
-        node.dirs.set(seg, { name: seg, path: parts.slice(0, i + 1).join('/'), dirs: new Map(), files: [] });
-      }
-      node = node.dirs.get(seg);
-    }
-    const fileName = parts[parts.length - 1];
-    if (fileName === '.gitkeep') continue;
-    node.files.push({ name: fileName, path: p });
-  }
-  return root;
-}
+import {
+  buildTree,
+  filterPaths,
+  flattenVisibleTree,
+  defaultCollapsedPaths,
+  LARGE_TREE_FILE_COUNT,
+  VIRTUAL_ROW_HEIGHT,
+  virtualWindow,
+} from '../../utils/fileTree';
 
 const ext = (name) => { const i = name.lastIndexOf('.'); return i > 0 ? name.slice(i) : ''; };
 
@@ -51,6 +38,11 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
   const [gitAvailable, setGitAvailable] = useState(false);
   const [collapsed, setCollapsed] = useState(() => new Set());
   const [loadError, setLoadError] = useState('');
+  const [pathFilter, setPathFilter] = useState('');
+  const [scrollTop, setScrollTop] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(400);
+  const scrollRef = useRef(null);
+  const largeTreeInitialized = useRef(false);
 
   const loadFiles = useCallback(() => {
     setLoadError('');
@@ -79,7 +71,48 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
     queueMicrotask(() => loadFiles());
   }, [loadFiles, refreshKey]);
 
-  const tree = useMemo(() => buildTree(files), [files]);
+  const filteredFiles = useMemo(
+    () => filterPaths(files, pathFilter),
+    [files, pathFilter]
+  );
+
+  const tree = useMemo(() => buildTree(filteredFiles), [filteredFiles]);
+
+  useEffect(() => {
+    if (files.length < LARGE_TREE_FILE_COUNT) {
+      largeTreeInitialized.current = false;
+      return;
+    }
+    if (largeTreeInitialized.current) return;
+    largeTreeInitialized.current = true;
+    setCollapsed(defaultCollapsedPaths(buildTree(files), 2));
+  }, [files]);
+
+  const useVirtual = files.length >= LARGE_TREE_FILE_COUNT;
+
+  const flatNodes = useMemo(
+    () => flattenVisibleTree(tree, collapsed, pathFilter),
+    [tree, collapsed, pathFilter]
+  );
+
+  const { start: winStart, end: winEnd } = useMemo(
+    () => (useVirtual ? virtualWindow(scrollTop, viewportHeight, flatNodes.length) : { start: 0, end: flatNodes.length }),
+    [useVirtual, scrollTop, viewportHeight, flatNodes.length]
+  );
+
+  const visibleNodes = useMemo(
+    () => flatNodes.slice(winStart, winEnd),
+    [flatNodes, winStart, winEnd]
+  );
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setViewportHeight(el.clientHeight || 400));
+    ro.observe(el);
+    setViewportHeight(el.clientHeight || 400);
+    return () => ro.disconnect();
+  }, [files.length, loadError]);
 
   const toggle = useCallback((path) => {
     setCollapsed(prev => {
@@ -89,7 +122,6 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
     });
   }, []);
 
-  // ── Mutations ──────────────────────────────────────────────────────────────
   const createFile = useCallback(async (parentDir) => {
     const name = window.prompt(`New file name${parentDir ? ` in ${parentDir}/` : ''}:`, '');
     if (!name) return;
@@ -142,8 +174,61 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
     }
   }, [framework, onMutate, loadFiles, addToast]);
 
-  // ── Render ───────────────────────────────────────────────────────────────
-  const renderDir = (node, depth) => {
+  const renderDirRow = (node, depth) => {
+    const isCollapsed = collapsed.has(node.path);
+    return (
+      <div
+        key={`dir-${node.path}`}
+        className="studio-file-item studio-tree-folder"
+        style={{ paddingLeft: 6 + depth * 12, height: VIRTUAL_ROW_HEIGHT }}
+        onClick={() => toggle(node.path)}
+        title={node.path}
+      >
+        {isCollapsed ? <ChevronRight size={12} className="studio-tree-chev" /> : <ChevronDown size={12} className="studio-tree-chev" />}
+        {isCollapsed ? <Folder size={13} className="studio-file-icon" /> : <FolderOpen size={13} className="studio-file-icon" />}
+        <span className="studio-file-name">{node.name}</span>
+        <span className="studio-tree-actions">
+          <button className="studio-tree-action" title="New file" onClick={e => { e.stopPropagation(); createFile(node.path); }}><FilePlus size={11} /></button>
+          <button className="studio-tree-action" title="New folder" onClick={e => { e.stopPropagation(); createFolder(node.path); }}><FolderPlus size={11} /></button>
+          <button className="studio-tree-action" title="Rename" onClick={e => { e.stopPropagation(); renamePath(node.path); }}><Pencil size={11} /></button>
+          <button className="studio-tree-action" title="Delete" onClick={e => { e.stopPropagation(); deletePath(node.path, true); }}><Trash2 size={11} /></button>
+        </span>
+      </div>
+    );
+  };
+
+  const renderFileRow = (file, depth) => (
+    <div
+      key={`file-${file.path}`}
+      className={`studio-file-item${selectedFile === file.path ? ' active' : ''}`}
+      style={{ paddingLeft: 6 + depth * 12 + 14, height: VIRTUAL_ROW_HEIGHT }}
+      onClick={() => onSelect?.(file.path)}
+      title={file.path}
+    >
+      {iconFor(file.name)}
+      <span className="studio-file-name">{file.name}</span>
+      {gitFiles[file.path] && (
+        <span
+          className={`studio-git-badge studio-git-badge--${gitFiles[file.path]}`}
+          title={GIT_BADGE[gitFiles[file.path]]?.title ?? gitFiles[file.path]}
+        >
+          {GIT_BADGE[gitFiles[file.path]]?.label ?? '?'}
+        </span>
+      )}
+      <span className="studio-file-ext">{ext(file.name)}</span>
+      <span className="studio-tree-actions">
+        <button className="studio-tree-action" title="Rename" onClick={e => { e.stopPropagation(); renamePath(file.path); }}><Pencil size={11} /></button>
+        <button className="studio-tree-action" title="Delete" onClick={e => { e.stopPropagation(); deletePath(file.path, false); }}><Trash2 size={11} /></button>
+      </span>
+    </div>
+  );
+
+  const renderFlatNode = (item) => {
+    if (item.kind === 'dir') return renderDirRow(item.dir, item.depth);
+    return renderFileRow(item.file, item.depth);
+  };
+
+  const renderRecursive = (node, depth) => {
     const dirs = [...node.dirs.values()].sort((a, b) => a.name.localeCompare(b.name));
     const leafFiles = [...node.files].sort((a, b) => a.name.localeCompare(b.name));
     return (
@@ -152,60 +237,28 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
           const isCollapsed = collapsed.has(dir.path);
           return (
             <div key={dir.path}>
-              <div
-                className="studio-file-item studio-tree-folder"
-                style={{ paddingLeft: 6 + depth * 12 }}
-                onClick={() => toggle(dir.path)}
-                title={dir.path}
-              >
-                {isCollapsed ? <ChevronRight size={12} className="studio-tree-chev" /> : <ChevronDown size={12} className="studio-tree-chev" />}
-                {isCollapsed ? <Folder size={13} className="studio-file-icon" /> : <FolderOpen size={13} className="studio-file-icon" />}
-                <span className="studio-file-name">{dir.name}</span>
-                <span className="studio-tree-actions">
-                  <button className="studio-tree-action" title="New file" onClick={e => { e.stopPropagation(); createFile(dir.path); }}><FilePlus size={11} /></button>
-                  <button className="studio-tree-action" title="New folder" onClick={e => { e.stopPropagation(); createFolder(dir.path); }}><FolderPlus size={11} /></button>
-                  <button className="studio-tree-action" title="Rename" onClick={e => { e.stopPropagation(); renamePath(dir.path); }}><Pencil size={11} /></button>
-                  <button className="studio-tree-action" title="Delete" onClick={e => { e.stopPropagation(); deletePath(dir.path, true); }}><Trash2 size={11} /></button>
-                </span>
-              </div>
-              {!isCollapsed && renderDir(dir, depth + 1)}
+              {renderDirRow(dir, depth)}
+              {!isCollapsed && renderRecursive(dir, depth + 1)}
             </div>
           );
         })}
-        {leafFiles.map(file => (
-          <div
-            key={file.path}
-            className={`studio-file-item${selectedFile === file.path ? ' active' : ''}`}
-            style={{ paddingLeft: 6 + depth * 12 + 14 }}
-            onClick={() => onSelect?.(file.path)}
-            title={file.path}
-          >
-            {iconFor(file.name)}
-            <span className="studio-file-name">{file.name}</span>
-            {gitFiles[file.path] && (
-              <span
-                className={`studio-git-badge studio-git-badge--${gitFiles[file.path]}`}
-                title={GIT_BADGE[gitFiles[file.path]]?.title ?? gitFiles[file.path]}
-              >
-                {GIT_BADGE[gitFiles[file.path]]?.label ?? '?'}
-              </span>
-            )}
-            <span className="studio-file-ext">{ext(file.name)}</span>
-            <span className="studio-tree-actions">
-              <button className="studio-tree-action" title="Rename" onClick={e => { e.stopPropagation(); renamePath(file.path); }}><Pencil size={11} /></button>
-              <button className="studio-tree-action" title="Delete" onClick={e => { e.stopPropagation(); deletePath(file.path, false); }}><Trash2 size={11} /></button>
-            </span>
-          </div>
-        ))}
+        {leafFiles.map(file => renderFileRow(file, depth))}
       </>
     );
   };
+
+  const showFilter = files.length > 50;
 
   return (
     <aside className="studio-explorer" style={width ? { width } : undefined}>
       <div className="studio-explorer-header">
         <span className="studio-explorer-title">
           Files
+          {files.length > 0 && (
+            <span className="studio-explorer-count" title={`${files.length} paths in workspace`}>
+              {files.length}
+            </span>
+          )}
           {gitAvailable && <span className="studio-explorer-git-hint" title="Git status shown for changed files">git</span>}
         </span>
         <div style={{ display: 'flex', gap: 2 }}>
@@ -223,7 +276,29 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
           )}
         </div>
       </div>
-      <div className="studio-explorer-scroll">
+
+      {showFilter && (
+        <div className="studio-explorer-filter">
+          <Search size={12} className="studio-explorer-filter-icon" />
+          <input
+            type="search"
+            className="studio-explorer-filter-input"
+            placeholder="Filter paths…"
+            value={pathFilter}
+            onChange={(e) => {
+              setPathFilter(e.target.value);
+              setScrollTop(0);
+            }}
+            aria-label="Filter file paths"
+          />
+        </div>
+      )}
+
+      <div
+        className="studio-explorer-scroll"
+        ref={scrollRef}
+        onScroll={useVirtual ? (e) => setScrollTop(e.currentTarget.scrollTop) : undefined}
+      >
         {loadError ? (
           <div className="studio-tree-error">
             <span>{loadError}</span>
@@ -233,8 +308,20 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
           </div>
         ) : files.length === 0
           ? <div className="studio-tree-empty">No files</div>
-          : renderDir(tree, 0)}
+          : useVirtual ? (
+            <div style={{ height: flatNodes.length * VIRTUAL_ROW_HEIGHT, position: 'relative' }}>
+              <div style={{ transform: `translateY(${winStart * VIRTUAL_ROW_HEIGHT}px)` }}>
+                {visibleNodes.map(renderFlatNode)}
+              </div>
+            </div>
+          ) : renderRecursive(tree, 0)}
       </div>
+
+      {useVirtual && !loadError && files.length > 0 && (
+        <div className="studio-explorer-perf-hint" title="Large workspaces use virtual scrolling and collapsed deep folders">
+          {flatNodes.length} visible · {files.length} total
+        </div>
+      )}
 
       {showAddComponent && (
         <AddComponentModal

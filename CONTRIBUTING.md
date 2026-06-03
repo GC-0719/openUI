@@ -41,6 +41,12 @@ exercise the agent.
   plus a few intentional effect patterns) that we chip away at — please don't
   add new errors, and clearing nearby warnings is welcome.
 
+## Good first issues
+
+We tag starter-friendly work with **`good first issue`** and **`help wanted`**. See
+[docs/GOOD_FIRST_ISSUES.md](docs/GOOD_FIRST_ISSUES.md) for label meanings, maintainer
+setup (`.github/labels.yml`), and example tasks from [ROADMAP.md](ROADMAP.md).
+
 ## Pull requests
 
 1. Fork and branch from `main`.
