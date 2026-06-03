@@ -7,6 +7,8 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 ## [Unreleased]
 
 ### Added
+- **`/api/validate-sources`** — TypeScript compiler checks for `.ts` files (Angular auto-fix); JSX still uses Vite probe.
+- **`buildAgentPrompt` regression tests** for React and Angular prompts.
 - **Agent memory panel** — edit, remove, or manually add individual facts; Memory toggle always available when AI is configured.
 - **Audit panel** — React/Angular-aware rules, AI specs from disk, load open file, `parseAuditResult` helper.
 - **Plan mode checklist** — structured plan with `- [ ]` tasks and **Build this plan** to run Edit mode against the approved plan.

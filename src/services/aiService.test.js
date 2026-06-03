@@ -7,6 +7,7 @@ import {
   parsePlanChecklist,
   parseAuditResult,
   buildAuditPrompt,
+  buildAgentPrompt,
 } from './aiService.js';
 
 describe('parseAIChanges', () => {
@@ -52,6 +53,36 @@ describe('parsePlanChecklist', () => {
 
   it('returns empty when no checklist syntax', () => {
     expect(parsePlanChecklist('just prose')).toEqual([]);
+  });
+});
+
+describe('buildAgentPrompt', () => {
+  it('includes kit name, memory, and theme in react mode', () => {
+    const prompt = buildAgentPrompt({
+      components: [{ id: 'buttons', name: 'Button' }],
+      kitName: 'AcmeUI',
+      kitPrefix: 'ac',
+      framework: 'react',
+      memory: '- The app is a CRM for sales teams',
+      cssVars: { '--primary': '#6366F1' },
+    });
+    expect(prompt).toContain('AcmeUI');
+    expect(prompt).toContain('PROJECT MEMORY');
+    expect(prompt).toContain('CRM');
+    expect(prompt).toContain('--primary');
+    expect(prompt).toContain('OUTPUT FORMAT');
+  });
+
+  it('uses Angular selectors when framework is angular', () => {
+    const prompt = buildAgentPrompt({
+      components: [{ id: 'button', name: 'Button' }],
+      kitName: 'AcmeUI',
+      kitPrefix: 'ou',
+      framework: 'angular',
+    });
+    expect(prompt).toContain('Angular');
+    expect(prompt).toContain('@angular/material');
+    expect(prompt).toContain('```ts:');
   });
 });
 

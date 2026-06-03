@@ -15,6 +15,7 @@ import {
 import { json, readBody } from './server/http.js';
 import { createPathResolver, safeKit } from './server/pathSafety.js';
 import { aiComplete, aiStreamWithContinuation, parseLocalLLMResponse } from './server/ai.js';
+import { validateWorkspaceFiles } from './server/validateSource.js';
 
 function copyPath(src, dest) {
   if (!fs.existsSync(src)) return;
@@ -629,6 +630,19 @@ const openuiDevPlugin = {
       fs.mkdirSync(MEMORY_DIR, { recursive: true });
       fs.writeFileSync(memoryFile(kit), JSON.stringify(data, null, 2));
     };
+    server.middlewares.use('/api/validate-sources', async (req, res) => {
+      if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
+      try {
+        const body = JSON.parse(await readBody(req));
+        const kit = body.kit === 'angular' ? 'angular' : 'react';
+        const paths = Array.isArray(body.paths) ? body.paths : [];
+        const parseErrors = validateWorkspaceFiles(cwd, resolveWs, kit, paths);
+        json(res, 200, { parseErrors });
+      } catch (err) {
+        json(res, 500, { error: err.message });
+      }
+    });
+
     server.middlewares.use('/api/agent-memory', async (req, res) => {
       try {
         const url = new URL(req.url, 'http://localhost');

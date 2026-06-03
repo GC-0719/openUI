@@ -402,12 +402,23 @@ const Studio = () => {
 
     const paths = await writeFiles(files);
 
-    // Probe Vite's transform pipeline for each written source file.
     const parseErrors = [];
     const sourcePaths = paths.filter(p =>
       p.endsWith('.jsx') || p.endsWith('.tsx') || p.endsWith('.ts')
     );
-    await Promise.all(sourcePaths.map(async (p) => {
+    const tsApiPaths = sourcePaths.filter(p =>
+      p.endsWith('.ts') || (framework === 'angular' && p.endsWith('.tsx'))
+    );
+    const viteProbePaths = sourcePaths.filter(p => !tsApiPaths.includes(p));
+
+    if (tsApiPaths.length) {
+      try {
+        const data = await apiPost('/api/validate-sources', { kit: framework, paths: tsApiPaths });
+        if (data.parseErrors?.length) parseErrors.push(...data.parseErrors);
+      } catch { /* validation API unavailable */ }
+    }
+
+    await Promise.all(viteProbePaths.map(async (p) => {
       try {
         const r = await fetch(`/kits/${framework}/workspace/${p}?t=${Date.now()}`);
         if (!r.ok) {
