@@ -20,7 +20,7 @@ const ExportModal = lazy(() => import('../components/docs/ExportModal'));
 const angularPreviewEnabled = import.meta.env.VITE_OPENUI_ANGULAR === '1';
 
 const Studio = () => {
-  const { kit, specsError } = useAI();
+  const { kit, specsError, retrySpecsLoad } = useAI();
   const [saveError, setSaveError] = useState('');
   const { framework: fwParam } = useParams();
   const navigate = useNavigate();
@@ -515,7 +515,16 @@ const Studio = () => {
         <div className="studio-topbar-actions">
           {anyDirty && <span className="studio-unsaved-notice" title="Unsaved changes">● unsaved</span>}
           {saveError && <span className="studio-save-error" title={saveError}>{saveError}</span>}
-          {specsError && <span className="studio-specs-warning" title={specsError}>Specs unavailable</span>}
+          {specsError && (
+            <button
+              type="button"
+              className="studio-specs-warning"
+              title={specsError}
+              onClick={retrySpecsLoad}
+            >
+              Specs unavailable — retry
+            </button>
+          )}
 
           <button className="studio-icon-btn" onClick={handleResetTemplate} disabled={resetting} title="Reset workspace">
             <RefreshCcw size={15} />

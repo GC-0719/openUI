@@ -139,6 +139,12 @@ exposed publicly — so the `/studio` route on the hosted site links you back he
 to run it. `server.js` serves the production build (`npm run build:react` →
 `npm start`).
 
+## Roadmap
+
+We're shipping toward **1.0** in small releases — real filesystem, MCP-aware
+agents, and ownable kits. See [ROADMAP.md](ROADMAP.md) for milestones and how to
+help.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). By participating you agree to the

@@ -4,6 +4,7 @@ import {
   Layers, Settings2, FilePlus, FolderPlus, Pencil, Trash2, RefreshCcw,
 } from 'lucide-react';
 import { apiPost } from '../../utils/api';
+import { useToast } from '../../../kits/react/workspace/src/components/ui/Toast';
 
 // ── Tree building ────────────────────────────────────────────────────────────
 // Turn a flat list of workspace-relative paths into a nested folder tree.
@@ -36,6 +37,7 @@ const iconFor = (name) => {
 };
 
 const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework = 'react', refreshKey = 0, onMutate }) => {
+  const { addToast } = useToast();
   const [files, setFiles] = useState([]);
   const [collapsed, setCollapsed] = useState(() => new Set());
   const [loadError, setLoadError] = useState('');
@@ -82,9 +84,9 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
       onMutate?.({ type: 'create', path: filePath });
       onSelect?.(filePath);
     } catch (err) {
-      window.alert(err.message);
+      addToast({ title: 'Could not create file', message: err.message, variant: 'error' });
     }
-  }, [framework, onMutate, onSelect, loadFiles]);
+  }, [framework, onMutate, onSelect, loadFiles, addToast]);
 
   const createFolder = useCallback(async (parentDir) => {
     const name = window.prompt(`New folder name${parentDir ? ` in ${parentDir}/` : ''}:`, '');
@@ -95,9 +97,9 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
       loadFiles();
       onMutate?.({ type: 'create', path: dirPath });
     } catch (err) {
-      window.alert(err.message);
+      addToast({ title: 'Could not create folder', message: err.message, variant: 'error' });
     }
-  }, [framework, onMutate, loadFiles]);
+  }, [framework, onMutate, loadFiles, addToast]);
 
   const renamePath = useCallback(async (fromPath) => {
     const segs = fromPath.split('/');
@@ -109,9 +111,9 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
       loadFiles();
       onMutate?.({ type: 'rename', path: fromPath, to: toPath });
     } catch (err) {
-      window.alert(err.message);
+      addToast({ title: 'Could not rename', message: err.message, variant: 'error' });
     }
-  }, [framework, onMutate, loadFiles]);
+  }, [framework, onMutate, loadFiles, addToast]);
 
   const deletePath = useCallback(async (targetPath, isDir) => {
     if (!window.confirm(`Delete ${isDir ? 'folder' : 'file'} "${targetPath}"?${isDir ? ' All contents will be removed.' : ''}`)) return;
@@ -120,9 +122,9 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
       loadFiles();
       onMutate?.({ type: 'delete', path: targetPath });
     } catch (err) {
-      window.alert(err.message);
+      addToast({ title: 'Could not delete', message: err.message, variant: 'error' });
     }
-  }, [framework, onMutate, loadFiles]);
+  }, [framework, onMutate, loadFiles, addToast]);
 
   // ── Render ───────────────────────────────────────────────────────────────
   const renderDir = (node, depth) => {

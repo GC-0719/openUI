@@ -6,6 +6,13 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 
 ## [Unreleased]
 
+### Added
+- [ROADMAP.md](ROADMAP.md) — path to 1.0, differentiation vs other AI UI tools, milestone checklist.
+
+### Changed
+- File explorer errors use in-app toasts instead of browser `alert()`.
+- Studio top bar: clickable **Specs unavailable — retry** when AI specs fail to load.
+
 ## [0.2.0] - 2026-06-03
 
 ### Added
