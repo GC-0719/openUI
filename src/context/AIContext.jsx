@@ -65,6 +65,7 @@ export const AIProvider = ({ children }) => {
   });
 
   const [specs, setSpecs] = useState({});
+  const [specsError, setSpecsError] = useState('');
 
   const [mcpServers, setMcpServers] = useState(() => {
     try { return JSON.parse(localStorage.getItem(MCP_STORAGE_KEY)) || []; }
@@ -77,12 +78,23 @@ export const AIProvider = ({ children }) => {
 
   const updateMcpServers = useCallback((servers) => setMcpServers(servers), []);
 
-  useEffect(() => {
+  const loadSpecs = useCallback(() => {
+    setSpecsError('');
     fetch('/api/read-specs')
-      .then(r => r.json())
-      .then(d => d.specs && setSpecs(d.specs))
-      .catch(() => {});
+      .then(r => {
+        if (!r.ok) throw new Error(`Could not load AI specs (${r.status})`);
+        return r.json();
+      })
+      .then(d => {
+        if (d.error) throw new Error(d.error);
+        if (d.specs) setSpecs(d.specs);
+      })
+      .catch(err => setSpecsError(err.message || 'Could not load AI specs'));
   }, []);
+
+  useEffect(() => {
+    loadSpecs();
+  }, [loadSpecs]);
 
   const updateSettings = (updates) => setSettings(prev => ({ ...prev, ...updates }));
   const updateKit = (updates) => setKit(prev => ({ ...prev, ...updates }));
@@ -101,7 +113,7 @@ export const AIProvider = ({ children }) => {
   }, []);
 
   return (
-    <AIContext.Provider value={{ settings, updateSettings, isConfigured, providers: AI_PROVIDERS, kit, updateKit, specs, updateSpec, mcpServers, updateMcpServers }}>
+    <AIContext.Provider value={{ settings, updateSettings, isConfigured, providers: AI_PROVIDERS, kit, updateKit, specs, specsError, retrySpecsLoad: loadSpecs, updateSpec, mcpServers, updateMcpServers }}>
       {children}
     </AIContext.Provider>
   );

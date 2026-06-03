@@ -126,6 +126,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
   const [workspaceCtx, setWorkspaceCtx] = useState({ tree: [], barrel: '', routes: [], navFile: null, pageFiles: {} });
   const [memory, setMemory] = useState({ facts: [], updatedAt: null });
   const [showMemory, setShowMemory] = useState(false);
+  const [contextWarning, setContextWarning] = useState('');
   const endRef = useRef(null);
   const textareaRef = useRef(null);
   const historyKitRef = useRef(framework); // which framework the current `messages` belong to
@@ -137,8 +138,8 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
     if (!enabled.length) { setMcpContext(''); setMcpData([]); return; }
     setMcpLoading(true);
     fetchMCPContext(enabled)
-      .then(r => { setMcpData(r); setMcpContext(formatMCPContext(r)); })
-      .catch(() => {})
+      .then(r => { setMcpData(r); setMcpContext(formatMCPContext(r)); setContextWarning(''); })
+      .catch(() => setContextWarning('Could not reach one or more MCP servers'))
       .finally(() => setMcpLoading(false));
   }, [mcpServers]);
 
@@ -176,14 +177,21 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
     let saved = null;
     try { const s = localStorage.getItem(chatKey(framework)); if (s) saved = JSON.parse(s); } catch { /* ignore bad JSON */ }
     setMessages(saved && saved.length ? saved : [{ role: 'assistant', text: WELCOME, changes: null }]);
+    setContextWarning('');
     fetch(`/api/agent-memory?kit=${framework}`)
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error('memory');
+        return r.json();
+      })
       .then(d => setMemory(d && Array.isArray(d.facts) ? d : { facts: [], updatedAt: null }))
-      .catch(() => {});
+      .catch(() => setContextWarning(prev => prev || 'Could not load agent memory'));
     fetch(`/api/workspace-context?kit=${framework}`)
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error('workspace');
+        return r.json();
+      })
       .then(data => setWorkspaceCtx(parseWorkspaceData(data, framework)))
-      .catch(() => {});
+      .catch(() => setContextWarning(prev => prev || 'Could not load workspace context'));
   }, [framework]);
 
   // Re-fetch workspace context after any file write so the next message
@@ -191,9 +199,15 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
   useEffect(() => {
     if (workspaceRefreshKey === 0) return;
     fetch(`/api/workspace-context?kit=${framework}`)
-      .then(r => r.json())
-      .then(data => setWorkspaceCtx(parseWorkspaceData(data, framework)))
-      .catch(() => {});
+      .then(r => {
+        if (!r.ok) throw new Error('workspace');
+        return r.json();
+      })
+      .then(data => {
+        setWorkspaceCtx(parseWorkspaceData(data, framework));
+        setContextWarning(prev => (prev === 'Could not load workspace context' ? '' : prev));
+      })
+      .catch(() => setContextWarning(prev => prev || 'Could not load workspace context'));
   }, [workspaceRefreshKey, framework]);
 
   useEffect(() => {
@@ -439,6 +453,12 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
           </button>
         </div>
       </div>
+
+      {contextWarning && (
+        <div className="ai-context-warning" title={contextWarning}>
+          {contextWarning}
+        </div>
+      )}
 
       {/* Provider badge */}
       {isConfigured && (

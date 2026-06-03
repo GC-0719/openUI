@@ -10,6 +10,7 @@ import SpecEditor from '../components/studio/SpecEditor';
 import AuditPanel from '../components/studio/AuditPanel';
 import ErrorBoundary from '../components/studio/ErrorBoundary';
 import { BrandLogo, Wordmark } from '../components/BrandLogo';
+import { apiFetch, apiPost } from '../utils/api';
 import '../styles/studio.css';
 import '../styles/docs.css';
 
@@ -19,7 +20,8 @@ const ExportModal = lazy(() => import('../components/docs/ExportModal'));
 const angularPreviewEnabled = import.meta.env.VITE_OPENUI_ANGULAR === '1';
 
 const Studio = () => {
-  const { kit } = useAI();
+  const { kit, specsError } = useAI();
+  const [saveError, setSaveError] = useState('');
   const { framework: fwParam } = useParams();
   const navigate = useNavigate();
   const framework = fwParam === 'angular' ? 'angular' : 'react';
@@ -97,16 +99,21 @@ const Studio = () => {
     setActiveFilePath(path);
     const isComponent = path.includes('/components/ui/') && !path.endsWith('index.jsx') && !path.endsWith('index.ts');
 
-    const isPageFile = framework === 'react' &&
-      path.startsWith('src/pages/') &&
-      path.endsWith('.jsx') &&
-      !path.includes('Dashboard') &&
-      !path.includes('ComponentShowcase');
+    const isPageFile = framework === 'angular'
+      ? (path.includes('/pages/') || path.includes('/app/')) &&
+        path.endsWith('.component.ts') &&
+        !path.includes('showcase')
+      : path.startsWith('src/pages/') &&
+        path.endsWith('.jsx') &&
+        !path.includes('Dashboard') &&
+        !path.includes('ComponentShowcase');
 
     if (isComponent) {
       setActiveAgentPage(null);
     } else if (isPageFile) {
-      const name = path.split('/').pop().replace(/\.jsx$/, '');
+      const name = path.split('/').pop()
+        .replace(/\.component\.ts$/, '')
+        .replace(/\.jsx$/, '');
       setAgentPages(prev => prev.includes(name) ? prev : [...prev, name]);
       setActiveAgentPage(name);
     }
@@ -147,30 +154,38 @@ const Studio = () => {
 
   // ── Save ─────────────────────────────────────────────────────────────────
   const handleFileSave = async (filePath, content) => {
-    await fetch('/api/write-file', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: filePath, content, kit: framework }),
-    });
-    setOpenFiles(prev => prev.map(f =>
-      f.path === filePath ? { ...f, content, dirty: false, pendingContent: null } : f
-    ));
-    setPreviewKey(k => k + 1);
+    try {
+      await apiPost('/api/write-file', { path: filePath, content, kit: framework });
+      setSaveError('');
+      setOpenFiles(prev => prev.map(f =>
+        f.path === filePath ? { ...f, content, dirty: false, pendingContent: null } : f
+      ));
+      setPreviewKey(k => k + 1);
+    } catch (err) {
+      setSaveError(err.message || 'Save failed');
+    }
   };
 
   const saveAllDirty = async () => {
     const dirty = openFiles.filter(f => f.dirty && f.pendingContent !== null);
-    await Promise.all(dirty.map(f =>
-      fetch('/api/write-file', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: f.path, content: f.pendingContent, kit: framework }),
-      }).then(() => {
+    if (!dirty.length) return true;
+    const failures = [];
+    await Promise.all(dirty.map(async (f) => {
+      try {
+        await apiPost('/api/write-file', { path: f.path, content: f.pendingContent, kit: framework });
         setOpenFiles(prev => prev.map(o =>
           o.path === f.path ? { ...o, content: f.pendingContent, dirty: false, pendingContent: null } : o
         ));
-      })
-    ));
+      } catch (err) {
+        failures.push(`${f.path.split('/').pop()}: ${err.message}`);
+      }
+    }));
+    if (failures.length) {
+      setSaveError(failures.join(' · '));
+      return false;
+    }
+    setSaveError('');
+    return true;
   };
 
   // ── Preview / Run ────────────────────────────────────────────────────────
@@ -204,8 +219,16 @@ const Studio = () => {
 
   // ── Guard: component files must keep their expected named export ─────────
   const guardExport = (path, content) => {
-    if (!path.includes('/components/ui/') || !path.endsWith('.jsx')) return content;
-    const expectedName = path.split('/').pop().replace(/\.jsx$/, '');
+    const isReactComp = path.includes('/components/ui/') && path.endsWith('.jsx');
+    const isAngularComp = path.includes('/components/ui/') && path.endsWith('.component.ts');
+    if (!isReactComp && !isAngularComp) return content;
+    const expectedName = path.split('/').pop()
+      .replace(/\.component\.ts$/, '')
+      .replace(/\.jsx$/, '');
+    if (isAngularComp) {
+      if (new RegExp(`export\\s+class\\s+${expectedName}\\b`).test(content)) return content;
+      return content.replace(/export\s+class\s+([A-Z]\w*)\b/, `export class ${expectedName}`);
+    }
     // Already correct — nothing to do
     if (new RegExp(`export\\s+(?:const|function)\\s+${expectedName}\\b`).test(content)) return content;
     // Find the first PascalCase component export and rename it to the expected name
@@ -233,16 +256,21 @@ const Studio = () => {
       )
     );
 
-    // Write all new content in parallel
+    const writeErrors = [];
     await Promise.all(
-      entries.map(([path, content]) =>
-        fetch('/api/write-file', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ path, content, kit: framework }),
-        })
-      )
+      entries.map(async ([path, content]) => {
+        try {
+          await apiPost('/api/write-file', { path, content, kit: framework });
+        } catch (err) {
+          writeErrors.push(`${path}: ${err.message}`);
+        }
+      })
     );
+    if (writeErrors.length) {
+      setSaveError(writeErrors.join(' · '));
+      throw new Error(writeErrors.join(' · '));
+    }
+    setSaveError('');
 
     setFilesVersion(v => v + 1);
 
@@ -328,40 +356,44 @@ const Studio = () => {
 
   // ── Agent file writes ────────────────────────────────────────────────────
   const handleFilesWritten = useCallback(async (files) => {
-    const BARREL = 'src/components/ui/index.jsx';
+    const BARREL = framework === 'angular'
+      ? 'src/components/ui/index.ts'
+      : 'src/components/ui/index.jsx';
+    const compExt = framework === 'angular' ? '.ts' : '.jsx';
+    const barrelIndex = framework === 'angular' ? 'index.ts' : 'index.jsx';
 
     // Auto-add new components to the barrel if the agent didn't write it
-    if (framework === 'react' && !files[BARREL]) {
+    if (!files[BARREL]) {
       const newCompPaths = Object.keys(files).filter(p =>
-        p.startsWith('src/components/ui/') && p.endsWith('.jsx') && !p.endsWith('index.jsx')
+        p.startsWith('src/components/ui/') && p.endsWith(compExt) && !p.endsWith(barrelIndex)
       );
       if (newCompPaths.length > 0) {
-        const barrelRes = await fetch(`/api/read-file?path=${encodeURIComponent(BARREL)}&kit=react`);
-        const barrelData = await barrelRes.json();
-        let barrel = barrelData.error ? '' : barrelData.content;
-        let updated = false;
-        for (const cp of newCompPaths) {
-          const name = cp.split('/').pop().replace(/\.jsx$/, '');
-          if (!barrel.includes(`'./${name}'`) && !barrel.includes(`"./${name}"`)) {
-            barrel = barrel.trimEnd() + `\nexport * from './${name}';`;
-            updated = true;
+        try {
+          const barrelData = await apiFetch(`/api/read-file?path=${encodeURIComponent(BARREL)}&kit=${framework}`);
+          let barrel = barrelData.content || '';
+          let updated = false;
+          for (const cp of newCompPaths) {
+            const name = cp.split('/').pop().replace(compExt, '');
+            if (!barrel.includes(`'./${name}'`) && !barrel.includes(`"./${name}"`)) {
+              barrel = barrel.trimEnd() + `\nexport * from './${name}';`;
+              updated = true;
+            }
           }
-        }
-        if (updated) files = { ...files, [BARREL]: barrel };
+          if (updated) files = { ...files, [BARREL]: barrel };
+        } catch { /* barrel read failed — agent may have omitted exports */ }
       }
     }
 
     const paths = await writeFiles(files);
 
-    // Probe Vite's transform pipeline for each written JSX file.
-    // A 500 response means OXC rejected the file — extract the error and return it
-    // so the agent can auto-fix without user intervention. Cover the whole app
-    // (pages, components, hooks, lib…) so syntax errors anywhere are caught.
+    // Probe Vite's transform pipeline for each written source file.
     const parseErrors = [];
-    const jsxPaths = paths.filter(p => p.endsWith('.jsx') || p.endsWith('.tsx'));
-    await Promise.all(jsxPaths.map(async (p) => {
+    const sourcePaths = paths.filter(p =>
+      p.endsWith('.jsx') || p.endsWith('.tsx') || p.endsWith('.ts')
+    );
+    await Promise.all(sourcePaths.map(async (p) => {
       try {
-        const r = await fetch(`/kits/react/workspace/${p}?t=${Date.now()}`);
+        const r = await fetch(`/kits/${framework}/workspace/${p}?t=${Date.now()}`);
         if (!r.ok) {
           const body = await r.text();
           const match = body.match(/(?:Error:|PARSE_ERROR[^\n]*\n?)([^\n<]{10,200})/);
@@ -372,8 +404,17 @@ const Studio = () => {
     }));
 
     const newPages = paths
-      .filter(p => p.includes('/pages/') && !p.includes('Dashboard') && !p.includes('BuilderOutput'))
-      .map(p => p.split('/').pop().replace(/\.jsx$/, ''));
+      .filter(p => {
+        if (p.includes('Dashboard') || p.includes('BuilderOutput') || p.includes('showcase')) return false;
+        if (framework === 'angular') {
+          return (p.includes('/pages/') || p.includes('/app/')) && p.endsWith('.component.ts');
+        }
+        return p.includes('/pages/') && p.endsWith('.jsx');
+      })
+      .map(p => {
+        const base = p.split('/').pop();
+        return base.replace(/\.component\.ts$/, '').replace(/\.jsx$/, '');
+      });
 
     if (newPages.length > 0) {
       setAgentPages(prev => {
@@ -473,6 +514,8 @@ const Studio = () => {
         <div className="studio-topbar-spacer" />
         <div className="studio-topbar-actions">
           {anyDirty && <span className="studio-unsaved-notice" title="Unsaved changes">● unsaved</span>}
+          {saveError && <span className="studio-save-error" title={saveError}>{saveError}</span>}
+          {specsError && <span className="studio-specs-warning" title={specsError}>Specs unavailable</span>}
 
           <button className="studio-icon-btn" onClick={handleResetTemplate} disabled={resetting} title="Reset workspace">
             <RefreshCcw size={15} />

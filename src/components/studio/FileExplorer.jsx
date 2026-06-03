@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ChevronRight, ChevronDown, FileCode, FileText, Folder, FolderOpen,
-  Layers, Settings2, FilePlus, FolderPlus, Pencil, Trash2,
+  Layers, Settings2, FilePlus, FolderPlus, Pencil, Trash2, RefreshCcw,
 } from 'lucide-react';
+import { apiPost } from '../../utils/api';
 
 // ── Tree building ────────────────────────────────────────────────────────────
 // Turn a flat list of workspace-relative paths into a nested folder tree.
@@ -34,21 +35,31 @@ const iconFor = (name) => {
   return <FileCode size={13} className="studio-file-icon" />;
 };
 
-// ── Network helpers ──────────────────────────────────────────────────────────
-const post = (url, body) =>
-  fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
-    .then(r => r.json());
-
 const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework = 'react', refreshKey = 0, onMutate }) => {
   const [files, setFiles] = useState([]);
   const [collapsed, setCollapsed] = useState(() => new Set());
+  const [loadError, setLoadError] = useState('');
+
+  const loadFiles = useCallback(() => {
+    setLoadError('');
+    fetch(`/api/workspace-files?kit=${framework}`)
+      .then(r => {
+        if (!r.ok) throw new Error(`Could not load file tree (${r.status})`);
+        return r.json();
+      })
+      .then(({ files: list = [], error }) => {
+        if (error) throw new Error(error);
+        setFiles(list);
+      })
+      .catch(err => {
+        setFiles([]);
+        setLoadError(err.message || 'Could not load file tree');
+      });
+  }, [framework]);
 
   useEffect(() => {
-    fetch(`/api/workspace-files?kit=${framework}`)
-      .then(r => r.json())
-      .then(({ files = [] }) => setFiles(files))
-      .catch(() => {});
-  }, [framework, refreshKey]);
+    loadFiles();
+  }, [loadFiles, refreshKey]);
 
   const tree = useMemo(() => buildTree(files), [files]);
 
@@ -65,34 +76,53 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
     const name = window.prompt(`New file name${parentDir ? ` in ${parentDir}/` : ''}:`, '');
     if (!name) return;
     const filePath = parentDir ? `${parentDir}/${name}` : name;
-    await post('/api/write-file', { path: filePath, content: '', kit: framework });
-    onMutate?.({ type: 'create', path: filePath });
-    onSelect?.(filePath);
-  }, [framework, onMutate, onSelect]);
+    try {
+      await apiPost('/api/write-file', { path: filePath, content: '', kit: framework });
+      loadFiles();
+      onMutate?.({ type: 'create', path: filePath });
+      onSelect?.(filePath);
+    } catch (err) {
+      window.alert(err.message);
+    }
+  }, [framework, onMutate, onSelect, loadFiles]);
 
   const createFolder = useCallback(async (parentDir) => {
     const name = window.prompt(`New folder name${parentDir ? ` in ${parentDir}/` : ''}:`, '');
     if (!name) return;
     const dirPath = parentDir ? `${parentDir}/${name}` : name;
-    await post('/api/create-folder', { path: dirPath, kit: framework });
-    onMutate?.({ type: 'create', path: dirPath });
-  }, [framework, onMutate]);
+    try {
+      await apiPost('/api/create-folder', { path: dirPath, kit: framework });
+      loadFiles();
+      onMutate?.({ type: 'create', path: dirPath });
+    } catch (err) {
+      window.alert(err.message);
+    }
+  }, [framework, onMutate, loadFiles]);
 
   const renamePath = useCallback(async (fromPath) => {
     const segs = fromPath.split('/');
     const next = window.prompt('Rename to:', segs[segs.length - 1]);
     if (!next || next === segs[segs.length - 1]) return;
     const toPath = [...segs.slice(0, -1), next].join('/');
-    const res = await post('/api/rename-path', { from: fromPath, to: toPath, kit: framework });
-    if (res?.error) { window.alert(res.error); return; }
-    onMutate?.({ type: 'rename', path: fromPath, to: toPath });
-  }, [framework, onMutate]);
+    try {
+      await apiPost('/api/rename-path', { from: fromPath, to: toPath, kit: framework });
+      loadFiles();
+      onMutate?.({ type: 'rename', path: fromPath, to: toPath });
+    } catch (err) {
+      window.alert(err.message);
+    }
+  }, [framework, onMutate, loadFiles]);
 
   const deletePath = useCallback(async (targetPath, isDir) => {
     if (!window.confirm(`Delete ${isDir ? 'folder' : 'file'} "${targetPath}"?${isDir ? ' All contents will be removed.' : ''}`)) return;
-    await post('/api/delete-path', { path: targetPath, kit: framework });
-    onMutate?.({ type: 'delete', path: targetPath });
-  }, [framework, onMutate]);
+    try {
+      await apiPost('/api/delete-path', { path: targetPath, kit: framework });
+      loadFiles();
+      onMutate?.({ type: 'delete', path: targetPath });
+    } catch (err) {
+      window.alert(err.message);
+    }
+  }, [framework, onMutate, loadFiles]);
 
   // ── Render ───────────────────────────────────────────────────────────────
   const renderDir = (node, depth) => {
@@ -158,7 +188,14 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
         </div>
       </div>
       <div className="studio-explorer-scroll">
-        {files.length === 0
+        {loadError ? (
+          <div className="studio-tree-error">
+            <span>{loadError}</span>
+            <button type="button" className="studio-tree-retry" onClick={loadFiles}>
+              <RefreshCcw size={12} /> Retry
+            </button>
+          </div>
+        ) : files.length === 0
           ? <div className="studio-tree-empty">No files</div>
           : renderDir(tree, 0)}
       </div>

@@ -118,6 +118,18 @@ In the studio, **Export** lets you download a full project ZIP (with a
 publishable `package/` named after your kit + optional npm scope), push to
 GitHub, or generate an MCP server. See [RELEASING.md](RELEASING.md).
 
+## Troubleshooting
+
+| Issue | What to do |
+|-------|------------|
+| **Studio on openui.live only shows “run locally”** | The hosted site is the landing page. Run `npm run dev` on your machine and open `/studio/react` or `/studio/angular`. |
+| **Angular preview is blank** | Use `npm run dev` or `npm run dev:angular` (not `dev:react`). Both set `VITE_OPENUI_ANGULAR=1`. |
+| **Save or file tree errors** | Ensure the Vite dev server is running. Failed writes keep your editor marked unsaved. |
+| **Local LLM (Ollama)** | Set base URL + model in AI Settings. API key is optional. Audit and Spec tools use the same settings. |
+| **MCP servers** | Only connect commands you trust. See [SECURITY.md](SECURITY.md). |
+
+Copy [.env.example](.env.example) to `.env` if you want env vars documented locally.
+
 ## Deployment
 
 [**openui.live**](https://openui.live) hosts the **landing site** (static build,

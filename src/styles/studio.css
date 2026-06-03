@@ -152,6 +152,33 @@
   color: rgba(248,248,248,0.35);
 }
 
+.studio-tree-error {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: #f87171;
+}
+
+.studio-tree-retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: transparent;
+  color: rgba(248,248,248,0.75);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.studio-tree-retry:hover {
+  background: rgba(255,255,255,0.06);
+}
+
 /* ── Resize handles ──────────────────────────────────────────────────────── */
 .studio-resize-handle {
   width: 4px;
@@ -593,6 +620,21 @@
   opacity: 0.85;
 }
 
+.studio-save-error {
+  font-size: 11px;
+  color: #f87171;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.studio-specs-warning {
+  font-size: 11px;
+  color: #fbbf24;
+  font-weight: 500;
+}
+
 /* ── Framework badge (replaces picker — click to go back to home) ─────────── */
 .studio-fw-badge {
   display: inline-flex;
@@ -812,6 +854,15 @@
   padding: 10px 14px;
   border-bottom: 1px solid rgba(255,255,255,0.07);
   flex-shrink: 0;
+}
+
+.ai-context-warning {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  font-size: 11px;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.08);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.15);
 }
 
 .ai-agent-title {

@@ -15,9 +15,11 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      # Gates on errors; ~117 non-correctness warnings remain as a cleanup backlog.
+      # Gates on errors; non-correctness warnings remain as a cleanup backlog.
       - name: Lint
         run: npm run lint
+      - name: Test
+        run: npm test
       - name: Build (React studio)
         run: npm run build:react
       - name: Build (@openui/react package)

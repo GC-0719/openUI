@@ -12,6 +12,7 @@ npm run dev          # React studio (Vite dev server with the openUI backend)
 npm run dev:angular  # Angular workspace
 npm run build        # production build (React + Angular)
 npm run lint         # ESLint
+npm test             # Vitest (aiService parsers + path guards)
 ```
 
 Set an AI key via `OPENUI_AI_KEY` (Anthropic) or in the in-app AI settings to
@@ -34,8 +35,8 @@ exercise the agent.
 - Keep changes focused; one logical change per PR.
 - Commit messages: imperative summary, e.g. `fix: ...`, `feat: ...`,
   `refactor: ...`.
-- Run `npm run lint` and `npm run build` before opening a PR. Lint must pass
-  with **0 errors**; there is a backlog of ~80 non-correctness warnings (mostly
+- Run `npm run lint`, `npm test`, and `npm run build` before opening a PR. Lint must pass
+  with **0 errors**; there is a backlog of ~84 non-correctness warnings (mostly
   Fast-Refresh `only-export-components` hints on barrels/contexts/data files,
   plus a few intentional effect patterns) that we chip away at — please don't
   add new errors, and clearing nearby warnings is welcome.

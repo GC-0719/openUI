@@ -1,7 +1,7 @@
 {
   "name": "openui",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "A local-first AI sandbox for building production-ready frontends, wired to your backend via MCP.",
   "license": "MIT",
@@ -35,6 +35,8 @@
     "build:react": "vite build",
     "build:angular": "OPENUI_ANGULAR=1 VITE_OPENUI_ANGULAR=1 vite build",
     "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "preview": "vite preview",
     "start": "node server.js"
   },
@@ -69,6 +71,7 @@
     "tslib": "^2.8.1",
     "typescript": "5.9",
     "vite": "^8.0.10",
+    "vitest": "^4.1.8",
     "zone.js": "^0.16.2"
   }
 }

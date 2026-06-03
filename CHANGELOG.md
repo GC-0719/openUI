@@ -6,6 +6,25 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-03
+
+### Added
+- **`apiFetch` helper** and studio error surfacing for failed saves, writes, and file-tree loads.
+- **Vitest** unit tests for `parseAgentResponse`, `parseAIChanges`, `stripJsonBlock`, and workspace path guards.
+- **`.env.example`** and README troubleshooting section.
+- **Dependabot** for npm dependencies.
+- **`server/` modules** — HTTP helpers, path safety, and AI providers extracted from `vite.config.js`.
+
+### Fixed
+- **Audit panel** supports local LLM (uses `isConfigured` like the agent).
+- **Angular agent parity** — barrel `index.ts` auto-export, framework-aware parse probe, `.component.ts` page detection.
+- **Silent failures** — specs load, MCP/memory/workspace context, and file explorer show warnings or retry.
+
+### Changed
+- CI runs `npm test` after lint.
+
+## [0.1.0] - initial release
+
 ### Added
 - **Sandbox IDE** — recursive project file tree with create/rename/delete,
   backed by new dev-server endpoints (`/api/create-folder`, `/api/rename-path`,

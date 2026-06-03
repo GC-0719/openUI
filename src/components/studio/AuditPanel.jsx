@@ -30,7 +30,7 @@ function Example() {
 }`;
 
 const AuditPanel = () => {
-  const { settings, kit } = useAI();
+  const { settings, kit, isConfigured } = useAI();
   const [code, setCode] = useState('');
   const [auditing, setAuditing] = useState(false);
   const [result, setResult] = useState(null);
@@ -39,7 +39,7 @@ const AuditPanel = () => {
 
   const runAudit = useCallback(async () => {
     if (!code.trim()) return;
-    if (!settings.apiKey) { setError('Configure an AI provider in Settings first.'); return; }
+    if (!isConfigured) { setError('Configure an AI provider in Settings first.'); return; }
     setAuditing(true);
     setError('');
     setResult(null);
@@ -60,7 +60,7 @@ const AuditPanel = () => {
     } finally {
       setAuditing(false);
     }
-  }, [code, settings, kit]);
+  }, [code, settings, kit, isConfigured]);
 
   const applyFixes = useCallback(() => {
     if (!result?.violations?.length) return;
@@ -89,7 +89,7 @@ const AuditPanel = () => {
         <div className="audit-left-header">
           <ShieldCheck size={14} style={{ color: '#34d399' }} />
           <span className="audit-title">Design System Audit</span>
-          {!settings.apiKey && (
+          {!isConfigured && (
             <span className="audit-no-key">Configure AI in Settings ↗</span>
           )}
         </div>
@@ -108,7 +108,7 @@ const AuditPanel = () => {
           <button
             className="audit-run-btn"
             onClick={runAudit}
-            disabled={auditing || !code.trim() || !settings.apiKey}
+            disabled={auditing || !code.trim() || !isConfigured}
           >
             {auditing
               ? <><span className="ai-thinking-dots"><span /><span /><span /></span> Auditing…</>
