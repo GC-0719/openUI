@@ -7,6 +7,7 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 ## [Unreleased]
 
 ### Added
+- **Git status in file tree** — `M` / `U` / `S` badges for modified, untracked, and staged files when the workspace is inside a git repo (`/api/git-status`).
 - **Open existing project** — link `kits/<framework>/workspace` to an absolute folder on disk (symlink + path validation); studio folder button and `/api/workspace-bind`.
 - **Agent diff preview** — review per-file line diffs before applying an Edit-mode file batch; auto-fix retries skip the modal.
 - **`/api/validate-sources`** — TypeScript compiler checks for `.ts` files (Angular auto-fix); JSX still uses Vite probe.

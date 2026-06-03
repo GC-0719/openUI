@@ -22,6 +22,7 @@ import {
   restoreBuiltinWorkspace,
   validateExternalRoot,
 } from './server/workspaceBind.js';
+import { getGitStatusForKit } from './server/gitStatus.js';
 
 function copyPath(src, dest) {
   if (!fs.existsSync(src)) return;
@@ -980,6 +981,19 @@ const openuiDevPlugin = {
         } else {
           json(res, 200, { files, routes: [], navFile: null });
         }
+      } catch (err) {
+        json(res, 500, { error: err.message });
+      }
+    });
+
+    // ── Git status for workspace file tree badges ─────────────────────────────
+    server.middlewares.use('/api/git-status', (req, res) => {
+      if (req.method !== 'GET') { json(res, 405, { error: 'GET only' }); return; }
+      try {
+        const url = new URL(req.url, 'http://localhost');
+        const kit = url.searchParams.get('kit') || 'react';
+        if (!safeKit(kit)) { json(res, 400, { error: 'Invalid kit' }); return; }
+        json(res, 200, getGitStatusForKit(cwd, kit));
       } catch (err) {
         json(res, 500, { error: err.message });
       }

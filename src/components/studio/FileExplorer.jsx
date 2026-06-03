@@ -36,25 +36,39 @@ const iconFor = (name) => {
   return <FileCode size={13} className="studio-file-icon" />;
 };
 
+const GIT_BADGE = {
+  modified: { label: 'M', title: 'Modified' },
+  untracked: { label: 'U', title: 'Untracked' },
+  staged: { label: 'S', title: 'Staged' },
+};
+
 const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework = 'react', refreshKey = 0, onMutate }) => {
   const { addToast } = useToast();
   const [files, setFiles] = useState([]);
+  const [gitFiles, setGitFiles] = useState({});
+  const [gitAvailable, setGitAvailable] = useState(false);
   const [collapsed, setCollapsed] = useState(() => new Set());
   const [loadError, setLoadError] = useState('');
 
   const loadFiles = useCallback(() => {
     setLoadError('');
-    fetch(`/api/workspace-files?kit=${framework}`)
-      .then(r => {
+    Promise.all([
+      fetch(`/api/workspace-files?kit=${framework}`).then(r => {
         if (!r.ok) throw new Error(`Could not load file tree (${r.status})`);
         return r.json();
-      })
-      .then(({ files: list = [], error }) => {
-        if (error) throw new Error(error);
-        setFiles(list);
+      }),
+      fetch(`/api/git-status?kit=${framework}`).then(r => r.json()).catch(() => ({ available: false })),
+    ])
+      .then(([treeData, gitData]) => {
+        if (treeData.error) throw new Error(treeData.error);
+        setFiles(treeData.files ?? []);
+        setGitAvailable(Boolean(gitData.available));
+        setGitFiles(gitData.available ? (gitData.files ?? {}) : {});
       })
       .catch(err => {
         setFiles([]);
+        setGitFiles({});
+        setGitAvailable(false);
         setLoadError(err.message || 'Could not load file tree');
       });
   }, [framework]);
@@ -166,6 +180,14 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
           >
             {iconFor(file.name)}
             <span className="studio-file-name">{file.name}</span>
+            {gitFiles[file.path] && (
+              <span
+                className={`studio-git-badge studio-git-badge--${gitFiles[file.path]}`}
+                title={GIT_BADGE[gitFiles[file.path]]?.title ?? gitFiles[file.path]}
+              >
+                {GIT_BADGE[gitFiles[file.path]]?.label ?? '?'}
+              </span>
+            )}
             <span className="studio-file-ext">{ext(file.name)}</span>
             <span className="studio-tree-actions">
               <button className="studio-tree-action" title="Rename" onClick={e => { e.stopPropagation(); renamePath(file.path); }}><Pencil size={11} /></button>
@@ -180,7 +202,10 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
   return (
     <aside className="studio-explorer" style={width ? { width } : undefined}>
       <div className="studio-explorer-header">
-        <span className="studio-explorer-title">Files</span>
+        <span className="studio-explorer-title">
+          Files
+          {gitAvailable && <span className="studio-explorer-git-hint" title="Git status shown for changed files">git</span>}
+        </span>
         <div style={{ display: 'flex', gap: 2 }}>
           <button className="studio-icon-btn" onClick={() => createFile('src')} title="New file in src/"><FilePlus size={14} /></button>
           <button className="studio-icon-btn" onClick={() => createFolder('src')} title="New folder in src/"><FolderPlus size={14} /></button>

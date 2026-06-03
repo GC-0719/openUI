@@ -116,6 +116,41 @@
   flex-shrink: 0;
 }
 
+.studio-git-badge {
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.studio-git-badge--modified {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fcd34d;
+}
+
+.studio-git-badge--untracked {
+  background: rgba(52, 211, 153, 0.12);
+  color: #6ee7b7;
+}
+
+.studio-git-badge--staged {
+  background: rgba(96, 165, 250, 0.15);
+  color: #93c5fd;
+}
+
+.studio-explorer-git-hint {
+  margin-left: 6px;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(165, 180, 252, 0.55);
+  vertical-align: middle;
+}
+
 /* ── File tree (recursive IDE explorer) ──────────────────────────────────── */
 .studio-tree-folder {
   gap: 4px;
