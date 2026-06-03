@@ -45,9 +45,11 @@ const AuditPanel = ({ framework = 'react', activeFilePath = null, activeFileCont
   const specCount = Object.keys(specs || {}).filter(k => specs[k]?.purpose).length;
 
   useEffect(() => {
-    setCode('');
-    setResult(null);
-    setError('');
+    queueMicrotask(() => {
+      setCode('');
+      setResult(null);
+      setError('');
+    });
   }, [framework]);
 
   const runAudit = useCallback(async () => {
