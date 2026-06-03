@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { Eye, Code2, Download, Settings, RotateCcw, RefreshCcw, PanelLeft, X, Sparkles, ShieldCheck, Bot, Monitor, Laptop, Tablet, Smartphone } from 'lucide-react';
+import { Eye, Code2, Download, Settings, RotateCcw, RefreshCcw, PanelLeft, X, Sparkles, ShieldCheck, Bot, Monitor, Laptop, Tablet, Smartphone, Palette } from 'lucide-react';
 import { useAI } from '../context/AIContext';
 import AIAgent from '../components/studio/AIAgent';
 import FileExplorer from '../components/studio/FileExplorer';
@@ -18,6 +18,7 @@ import '../styles/docs.css';
 const KitSettingsModal = lazy(() => import('../components/studio/KitSettingsModal'));
 const AISettingsModal = lazy(() => import('../components/docs/AISettingsModal'));
 const ExportModal = lazy(() => import('../components/docs/ExportModal'));
+const ThemeEditorModal = lazy(() => import('../components/studio/ThemeEditorModal'));
 const angularPreviewEnabled = import.meta.env.VITE_OPENUI_ANGULAR === '1';
 
 const Studio = () => {
@@ -33,6 +34,7 @@ const Studio = () => {
 
   const [centerTab, setCenterTab] = useState('preview');
   const [showKitSettings, setShowKitSettings] = useState(false);
+  const [showThemeEditor, setShowThemeEditor] = useState(false);
   const [showAISettings, setShowAISettings] = useState(false);
   const [aiSettingsTab, setAiSettingsTab] = useState('ai');
   const [showExport, setShowExport] = useState(false);
@@ -88,12 +90,14 @@ const Studio = () => {
 
   // ── Reset open files when switching framework ────────────────────────────
   useEffect(() => {
-    setOpenFiles([]);
-    setActiveFilePath(null);
-    setCenterTab('preview');
-    setPreviewKey(k => k + 1);
-    setAgentPages([]);
-    setActiveAgentPage(null);
+    queueMicrotask(() => {
+      setOpenFiles([]);
+      setActiveFilePath(null);
+      setCenterTab('preview');
+      setPreviewKey(k => k + 1);
+      setAgentPages([]);
+      setActiveAgentPage(null);
+    });
   }, [framework]);
 
   // ── Open / switch file ───────────────────────────────────────────────────
@@ -523,6 +527,14 @@ const Studio = () => {
           <span style={{ fontSize: '10px', opacity: 0.6 }}>.{kit.kitPrefix}-</span>
         </button>
 
+        <button
+          className="studio-icon-btn"
+          onClick={() => setShowThemeEditor(true)}
+          title="Theme tokens"
+        >
+          <Palette size={15} />
+        </button>
+
         <div className="studio-topbar-spacer" />
         <div className="studio-topbar-actions">
           {anyDirty && <span className="studio-unsaved-notice" title="Unsaved changes">● unsaved</span>}
@@ -771,6 +783,13 @@ const Studio = () => {
 
       <Suspense fallback={null}>
         {showKitSettings && <KitSettingsModal onClose={() => setShowKitSettings(false)} />}
+        {showThemeEditor && (
+          <ThemeEditorModal
+            framework={framework}
+            onClose={() => setShowThemeEditor(false)}
+            onSynced={() => setPreviewKey(k => k + 1)}
+          />
+        )}
         {showAISettings && <AISettingsModal onClose={() => setShowAISettings(false)} defaultTab={aiSettingsTab} />}
         {showExport && <ExportModal onClose={() => setShowExport(false)} />}
       </Suspense>

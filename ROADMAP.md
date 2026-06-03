@@ -28,11 +28,11 @@ openUI is a **local-first AI studio** that writes into a **real project tree**, 
 - [x] Studio toasts instead of `alert()` for file ops
 - [x] Specs load retry + clearer banners
 - [x] Undo/redo and reset-template use `apiPost` + error feedback
-- [ ] Ratchet ESLint warnings down in touched files
+- [x] Ratchet ESLint warnings down in touched files (queueMicrotask for intentional effect loads)
 
 ### 0.3.x — Agent quality & design-system depth
 
-- [ ] **Theme token editor** in studio (CSS variables + per-component overrides) synced to agent context
+- [x] **Theme token editor** in studio (CSS variables synced to workspace + agent prompts)
 - [ ] **Plan mode** exports a markdown checklist before Edit runs
 - [ ] **Audit panel** supports Angular templates + uses kit specs from disk
 - [ ] Stronger **parse validation** for Angular (TypeScript compiler feedback in dev server)

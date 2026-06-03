@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowUp, Settings, RotateCcw, FileCode, Layers, Sparkles, Undo2, Database, Brain, Trash2 } from 'lucide-react';
 import { useAI, AI_PROVIDERS } from '../../context/AIContext';
+import { useTheme } from '../../context/ThemeContext';
 import { callAI, buildAgentPrompt, buildAskPrompt, buildPlanPrompt, parseAgentResponse, buildMemoryExtractionPrompt } from '../../services/aiService';
 import { fetchMCPContext, formatMCPContext } from '../../services/mcpClientService';
 import { componentsMeta } from '../../data/components-meta.js';
@@ -112,6 +113,7 @@ function trimForContext(history) {
 
 const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSettings, activeFilePath, activeFileContent, onUndo, canUndo, workspaceRefreshKey = 0 }) => {
   const { settings, kit, specs, mcpServers } = useAI();
+  const { cssVars, componentCSS } = useTheme();
   const [messages, setMessages] = useState([{ role: 'assistant', text: WELCOME, changes: null }]);
   const [input, setInput] = useState('');
   const [mode, setMode] = useState('edit'); // 'ask' | 'plan' | 'edit'
@@ -252,6 +254,8 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
         existingRoutes: workspaceCtx.routes,
         navFile: workspaceCtx.navFile,
         pageFiles: workspaceCtx.pageFiles,
+        cssVars,
+        componentCSS,
       };
 
       const systemPrompt =

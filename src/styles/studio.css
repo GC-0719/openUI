@@ -1873,3 +1873,105 @@
 .builder-history-mode-page { background: rgba(99,102,241,0.15); color: #a5b4fc; }
 .builder-history-mode-edit { background: rgba(52,211,153,0.12); color: #6ee7b7; }
 .builder-history-mode-create { background: rgba(251,191,36,0.12); color: #fcd34d; }
+
+/* ── Theme token editor ───────────────────────────────────────────────────── */
+.theme-editor-modal {
+  width: min(560px, 94vw);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.theme-editor-body {
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+.theme-editor-intro {
+  font-size: 12px;
+  color: rgba(248, 248, 248, 0.55);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.theme-editor-intro code {
+  font-size: 11px;
+  color: #a5b4fc;
+}
+
+.theme-editor-group {
+  margin-bottom: 18px;
+}
+
+.theme-editor-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(248, 248, 248, 0.45);
+  margin-bottom: 10px;
+}
+
+.theme-editor-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.theme-editor-field {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 4px 10px;
+  align-items: center;
+}
+
+.theme-editor-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text, #f8f8f8);
+}
+
+.theme-editor-key {
+  font-size: 10px;
+  color: rgba(248, 248, 248, 0.35);
+  grid-column: 1;
+}
+
+.theme-editor-input-row {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 200px;
+}
+
+.theme-editor-color-swatch {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+}
+
+.theme-editor-value {
+  flex: 1;
+  min-width: 0;
+}
+
+.theme-editor-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.theme-editor-status {
+  font-size: 11px;
+  color: rgba(248, 248, 248, 0.45);
+  max-width: 240px;
+}

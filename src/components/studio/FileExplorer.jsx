@@ -60,7 +60,7 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
   }, [framework]);
 
   useEffect(() => {
-    loadFiles();
+    queueMicrotask(() => loadFiles());
   }, [loadFiles, refreshKey]);
 
   const tree = useMemo(() => buildTree(files), [files]);

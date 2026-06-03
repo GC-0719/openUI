@@ -7,6 +7,10 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 ## [Unreleased]
 
 ### Added
+- **Theme token editor** in the studio (palette button) — live CSS variable overrides, sync to `src/styles/theme-overrides.css`, agent sees active tokens.
+- Unit tests for `buildThemeOverridesCss`.
+
+### Added (earlier unreleased)
 - [ROADMAP.md](ROADMAP.md) — path to 1.0, differentiation vs other AI UI tools, milestone checklist.
 
 ### Changed

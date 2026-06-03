@@ -93,7 +93,7 @@ export const AIProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    loadSpecs();
+    queueMicrotask(() => loadSpecs());
   }, [loadSpecs]);
 
   const updateSettings = (updates) => setSettings(prev => ({ ...prev, ...updates }));

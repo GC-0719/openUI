@@ -1,6 +1,19 @@
 // Call the local AI proxy. Pass { stream: true, onToken } to receive tokens live
 // (onToken(deltaText, fullTextSoFar)); the full text is still returned at the end.
 // Without `stream`, behaves exactly as before (single JSON response).
+function formatThemeBlock(cssVars = {}, componentCSS = {}) {
+  if (!Object.keys(cssVars).length && !Object.keys(componentCSS).length) return '';
+  return (
+    '\n## Active theme tokens (set in studio — honor these colors and radii; do not re-declare unless the user asks):\n' +
+    (Object.keys(cssVars).length
+      ? Object.entries(cssVars).map(([k, v]) => `- ${k}: ${v}`).join('\n') + '\n'
+      : '') +
+    (Object.keys(componentCSS).length
+      ? '### Component CSS overrides:\n' + Object.entries(componentCSS).map(([k, v]) => `- ${k}: ${v}`).join('\n') + '\n'
+      : '')
+  );
+}
+
 export async function callAI({ provider, model, apiKey, baseUrl, messages, systemPrompt, stream = false, onToken } = {}) {
   const res = await fetch('/api/ai', {
     method: 'POST',
@@ -310,7 +323,7 @@ Rules:
 }
 
 // ── Ask mode: answer questions, no file changes ───────────────────────────────
-export function buildAskPrompt({ kitName, components = [], specs = {}, activeFilePath = null, activeFileContent = null, existingRoutes = [] }) {
+export function buildAskPrompt({ kitName, components = [], specs = {}, activeFilePath = null, activeFileContent = null, existingRoutes = [], cssVars = {}, componentCSS = {} }) {
   const compList = components.map(c => {
     const spec = specs[c.id] || {};
     return `- **${c.name}**${spec.purpose ? `: ${spec.purpose}` : ''}`;
@@ -330,11 +343,11 @@ Do NOT make any file changes or output code blocks with file paths. If you show 
 
 ## Available components:
 ${compList}
-${routeList}${openFileCtx}`;
+${routeList}${formatThemeBlock(cssVars, componentCSS)}${openFileCtx}`;
 }
 
 // ── Plan mode: produce an implementation plan, no file changes ────────────────
-export function buildPlanPrompt({ kitName, components = [], activeFilePath = null, existingRoutes = [] }) {
+export function buildPlanPrompt({ kitName, components = [], activeFilePath = null, existingRoutes = [], cssVars = {}, componentCSS = {} }) {
   const compList = components.map(c => `- ${c.name}`).join(', ');
 
   const existingPagesList = existingRoutes.length
@@ -354,12 +367,12 @@ Your plan must cover:
 4. **Routing** — how pages link together using hash routes (#/ai/PageName)
 5. **Data / state** — any shared state or props needed
 
-Available components: ${compList}${existingPagesList}${openFileCtx}
+Available components: ${compList}${existingPagesList}${formatThemeBlock(cssVars, componentCSS)}${openFileCtx}
 
 Format the plan as numbered sections with sub-bullets. Be specific about file paths and component names.`;
 }
 
-export function buildAgentPrompt({ components, kitPrefix, kitName, specs = {}, mcpContext = '', activeFilePath = null, activeFileContent = null, framework = 'react', workspaceTree = [], barrelContent = '', existingRoutes = [], navFile = null, pageFiles = {}, memory = '' }) {
+export function buildAgentPrompt({ components, kitPrefix, kitName, specs = {}, mcpContext = '', activeFilePath = null, activeFileContent = null, framework = 'react', workspaceTree = [], barrelContent = '', existingRoutes = [], navFile = null, pageFiles = {}, memory = '', cssVars = {}, componentCSS = {} }) {
   const isAngular = framework === 'angular';
 
   // Long-term memory: durable facts learned from past sessions (stable across
@@ -367,6 +380,8 @@ export function buildAgentPrompt({ components, kitPrefix, kitName, specs = {}, m
   const memoryCtx = memory && memory.trim()
     ? `\n## PROJECT MEMORY — what you've learned about this project across past sessions. Honor these conventions and preferences:\n${memory.trim()}\n`
     : '';
+
+  const themeCtx = formatThemeBlock(cssVars, componentCSS);
 
   const REACT_PROP_HINTS = {
     Button: 'variant="primary|secondary|outline|ghost|neon|danger|glass" size="sm|md|lg" loading={bool}',
@@ -447,7 +462,7 @@ ${routeList}
 
   if (isAngular) {
     return `You are openUI Agent — a UI builder for the ${kitName} Angular design system.
-${memoryCtx}
+${memoryCtx}${themeCtx}
 FORBIDDEN — never do any of these:
 - Import from @angular/material, ng-bootstrap, primeng, or any package other than @angular/core, @angular/common, @angular/forms, and ../../components/ui
 - Use raw <button>, <input>, <select>, <table> — always use the kit component instead
@@ -535,7 +550,7 @@ Write complete file content. Never truncate.`;
 
 YOUR JOB: Build complete React features end-to-end — pages, reusable components, hooks, context, and small data/service modules — creating and editing as many files across the project as the task needs. Wire everything together so it runs.
 NEVER explain at length, ask clarifying questions, or say "I cannot create files." Write the code immediately.
-${memoryCtx}
+${memoryCtx}${themeCtx}
 OUTPUT FORMAT — mandatory for every response. One fenced block per file (you may output several):
 \`\`\`jsx:src/pages/SignIn.jsx
 import React, { useState } from 'react';
