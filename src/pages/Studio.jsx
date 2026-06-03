@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { Eye, Code2, Download, Settings, RotateCcw, RefreshCcw, PanelLeft, X, Sparkles, ShieldCheck, Bot, Monitor, Laptop, Tablet, Smartphone, Palette } from 'lucide-react';
+import { Eye, Code2, Download, Settings, RotateCcw, RefreshCcw, PanelLeft, X, Sparkles, ShieldCheck, Bot, Monitor, Laptop, Tablet, Smartphone, Palette, FolderOpen } from 'lucide-react';
 import { useAI } from '../context/AIContext';
 import AIAgent from '../components/studio/AIAgent';
 import FileExplorer from '../components/studio/FileExplorer';
@@ -21,6 +21,7 @@ const AISettingsModal = lazy(() => import('../components/docs/AISettingsModal'))
 const ExportModal = lazy(() => import('../components/docs/ExportModal'));
 const ThemeEditorModal = lazy(() => import('../components/studio/ThemeEditorModal'));
 const AgentDiffPreview = lazy(() => import('../components/studio/AgentDiffPreview'));
+const OpenWorkspaceModal = lazy(() => import('../components/studio/OpenWorkspaceModal'));
 const angularPreviewEnabled = import.meta.env.VITE_OPENUI_ANGULAR === '1';
 
 const Studio = () => {
@@ -40,6 +41,8 @@ const Studio = () => {
   const [showAISettings, setShowAISettings] = useState(false);
   const [aiSettingsTab, setAiSettingsTab] = useState('ai');
   const [showExport, setShowExport] = useState(false);
+  const [showOpenWorkspace, setShowOpenWorkspace] = useState(false);
+  const [workspaceBind, setWorkspaceBind] = useState(null);
   const [pendingAgentWrite, setPendingAgentWrite] = useState(null);
   const [applyingAgentDiff, setApplyingAgentDiff] = useState(false);
   const [previewKey, setPreviewKey] = useState(0);
@@ -66,6 +69,36 @@ const Studio = () => {
   const redoRef = useRef(redoStack);
   useEffect(() => { undoRef.current = undoStack; }, [undoStack]);
   useEffect(() => { redoRef.current = redoStack; }, [redoStack]);
+
+  const loadWorkspaceBind = useCallback(async () => {
+    try {
+      const data = await apiFetch(`/api/workspace-bind?kit=${framework}`);
+      setWorkspaceBind(data);
+    } catch {
+      setWorkspaceBind(null);
+    }
+  }, [framework]);
+
+  useEffect(() => {
+    loadWorkspaceBind();
+  }, [loadWorkspaceBind]);
+
+  const handleWorkspaceBound = useCallback(() => {
+    setOpenFiles([]);
+    setActiveFilePath(null);
+    setAgentPages([]);
+    setActiveAgentPage(null);
+    setUndoStack([]);
+    setRedoStack([]);
+    setFilesVersion(v => v + 1);
+    setPreviewKey(k => k + 1);
+    loadWorkspaceBind();
+    addToast({
+      title: 'Workspace updated',
+      message: 'File tree and preview will use the linked project folder.',
+      variant: 'success',
+    });
+  }, [loadWorkspaceBind, addToast]);
 
   const activeFile = openFiles.find(f => f.path === activeFilePath) ?? null;
   const anyDirty = openFiles.some(f => f.dirty);
@@ -222,6 +255,7 @@ const Studio = () => {
       setRedoStack([]);
       setFilesVersion(v => v + 1);
       setPreviewKey(k => k + 1);
+      loadWorkspaceBind();
       addToast({ title: 'Workspace reset', message: 'Restored from template.', variant: 'success' });
     } catch (err) {
       setSaveError(err.message);
@@ -596,6 +630,24 @@ const Studio = () => {
           <Palette size={15} />
         </button>
 
+        <button
+          className={`studio-icon-btn${workspaceBind?.mode === 'external' ? ' panel-active' : ''}`}
+          onClick={() => setShowOpenWorkspace(true)}
+          title={
+            workspaceBind?.mode === 'external'
+              ? `Linked: ${workspaceBind.externalRoot}`
+              : 'Open existing project folder'
+          }
+        >
+          <FolderOpen size={15} />
+        </button>
+
+        {workspaceBind?.mode === 'external' && workspaceBind.externalRoot && (
+          <span className="studio-workspace-link" title={workspaceBind.externalRoot}>
+            {workspaceBind.externalRoot.replace(/^.*[/\\]/, '…/')}
+          </span>
+        )}
+
         <div className="studio-topbar-spacer" />
         <div className="studio-topbar-actions">
           {anyDirty && <span className="studio-unsaved-notice" title="Unsaved changes">● unsaved</span>}
@@ -865,6 +917,13 @@ const Studio = () => {
             applying={applyingAgentDiff}
             onApply={applyPendingAgentWrite}
             onDiscard={discardPendingAgentWrite}
+          />
+        )}
+        {showOpenWorkspace && (
+          <OpenWorkspaceModal
+            framework={framework}
+            onClose={() => setShowOpenWorkspace(false)}
+            onBound={handleWorkspaceBound}
           />
         )}
       </Suspense>

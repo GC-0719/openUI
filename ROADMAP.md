@@ -41,7 +41,7 @@ openUI is a **local-first AI studio** that writes into a **real project tree**, 
 
 ### 0.4.x — Workflow & uniqueness
 
-- [ ] **Open in existing repo** — point workspace at a user folder (with strict path guard)
+- [x] **Open in existing repo** — point workspace at a user folder (with strict path guard)
 - [ ] **Git status** in file tree (modified / untracked badges)
 - [x] **Diff preview** before applying agent file batch
 - [ ] **Starter templates** (dashboard, auth, settings) as one-click agent seeds

@@ -9,6 +9,9 @@ run **only on your local machine, for your own use**:
   `/api/create-folder`, `/api/rename-path`, `/api/delete-path`). A path-traversal
   guard keeps writes inside the workspace, but the surface is still a local
   filesystem API.
+- **`/api/workspace-bind`** can symlink `kits/<kit>/workspace` to a folder you
+  choose. Only bind projects you trust; validation blocks template folders and
+  `node_modules`, but the linked tree is fully writable by the studio APIs.
 - It can **spawn MCP server processes over stdio** (`/api/mcp-bridge`), executing
   the command you configure. Only connect MCP servers you trust.
 - It **proxies AI requests** with the API key you provide.

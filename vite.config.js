@@ -16,6 +16,12 @@ import { json, readBody } from './server/http.js';
 import { createPathResolver, safeKit } from './server/pathSafety.js';
 import { aiComplete, aiStreamWithContinuation, parseLocalLLMResponse } from './server/ai.js';
 import { validateWorkspaceFiles } from './server/validateSource.js';
+import {
+  bindExternalWorkspace,
+  getWorkspaceBindStatus,
+  restoreBuiltinWorkspace,
+  validateExternalRoot,
+} from './server/workspaceBind.js';
 
 function copyPath(src, dest) {
   if (!fs.existsSync(src)) return;
@@ -804,17 +810,56 @@ const openuiDevPlugin = {
       }
     });
 
+    // ── Workspace bind (open existing repo on disk) ───────────────────────────
+    server.middlewares.use('/api/workspace-bind', async (req, res) => {
+      try {
+        const url = new URL(req.url, 'http://localhost');
+        const kit = url.searchParams.get('kit') || 'react';
+
+        if (req.method === 'GET') {
+          if (!safeKit(kit)) { json(res, 400, { error: 'Invalid kit' }); return; }
+          json(res, 200, getWorkspaceBindStatus(cwd, kit));
+          return;
+        }
+
+        if (req.method === 'POST') {
+          const body = JSON.parse(await readBody(req) || '{}');
+          const action = body.action || 'bind';
+          const kitPost = body.kit || kit;
+          if (!safeKit(kitPost)) { json(res, 400, { error: 'Invalid kit' }); return; }
+
+          if (action === 'unbind' || action === 'restore') {
+            const result = restoreBuiltinWorkspace(cwd, kitPost, copyPath);
+            if (!result.ok) { json(res, 400, result); return; }
+            json(res, 200, { ok: true, ...getWorkspaceBindStatus(cwd, kitPost) });
+            return;
+          }
+
+          if (action === 'validate') {
+            const check = validateExternalRoot(body.rootPath, cwd, kitPost);
+            json(res, check.ok ? 200 : 400, check);
+            return;
+          }
+
+          const bind = bindExternalWorkspace(cwd, kitPost, body.rootPath);
+          if (!bind.ok) { json(res, 400, bind); return; }
+          json(res, 200, { ok: true, ...getWorkspaceBindStatus(cwd, kitPost) });
+          return;
+        }
+
+        json(res, 405, { error: 'GET/POST only' });
+      } catch (err) {
+        json(res, 500, { error: err.message });
+      }
+    });
+
     // ── Reset workspace to template ───────────────────────────────────────────
     server.middlewares.use('/api/reset-template', async (req, res) => {
       if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
       try {
         const { kit = 'react' } = JSON.parse(await readBody(req) || '{}');
-        if (!safeKit(kit)) { json(res, 400, { error: 'Invalid kit' }); return; }
-        const wsPath = path.join(cwd, KITS_DIR, kit, 'workspace');
-        const tmplPath = path.join(cwd, KITS_DIR, kit, 'template');
-        if (!fs.existsSync(tmplPath)) { json(res, 404, { error: 'Template not found' }); return; }
-        fs.rmSync(wsPath, { recursive: true, force: true });
-        copyPath(tmplPath, wsPath);
+        const result = restoreBuiltinWorkspace(cwd, kit, copyPath);
+        if (!result.ok) { json(res, result.error === 'Template not found' ? 404 : 400, result); return; }
         json(res, 200, { ok: true });
       } catch (err) {
         json(res, 500, { error: err.message });
