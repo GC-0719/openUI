@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import process from 'node:process';
 import { KITS_DIR } from './constants.js';
 import { safeKit } from './pathSafety.js';
 
@@ -119,31 +120,21 @@ export function getWorkspaceBindStatus(openuiRoot, kit) {
     };
   }
 
-  let isSymlink = false;
-  let target = null;
   try {
-    isSymlink = fs.lstatSync(slot).isSymbolicLink();
-    if (isSymlink) target = fs.realpathSync(slot);
-  } catch {
-    return { kit, mode: 'error', slot, error: 'Workspace slot unreadable' };
-  }
-
-  if (isSymlink && target) {
+    if (!fs.lstatSync(slot).isSymbolicLink()) {
+      return { kit, mode: 'builtin', slot, externalRoot: null };
+    }
+    const externalRoot = fs.realpathSync(slot);
     return {
       kit,
       mode: 'external',
       slot,
-      externalRoot: target,
+      externalRoot,
       linkedAt: saved?.linkedAt ?? null,
     };
+  } catch {
+    return { kit, mode: 'error', slot, error: 'Workspace slot unreadable' };
   }
-
-  return {
-    kit,
-    mode: 'builtin',
-    slot,
-    externalRoot: null,
-  };
 }
 
 /**
