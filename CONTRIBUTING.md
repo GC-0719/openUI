@@ -35,7 +35,7 @@ exercise the agent.
 - Keep changes focused; one logical change per PR.
 - Commit messages: imperative summary, e.g. `fix: ...`, `feat: ...`,
   `refactor: ...`.
-- Run `npm run lint`, `npm test`, and `npm run build` before opening a PR. Lint must pass
+- Run `npm run lint`, `npm test`, `npm run security:audit`, and `npm run build` before opening a PR. Lint must pass
   with **0 errors**; there is a backlog of ~84 non-correctness warnings (mostly
   Fast-Refresh `only-export-components` hints on barrels/contexts/data files,
   plus a few intentional effect patterns) that we chip away at — please don't

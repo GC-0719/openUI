@@ -29,6 +29,8 @@ import {
   registerCustomComponent,
   writeWorkspaceSpec,
 } from './server/customComponent.js';
+import { validateMcpStdioCommand } from './server/mcpCommandSafety.js';
+import { isPathInsideRoot } from './server/securityAudit.js';
 
 function copyPath(src, dest) {
   if (!fs.existsSync(src)) return;
@@ -1261,7 +1263,11 @@ Variants: ${(variants || []).join(', ')}`;
     }
 
     async function mcpRequest(transport, url, command, method, params) {
-      if (transport === 'stdio') return stdioMCPRequest(command, method, params);
+      if (transport === 'stdio') {
+        const check = validateMcpStdioCommand(command);
+        if (!check.ok) throw new Error(check.error);
+        return stdioMCPRequest(command, method, params);
+      }
       return httpMCPRequest(url, method, params);
     }
 
@@ -1302,6 +1308,7 @@ Variants: ${(variants || []).join(', ')}`;
         // Async + yields between I/O so a large export never blocks Vite's
         // event loop (and thus never freezes HMR / the studio UI).
         const readPath = async (wsRelPath) => {
+          if (!isPathInsideRoot(wsRoot, wsRelPath)) return;
           const full = path.join(wsRoot, wsRelPath);
           const bn = path.basename(full);
           if (bn.startsWith('._') || bn === '.DS_Store' || bn === 'node_modules') return;

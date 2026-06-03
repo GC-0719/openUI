@@ -22,6 +22,8 @@ jobs:
         run: npm run gallery:sync
       - name: Test
         run: npm test
+      - name: Security audit
+        run: npm run security:audit
       - name: Build (React studio)
         run: npm run build:react
       - name: Build (@openui/react package)

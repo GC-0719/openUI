@@ -7,6 +7,7 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 ## [Unreleased]
 
 ### Added
+- **Security RC checklist** — [docs/SECURITY_CHECKLIST.md](docs/SECURITY_CHECKLIST.md) and `npm run security:audit` (CI); MCP stdio command allowlist; export walk path containment.
 - **Custom kit components** — studio **New kit component** flow (`POST /api/register-component`), workspace `.openui/specs.json`, merged specs for the agent; see [docs/CUSTOM_COMPONENTS.md](docs/CUSTOM_COMPONENTS.md).
 - **Kit gallery** — `kits/gallery/` index (24 components), `npm run gallery:sync`, CI coverage tests for React/Angular showcase previews.
 - **Kit public API manifest** (`kits/public-api.manifest.json`) + CI tests — template/workspace barrels must match frozen `@openedui/react` / `@openedui/angular` exports (0.2.0).

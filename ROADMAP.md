@@ -56,7 +56,7 @@ openUI is a **local-first AI studio** that writes into a **real project tree**, 
 
 ### 0.9.x — Release candidate
 
-- [ ] Security review checklist (path traversal, MCP spawn, export ZIP)
+- [x] Security review checklist (path traversal, MCP spawn, export ZIP)
 - [ ] Contributor guide: “good first issue” labels in GitHub
 - [ ] Example apps: `examples/dashboard-react`, `examples/mcp-postgres`
 - [ ] Performance: large workspace tree (500+ files) stays usable

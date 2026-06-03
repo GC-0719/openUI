@@ -38,6 +38,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "gallery:sync": "node scripts/generate-kit-gallery.mjs",
+    "security:audit": "node scripts/security-audit.mjs",
     "preview": "vite preview",
     "start": "node server.js"
   },

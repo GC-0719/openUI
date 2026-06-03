@@ -22,6 +22,10 @@ run **only on your local machine, for your own use**:
 Do not run it as a hosted/multi-tenant service. Treat connected MCP commands and
 AI keys as you would any local secret.
 
+Maintainers: run **`npm run security:audit`** before release candidates. See
+[docs/SECURITY_CHECKLIST.md](docs/SECURITY_CHECKLIST.md) for the full review
+checklist (path traversal, MCP spawn, export ZIP, workspace bind).
+
 ## Reporting a vulnerability
 
 Please report security issues privately to **gopichandyaragarla@gmail.com**
