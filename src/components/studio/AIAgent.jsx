@@ -2,7 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ArrowUp, Settings, RotateCcw, FileCode, Layers, Sparkles, Undo2, Database, Brain, Trash2 } from 'lucide-react';
 import { useAI, AI_PROVIDERS } from '../../context/AIContext';
 import { useTheme } from '../../context/ThemeContext';
-import { callAI, buildAgentPrompt, buildAskPrompt, buildPlanPrompt, parseAgentResponse, buildMemoryExtractionPrompt } from '../../services/aiService';
+import {
+  callAI,
+  buildAgentPrompt,
+  buildAskPrompt,
+  buildPlanPrompt,
+  buildImplementPlanPrompt,
+  parseAgentResponse,
+  buildMemoryExtractionPrompt,
+} from '../../services/aiService';
+import PlanChecklist from './PlanChecklist';
 import { fetchMCPContext, formatMCPContext } from '../../services/mcpClientService';
 import { componentsMeta } from '../../data/components-meta.js';
 
@@ -216,13 +225,12 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  const send = async () => {
+  const executeTurn = async (userMsg, { activeMode = mode, implementPlanText = null } = {}) => {
     const configured = settings.provider === 'local'
       ? Boolean(settings.baseUrl?.trim() && settings.model?.trim())
       : Boolean(settings.apiKey?.trim());
-    if (!input.trim() || loading || !configured) return;
-    const userMsg = input.trim();
-    setInput('');
+    if (!userMsg?.trim() || loading || !configured) return;
+
     setError('');
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setLoading(true);
@@ -259,11 +267,23 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       };
 
       const systemPrompt =
-        mode === 'ask'  ? buildAskPrompt(ctxArgs) :
-        mode === 'plan' ? buildPlanPrompt(ctxArgs) :
+        activeMode === 'ask' ? buildAskPrompt(ctxArgs) :
+        activeMode === 'plan' ? buildPlanPrompt(ctxArgs) :
+        implementPlanText ? buildImplementPlanPrompt({
+          planText: implementPlanText,
+          kitName: kit.kitName,
+          kitPrefix: kit.kitPrefix,
+          framework,
+          components: COMPONENTS_META,
+          specs,
+          mcpContext,
+          workspaceTree: workspaceCtx.tree,
+          cssVars,
+          componentCSS,
+        }) :
         buildAgentPrompt(ctxArgs);
 
-      const isEditMode = mode === 'edit';
+      const isEditMode = activeMode === 'edit';
       const MAX_AUTO_FIX = 2;
       let conversationTail = [...history, { role: 'user', content: userMsg }];
       let finalMessage = '';
@@ -303,7 +323,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
               role: 'assistant',
               text: `⟳ Fixing component usage (attempt ${autoFixCount})…`,
               changes: null,
-              mode,
+              mode: activeMode,
             }]);
             conversationTail = [
               ...conversationTail,
@@ -327,7 +347,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
               role: 'assistant',
               text: `⟳ Auto-fixing syntax error (attempt ${autoFixCount})…`,
               changes: null,
-              mode,
+              mode: activeMode,
             }]);
             conversationTail = [
               ...conversationTail,
@@ -356,7 +376,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       if (!finalMessage) finalMessage = '…';
       setStreamingText('');
       setAutoFixing(false);
-      setMessages(prev => [...prev, { role: 'assistant', text: finalMessage, changes: finalChanges, mode }]);
+      setMessages(prev => [...prev, { role: 'assistant', text: finalMessage, changes: finalChanges, mode: activeMode }]);
 
       // Learn from a successful build — fire-and-forget so it never blocks the UI.
       if (isEditMode && builtFiles) learnFromBuild(userMsg, builtFiles);
@@ -365,6 +385,21 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       setStreamingText('');
     }
     setLoading(false);
+  };
+
+  const send = async () => {
+    if (!input.trim()) return;
+    const userMsg = input.trim();
+    setInput('');
+    await executeTurn(userMsg);
+  };
+
+  const buildFromPlan = async (planText) => {
+    setMode('edit');
+    await executeTurn(
+      'Implement the approved plan above. Complete every checklist item.',
+      { activeMode: 'edit', implementPlanText: planText },
+    );
   };
 
   // The "training" loop: after a successful build, ask the model for up to 3
@@ -551,6 +586,13 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
                       <span className="ai-msg-label-name">openUI Agent</span>
                     </div>
                     <div className="ai-msg-body">{renderMessage(msg.text)}</div>
+                    {msg.mode === 'plan' && !loading && (
+                      <PlanChecklist
+                        planText={msg.text}
+                        onBuild={() => buildFromPlan(msg.text)}
+                        building={loading}
+                      />
+                    )}
                     <FileChangeBadge changes={msg.changes} onNavigate={onNavigatePage} />
                     {msg.changes && i === lastChangedIdx && canUndo && (
                       <button className="agent-undo-btn" onClick={onUndo} title="Undo these changes">

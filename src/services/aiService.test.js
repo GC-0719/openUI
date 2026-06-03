@@ -4,6 +4,7 @@ import {
   stripJsonBlock,
   parseBuilderJSX,
   parseAgentResponse,
+  parsePlanChecklist,
 } from './aiService.js';
 
 describe('parseAIChanges', () => {
@@ -35,6 +36,20 @@ describe('parseBuilderJSX', () => {
 
   it('returns trimmed text when no fence', () => {
     expect(parseBuilderJSX('  <span />  ')).toBe('<span />');
+  });
+});
+
+describe('parsePlanChecklist', () => {
+  it('extracts unchecked and checked items', () => {
+    const text = `## Checklist\n- [ ] Create src/pages/Home.jsx\n- [x] Read Dashboard.jsx\n`;
+    expect(parsePlanChecklist(text)).toEqual([
+      { done: false, text: 'Create src/pages/Home.jsx' },
+      { done: true, text: 'Read Dashboard.jsx' },
+    ]);
+  });
+
+  it('returns empty when no checklist syntax', () => {
+    expect(parsePlanChecklist('just prose')).toEqual([]);
   });
 });
 

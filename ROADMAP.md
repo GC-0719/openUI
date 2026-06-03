@@ -33,7 +33,7 @@ openUI is a **local-first AI studio** that writes into a **real project tree**, 
 ### 0.3.x — Agent quality & design-system depth
 
 - [x] **Theme token editor** in studio (CSS variables synced to workspace + agent prompts)
-- [ ] **Plan mode** exports a markdown checklist before Edit runs
+- [x] **Plan mode** exports a markdown checklist before Edit runs
 - [ ] **Audit panel** supports Angular templates + uses kit specs from disk
 - [ ] Stronger **parse validation** for Angular (TypeScript compiler feedback in dev server)
 - [ ] **Agent memory** UI: edit/remove single facts, not only “forget all”

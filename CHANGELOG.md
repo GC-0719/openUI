@@ -7,6 +7,7 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 ## [Unreleased]
 
 ### Added
+- **Plan mode checklist** — structured plan with `- [ ]` tasks and **Build this plan** to run Edit mode against the approved plan.
 - **Theme token editor** in the studio (palette button) — live CSS variable overrides, sync to `src/styles/theme-overrides.css`, agent sees active tokens.
 - Unit tests for `buildThemeOverridesCss`.
 

@@ -347,29 +347,118 @@ ${routeList}${formatThemeBlock(cssVars, componentCSS)}${openFileCtx}`;
 }
 
 // ── Plan mode: produce an implementation plan, no file changes ────────────────
-export function buildPlanPrompt({ kitName, components = [], activeFilePath = null, existingRoutes = [], cssVars = {}, componentCSS = {} }) {
-  const compList = components.map(c => `- ${c.name}`).join(', ');
+export function buildPlanPrompt({
+  kitName,
+  components = [],
+  specs = {},
+  activeFilePath = null,
+  activeFileContent = null,
+  existingRoutes = [],
+  framework = 'react',
+  workspaceTree = [],
+  mcpContext = '',
+  cssVars = {},
+  componentCSS = {},
+} = {}) {
+  const compList = components.map(c => {
+    const spec = specs[c.id] || {};
+    return `- **${c.name}**${spec.purpose ? `: ${spec.purpose}` : ''}`;
+  }).join('\n');
 
   const existingPagesList = existingRoutes.length
-    ? `\nExisting pages: ${existingRoutes.map(r => `${r.name} → ${r.route}`).join(', ')}`
+    ? `\nExisting pages: ${existingRoutes.map(r => `${r.name} → ${r.route} (${r.file})`).join(', ')}`
     : '';
 
-  const openFileCtx = activeFilePath ? `\nCurrently open: \`${activeFilePath}\`` : '';
+  const treeCtx = workspaceTree.length > 0
+    ? `\n## Workspace files already present:\n${workspaceTree.map(f => `  - ${f}`).join('\n')}\n`
+    : '';
 
-  return `You are a ${kitName} UI architect. Create a clear implementation plan for the user's request.
+  const openFileCtx = activeFilePath && activeFileContent
+    ? `\nCurrently open: \`${activeFilePath}\`\n\`\`\`\n${activeFileContent.slice(0, 2000)}\n\`\`\``
+    : activeFilePath
+      ? `\nCurrently open: \`${activeFilePath}\``
+      : '';
 
-DO NOT write file code or use \`\`\`jsx:path\`\`\` blocks. Produce only a structured plan.
+  const routeHint = framework === 'angular'
+    ? 'Register new pages in `src/app/app.component.ts` imports + template.'
+    : 'New pages use `src/pages/<Name>.jsx` with default export; reachable at `#/ai/<Name>`.';
 
-Your plan must cover:
-1. **Files to create** — name, purpose, route (if a page)
-2. **Files to edit** — which existing file, what to change and why
-3. **Components to use** — from the kit: ${compList}
-4. **Routing** — how pages link together using hash routes (#/ai/PageName)
-5. **Data / state** — any shared state or props needed
+  return `You are a ${kitName} UI architect (${framework} kit). Create an implementation plan for the user's request.
 
-Available components: ${compList}${existingPagesList}${formatThemeBlock(cssVars, componentCSS)}${openFileCtx}
+DO NOT write file code or use path-annotated fenced blocks (\`\`\`jsx:path\`). No file contents.
 
-Format the plan as numbered sections with sub-bullets. Be specific about file paths and component names.`;
+Structure your response EXACTLY like this:
+
+## Overview
+One short paragraph: what we are building and why.
+
+## Files to create
+Bulleted list: \`path\` — purpose, route if applicable.
+
+## Files to edit
+Bulleted list: \`path\` — what to change.
+
+## Components & patterns
+Which kit components to use and how they compose.
+
+## Routing & navigation
+${routeHint}
+
+## Data / services
+State, hooks, or ${framework === 'angular' ? 'services' : 'lib/'} modules if needed.
+
+## Checklist
+A markdown task list the builder will follow — one checkbox per concrete step (8–15 items max):
+- [ ] Step one with exact file path
+- [ ] Step two
+(Use \`- [ ]\` syntax only in this section.)
+
+${mcpContext ? `\n## Backend (MCP)\nHonor connected backend fields and tools.\n` : ''}
+## Available kit components:
+${compList}${existingPagesList}${treeCtx}${formatThemeBlock(cssVars, componentCSS)}${openFileCtx}`;
+}
+
+/** Parse markdown checklist items from a plan response. */
+export function parsePlanChecklist(text) {
+  if (!text) return [];
+  const items = [];
+  for (const line of text.split('\n')) {
+    const m = line.match(/^\s*[-*]\s+\[([ xX])\]\s+(.+)$/);
+    if (m) items.push({ done: m[1].toLowerCase() === 'x', text: m[2].trim() });
+  }
+  return items;
+}
+
+/** Edit-mode prompt when implementing a prior plan. */
+export function buildImplementPlanPrompt({
+  planText,
+  kitName,
+  kitPrefix,
+  framework = 'react',
+  components = [],
+  specs = {},
+  mcpContext = '',
+  workspaceTree = [],
+  cssVars = {},
+  componentCSS = {},
+} = {}) {
+  const compList = components.map(c => `- ${c.name}`).join(', ');
+  const treeCtx = workspaceTree.length > 0
+    ? `\nWorkspace tree:\n${workspaceTree.map(f => `  ${f}`).join('\n')}\n`
+    : '';
+  return `You are openUI Agent implementing an approved plan for ${kitName} (${framework}, prefix ${kitPrefix}-).
+
+Follow the plan below step by step. Check off each checklist item by actually creating/editing the files described.
+
+## Approved plan
+${planText}
+
+## Rules
+- Output path-annotated code blocks for every file you create or change.
+- Use kit components only: ${compList}
+- No hardcoded hex colors — use CSS variables.
+${treeCtx}${formatThemeBlock(cssVars, componentCSS)}${mcpContext ? `\n## Backend context:\n${mcpContext}\n` : ''}
+Begin implementation now.`;
 }
 
 export function buildAgentPrompt({ components, kitPrefix, kitName, specs = {}, mcpContext = '', activeFilePath = null, activeFileContent = null, framework = 'react', workspaceTree = [], barrelContent = '', existingRoutes = [], navFile = null, pageFiles = {}, memory = '', cssVars = {}, componentCSS = {} }) {
