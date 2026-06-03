@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowUp, Settings, RotateCcw, FileCode, Layers, Sparkles, Undo2, Database, Brain, Trash2 } from 'lucide-react';
+import { ArrowUp, Settings, RotateCcw, FileCode, Layers, Sparkles, Undo2, Database, Brain } from 'lucide-react';
 import { useAI, AI_PROVIDERS } from '../../context/AIContext';
 import { useTheme } from '../../context/ThemeContext';
 import {
@@ -12,6 +12,8 @@ import {
   buildMemoryExtractionPrompt,
 } from '../../services/aiService';
 import PlanChecklist from './PlanChecklist';
+import AgentMemoryPanel from './AgentMemoryPanel';
+import { apiFetch, apiPost } from '../../utils/api';
 import { fetchMCPContext, formatMCPContext } from '../../services/mcpClientService';
 import { componentsMeta } from '../../data/components-meta.js';
 
@@ -421,22 +423,19 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       try { facts = JSON.parse(arr[0]); } catch { return; }
       const clean = (Array.isArray(facts) ? facts : []).filter(f => typeof f === 'string' && f.trim()).slice(0, 3);
       if (!clean.length) return;
-      const res = await fetch('/api/agent-memory', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kit: framework, add: clean }),
-      });
-      const data = await res.json();
+      const data = await apiPost('/api/agent-memory', { kit: framework, add: clean });
       if (data && Array.isArray(data.facts)) setMemory(data);
     } catch { /* best-effort; never disrupt the build */ }
   };
 
   const forgetMemory = async () => {
+    if (!window.confirm('Forget all learned facts for this project?')) return;
     try {
-      const res = await fetch(`/api/agent-memory?kit=${framework}`, { method: 'DELETE' });
-      const data = await res.json();
+      const data = await apiFetch(`/api/agent-memory?kit=${framework}`, { method: 'DELETE' });
       setMemory(data && Array.isArray(data.facts) ? data : { facts: [], updatedAt: null });
-    } catch { /* ignore */ }
+    } catch {
+      setContextWarning(prev => prev || 'Could not clear agent memory');
+    }
   };
 
   const handleKey = (e) => {
@@ -470,14 +469,14 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
               {enabledMCP} MCP
             </button>
           )}
-          {memory.facts.length > 0 && (
+          {isConfigured && (
             <button
               className={`ai-mem-indicator${showMemory ? ' active' : ''}`}
               onClick={() => setShowMemory(v => !v)}
-              title="What the agent has learned about this project"
+              title="Project memory — facts the agent remembers"
             >
               <Brain size={11} />
-              {memory.facts.length} learned
+              {memory.facts.length > 0 ? `${memory.facts.length} learned` : 'Memory'}
             </button>
           )}
         </div>
@@ -545,21 +544,13 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       )}
 
       {/* Long-term memory — what the agent has learned and applies to every build */}
-      {showMemory && memory.facts.length > 0 && (
-        <div className="ai-backend-panel">
-          <div className="ai-backend-title">
-            <Brain size={12} /> Project memory
-            <button className="ai-mem-forget" onClick={forgetMemory} title="Forget everything learned">
-              <Trash2 size={11} /> Forget all
-            </button>
-          </div>
-          <ul className="ai-mem-list">
-            {memory.facts.map((f, i) => (
-              <li key={i}>{f.text}</li>
-            ))}
-          </ul>
-          <div className="ai-backend-hint">Learned automatically from your builds. Injected into every request so the agent improves over time.</div>
-        </div>
+      {showMemory && isConfigured && (
+        <AgentMemoryPanel
+          framework={framework}
+          memory={memory}
+          onMemoryChange={setMemory}
+          onForgetAll={forgetMemory}
+        />
       )}
 
       {/* Messages */}
