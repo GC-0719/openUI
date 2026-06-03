@@ -7,6 +7,8 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 ## [Unreleased]
 
 ### Added
+- **Kit public API manifest** (`kits/public-api.manifest.json`) + CI tests — template/workspace barrels must match frozen `@openedui/react` / `@openedui/angular` exports (0.2.0).
+- **Kit stability & migration docs** — `kits/KIT_STABILITY.md`, `docs/KIT_MIGRATION.md`, per-kit CHANGELOGs.
 - **MCP wizard** (AI Settings → MCP) — scaffold a stdio MCP server from **OpenAPI JSON** (HTTP proxy tools) or **Prisma schema** (model introspection); download ZIP, copy Claude config, add to studio MCP list.
 - **Starter templates** in the agent panel — Dashboard, Auth, and Settings seeds with **Plan** (checklist first) or **Build** (Edit mode) for React and Angular workspaces.
 - **Git status in file tree** — `M` / `U` / `S` badges for modified, untracked, and staged files when the workspace is inside a git repo (`/api/git-status`).
