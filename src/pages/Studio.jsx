@@ -755,7 +755,13 @@ const Studio = () => {
             {centerTab === 'spec' && <SpecEditor filePath={activeFilePath} framework={framework} />}
 
             {/* Audit */}
-            {centerTab === 'audit' && <AuditPanel />}
+            {centerTab === 'audit' && (
+              <AuditPanel
+                framework={framework}
+                activeFilePath={activeFilePath}
+                activeFileContent={activeFile?.pendingContent ?? activeFile?.content ?? null}
+              />
+            )}
           </div>
           </ErrorBoundary>
         </div>

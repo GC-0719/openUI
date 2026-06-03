@@ -5,6 +5,8 @@ import {
   parseBuilderJSX,
   parseAgentResponse,
   parsePlanChecklist,
+  parseAuditResult,
+  buildAuditPrompt,
 } from './aiService.js';
 
 describe('parseAIChanges', () => {
@@ -50,6 +52,33 @@ describe('parsePlanChecklist', () => {
 
   it('returns empty when no checklist syntax', () => {
     expect(parsePlanChecklist('just prose')).toEqual([]);
+  });
+});
+
+describe('parseAuditResult', () => {
+  it('parses JSON wrapped in markdown fences', () => {
+    const text = '```json\n{"violations":[],"summary":"clean"}\n```';
+    expect(parseAuditResult(text)).toEqual({ violations: [], summary: 'clean' });
+  });
+});
+
+describe('buildAuditPrompt', () => {
+  it('includes Angular rules when framework is angular', () => {
+    const prompt = buildAuditPrompt('<button>Go</button>', {
+      components: [{ id: 'button', name: 'Button' }],
+      framework: 'angular',
+      kitPrefix: 'ou',
+    });
+    expect(prompt).toContain('Angular template');
+    expect(prompt).toContain('@angular/material');
+  });
+
+  it('includes specs from disk when provided', () => {
+    const prompt = buildAuditPrompt('code', {
+      components: [{ id: 'buttons', name: 'Button' }],
+      specs: { buttons: { purpose: 'Primary actions', useWhen: ['CTAs'], avoidWhen: [] } },
+    });
+    expect(prompt).toContain('Primary actions');
   });
 });
 

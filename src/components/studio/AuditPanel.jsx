@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react';
-import { ShieldCheck, AlertCircle, AlertTriangle, Info, Copy, Check, FileCode } from 'lucide-react';
+import { useState, useCallback, useEffect } from 'react';
+import { ShieldCheck, AlertCircle, AlertTriangle, Info, Copy, Check, FileCode, FileInput } from 'lucide-react';
 import { useAI } from '../../context/AIContext';
-import { callAI, buildAuditPrompt } from '../../services/aiService';
-import { componentsMeta } from '../../data/components-meta.js';
+import { callAI, buildAuditPrompt, parseAuditResult } from '../../services/aiService';
+import { componentsMeta, angularComponentsMeta } from '../../data/components-meta.js';
 
 const SEVERITY_ICON = {
   error: <AlertCircle size={13} style={{ color: '#f87171', flexShrink: 0 }} />,
@@ -12,30 +12,43 @@ const SEVERITY_ICON = {
 
 const SEVERITY_CLASS = { error: 'audit-violation-error', warning: 'audit-violation-warning', info: 'audit-violation-info' };
 
-const COMPONENTS_META = componentsMeta.map(c => ({ id: c.id, name: c.name }));
-
-const SAMPLE = `// Paste any JSX here to audit it against your design system
+const SAMPLE_REACT = `// Paste JSX to audit against your kit
 function Example() {
   return (
     <div>
-      <button style={{ background: "#6366F1", color: "#fff" }}>
-        Save Changes
-      </button>
+      <button style={{ background: "#6366F1", color: "#fff" }}>Save</button>
       <input type="text" placeholder="Search..." />
-      <span style={{ fontSize: "12px", color: "#999" }}>
-        3 items selected
-      </span>
     </div>
   );
 }`;
 
-const AuditPanel = () => {
-  const { settings, kit, isConfigured } = useAI();
+const SAMPLE_ANGULAR = `// Paste Angular template or component code
+@Component({
+  template: \`
+    <button style="background:#6366F1">Save</button>
+    <input type="text" placeholder="Search" />
+  \`,
+})
+export class ExampleComponent {}`;
+
+const AuditPanel = ({ framework = 'react', activeFilePath = null, activeFileContent = null }) => {
+  const { settings, kit, isConfigured, specs, specsError } = useAI();
   const [code, setCode] = useState('');
   const [auditing, setAuditing] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+
+  const componentsList = (framework === 'angular' ? angularComponentsMeta : componentsMeta)
+    .map(c => ({ id: c.id, name: c.name }));
+
+  const specCount = Object.keys(specs || {}).filter(k => specs[k]?.purpose).length;
+
+  useEffect(() => {
+    setCode('');
+    setResult(null);
+    setError('');
+  }, [framework]);
 
   const runAudit = useCallback(async () => {
     if (!code.trim()) return;
@@ -45,22 +58,31 @@ const AuditPanel = () => {
     setResult(null);
     try {
       const systemPrompt = buildAuditPrompt(code, {
-        components: COMPONENTS_META,
+        components: componentsList,
         kitPrefix: kit.kitPrefix,
+        kitName: kit.kitName,
+        framework,
+        specs,
       });
       const text = await callAI({
         ...settings,
         messages: [{ role: 'user', content: 'Audit the code provided in the system prompt.' }],
         systemPrompt,
       });
-      const clean = text.replace(/^```json\n?/, '').replace(/\n?```$/, '').trim();
-      setResult(JSON.parse(clean));
+      setResult(parseAuditResult(text));
     } catch (err) {
       setError(err.message);
     } finally {
       setAuditing(false);
     }
-  }, [code, settings, kit, isConfigured]);
+  }, [code, settings, kit, isConfigured, componentsList, framework, specs]);
+
+  const loadOpenFile = useCallback(() => {
+    if (!activeFileContent?.trim()) return;
+    setCode(activeFileContent);
+    setResult(null);
+    setError('');
+  }, [activeFileContent]);
 
   const applyFixes = useCallback(() => {
     if (!result?.violations?.length) return;
@@ -82,9 +104,11 @@ const AuditPanel = () => {
     });
   }, [code, result]);
 
+  const sample = framework === 'angular' ? SAMPLE_ANGULAR : SAMPLE_REACT;
+  const langLabel = framework === 'angular' ? 'Angular template / TS' : 'JSX';
+
   return (
     <div className="audit-layout">
-      {/* Left: Input */}
       <div className="audit-left">
         <div className="audit-left-header">
           <ShieldCheck size={14} style={{ color: '#34d399' }} />
@@ -93,18 +117,40 @@ const AuditPanel = () => {
             <span className="audit-no-key">Configure AI in Settings ↗</span>
           )}
         </div>
+        <div className="audit-meta-row">
+          <span className="audit-meta-pill">{framework === 'angular' ? 'Angular' : 'React'}</span>
+          {specCount > 0 && (
+            <span className="audit-meta-pill audit-meta-specs">{specCount} AI specs loaded</span>
+          )}
+          {specsError && (
+            <span className="audit-meta-pill audit-meta-warn" title={specsError}>Specs unavailable</span>
+          )}
+        </div>
         <div className="audit-editor-wrap">
           <textarea
             className="audit-textarea-full"
             value={code}
             onChange={e => setCode(e.target.value)}
-            placeholder={SAMPLE}
+            placeholder={sample}
             spellCheck={false}
             disabled={auditing}
           />
         </div>
         <div className="audit-footer">
-          <span className="audit-hint">Paste any JSX — AI checks it against {kit.kitName} rules</span>
+          <div className="audit-footer-actions">
+            {activeFilePath && activeFileContent && (
+              <button
+                type="button"
+                className="audit-load-file-btn"
+                onClick={loadOpenFile}
+                disabled={auditing}
+                title={activeFilePath}
+              >
+                <FileInput size={12} /> Load open file
+              </button>
+            )}
+            <span className="audit-hint">Paste {langLabel} — checked against {kit.kitName} rules</span>
+          </div>
           <button
             className="audit-run-btn"
             onClick={runAudit}
@@ -117,7 +163,6 @@ const AuditPanel = () => {
         </div>
       </div>
 
-      {/* Right: Results */}
       <div className="audit-right">
         {!result && !error && (
           <div className="audit-right-empty">

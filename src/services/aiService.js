@@ -891,22 +891,64 @@ Rules:
 Example: ["The app manages inventory items with fields name, price, category, and status.", "Data is persisted to localStorage via a useStore hook seeded from a JSON file."]`;
 }
 
-export function buildAuditPrompt(code, { components = [], kitPrefix = 'ou' }) {
-  const compList = components.map(c => `- ${c.name} (import: { ${c.name} } from './components/ui')`).join('\n');
+function formatSpecsForAudit(specs = {}) {
+  const entries = Object.entries(specs).filter(([, s]) => s && (s.purpose || (s.useWhen || []).length));
+  if (!entries.length) return '';
+  return '\n## Component intelligence specs (from project):\n' +
+    entries.map(([id, s]) => {
+      const useWhen = (s.useWhen || []).filter(Boolean).join('; ');
+      const avoid = (s.avoidWhen || []).filter(Boolean).join('; ');
+      return `- **${id}**: ${s.purpose || ''}${useWhen ? ` | Use when: ${useWhen}` : ''}${avoid ? ` | Avoid: ${avoid}` : ''}`;
+    }).join('\n') + '\n';
+}
 
-  return `You are a design system compliance auditor. Analyze the following code for violations of the design system rules.
+export function buildAuditPrompt(code, {
+  components = [],
+  kitPrefix = 'ou',
+  kitName = 'openUI',
+  framework = 'react',
+  specs = {},
+} = {}) {
+  const isAngular = framework === 'angular';
+  const prefix = kitPrefix || 'ou';
 
-## Available design system components:
+  const compList = components.map(c => {
+    const spec = specs[c.id] || specs[`${c.id}s`] || {};
+    const hint = spec.purpose ? ` — ${spec.purpose}` : '';
+    if (isAngular) {
+      const sel = c.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+      return `- **${c.name}**: \`<${prefix}-${sel}>\` (import ${c.name}Component from components/ui)${hint}`;
+    }
+    return `- **${c.name}**: import \`{ ${c.name} }\` from components/ui${hint}`;
+  }).join('\n');
+
+  const specBlock = formatSpecsForAudit(specs);
+
+  const rules = isAngular
+    ? `1. Raw HTML (<button>, <input>, <select>, <table>) → kit selectors (\`<${prefix}-button>\`, \`<${prefix}-input>\`, etc.)
+2. Do NOT use @angular/material, ng-bootstrap, or third-party UI libraries
+3. Hardcoded colors (#hex, rgb()) → CSS variables (var(--primary), var(--text), …)
+4. Templates must use kit attribute bindings ([variant], (click), [(ngModel)] on kit components)
+5. Missing accessibility (aria-label, alt on avatars, labels on inputs)`
+    : `1. Raw HTML elements (<button>, <input>, <select>, etc.) → design system components (<Button>, <Input>, …)
+2. Hardcoded color values (#hex, rgb(), hsl()) → CSS variables (var(--primary), etc.)
+3. Hardcoded font sizes/weights → design tokens when available
+4. Missing accessibility attributes (aria-label, role, alt) on interactive elements
+5. Inline styles that duplicate existing component prop functionality`;
+
+  const lang = isAngular ? 'Angular template / component TypeScript' : 'React JSX';
+
+  return `You are a design system compliance auditor for **${kitName}** (${framework} kit, prefix \`${prefix}-\`).
+
+Analyze the following ${lang} for violations.
+
+## Available kit components:
 ${compList}
-
-## CSS prefix: ${kitPrefix}-
+${specBlock}
+## CSS prefix: ${prefix}-
 
 ## Audit rules:
-1. Raw HTML elements (<button>, <input>, <select>, etc.) should use the design system component equivalent
-2. Hardcoded color values (#hex, rgb(), hsl()) should use CSS variables (var(--primary), etc.)
-3. Hardcoded font sizes/weights should use design tokens when available
-4. Missing accessibility attributes (aria-label, role, alt) on interactive elements
-5. Inline styles that duplicate existing component prop functionality
+${rules}
 
 ## Code to audit:
 \`\`\`
@@ -919,8 +961,8 @@ Respond with ONLY a JSON object (no markdown fences):
     {
       "line": 12,
       "element": "<button>",
-      "message": "Use <Button> from the design system instead of raw <button>",
-      "suggestion": "<Button variant=\\"primary\\">Save</Button>",
+      "message": "Use kit component instead of raw HTML",
+      "suggestion": "${isAngular ? `<${prefix}-button variant=\\"primary\\">Save</${prefix}-button>` : '<Button variant=\\"primary\\">Save</Button>'}",
       "severity": "error"
     }
   ],
@@ -928,4 +970,11 @@ Respond with ONLY a JSON object (no markdown fences):
 }
 
 severity must be "error" | "warning" | "info". Return { "violations": [], "summary": "No violations found" } if clean.`;
+}
+
+/** Parse audit JSON from model output (tolerates markdown fences). */
+export function parseAuditResult(text) {
+  const clean = text.replace(/^```json\n?/, '').replace(/\n?```$/, '').trim();
+  const jsonMatch = clean.match(/\{[\s\S]*\}/);
+  return JSON.parse(jsonMatch ? jsonMatch[0] : clean);
 }
