@@ -13,19 +13,18 @@ The publishable packages **`@openedui/react`** and **`@openedui/angular`** expos
 
 Anything not exported from the kit barrel is **internal** (workspace pages, demo CSS, studio-only files).
 
-## Semver rules (pre-1.0)
+## Semver rules
 
-While the packages are **0.x**, we follow [Semantic Versioning](https://semver.org/) intent:
-
-| Change | Bump |
-|--------|------|
-| Remove or rename a manifest export | **Minor** (0.x) until 1.0 — treat as breaking and document in kit CHANGELOG |
-| Change component props in a way that breaks typed/ documented usage | **Minor** + migration note |
+| Change | Bump (1.0+) |
+|--------|-------------|
+| Remove or rename a manifest export | **Major** |
+| Change component props in a breaking way | **Major** + migration note in [KIT_MIGRATION.md](../docs/KIT_MIGRATION.md) |
 | Add a new component export | **Minor** (update manifest + both barrels + tests) |
-| CSS variable renames, removed classes | **Minor** + migration note |
+| CSS variable renames, removed classes | **Major** or **Minor** with migration note |
 | Bug fix, same API | **Patch** |
+| Accessibility / behavior fix, same props | **Patch** (1.0.0 included many of these) |
 
-At **1.0.0**, breaking changes require a **major** bump only.
+Pre-1.0 (`0.x`) treated some breaks as **minor**; **1.0.0** is the stable baseline.
 
 ## How we enforce stability
 
@@ -36,4 +35,4 @@ At **1.0.0**, breaking changes require a **major** bump only.
 
 ## Publishing
 
-See [RELEASING.md](../RELEASING.md). Kit `package.json` versions must match `semver` in the manifest before tagging a release.
+See [RELEASING.md](../RELEASING.md). Kit `package.json` versions must match `semver` in the manifest before tagging (e.g. `v1.0.0`).

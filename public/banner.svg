@@ -28,7 +28,7 @@
       <tspan font-weight="500" fill="#525252">open</tspan><tspan font-weight="800" fill="#0a0a0a">UI</tspan>
     </text>
     <rect x="196" y="14" width="118" height="28" rx="14" fill="#fafafa" stroke="#e5e5e5" stroke-width="1"/>
-    <text x="255" y="33" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#525252" text-anchor="middle">MIT · v0.2.0</text>
+    <text x="255" y="33" font-family="system-ui, sans-serif" font-size="13" font-weight="600" fill="#525252" text-anchor="middle">MIT · v1.0.0</text>
   </g>
 
   <!-- Headline -->

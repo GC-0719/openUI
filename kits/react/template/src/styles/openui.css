@@ -124,6 +124,19 @@ h1, h2, h3, h4, h5, h6 {
 /* Disabled state */
 .ou-disabled { opacity: 0.5; pointer-events: none; }
 
+/* Screen-reader only (1.0 a11y) */
+.ou-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* 1. BUTTON (.ou-btn) */
 .ou-btn {
   display: inline-flex;

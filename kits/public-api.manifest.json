@@ -2,7 +2,7 @@
   "version": 1,
   "react": {
     "package": "@openedui/react",
-    "semver": "0.2.0",
+    "semver": "1.0.0",
     "barrel": "src/components/ui/index.jsx",
     "components": [
       "Accordion",
@@ -37,7 +37,7 @@
   },
   "angular": {
     "package": "@openedui/angular",
-    "semver": "0.2.0",
+    "semver": "1.0.0",
     "barrel": "src/components/ui/index.ts",
     "symbols": [
       "AccordionComponent",

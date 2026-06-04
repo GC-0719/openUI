@@ -131,8 +131,9 @@ Pre-1.0 semver for the studio and `@openedui/*` kits:
 
 | Git tag | What it marks |
 |---------|----------------|
-| **v0.2.0** | Current **main** — full studio (BYOK, MCP wizard, diff preview, B/W UI, 84 tests). Publishes `@openedui/*` **0.2.0** when `NPM_TOKEN` is set ([release workflow](.github/workflows/release.yml)). |
-| **v0.1.1** | Earlier **kits-only** npm release (provenance); no 0.2.x studio features. |
+| **v1.0.0** | **Stable kits** — `@openedui/react` and `@openedui/angular` **1.0.0** (a11y, forms, modals, menus). Studio app on main matches. Tag publishes to npm when `NPM_TOKEN` is set. |
+| **v0.2.0** | Studio milestone (pre–kit-1.0). |
+| **v0.1.1** | First npm publish (0.1.x kits only). |
 
 See [CHANGELOG.md](CHANGELOG.md) and [GitHub Releases](https://github.com/GC-0719/openUI/releases).
 

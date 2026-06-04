@@ -74,8 +74,8 @@ Kit public APIs are locked in [`kits/public-api.manifest.json`](kits/public-api.
 CI fails if barrels drift. Policy: [`kits/KIT_STABILITY.md`](kits/KIT_STABILITY.md).
 Consumer upgrades: [`docs/KIT_MIGRATION.md`](docs/KIT_MIGRATION.md).
 
-Pre-1.0: bump **minor** for manifest/API changes, **patch** for fixes. Keep
-`kits/react/template/package.json` and `kits/angular/template/package.json`
-versions in sync with the manifest `semver` fields. Tag releases `v0.x.y`.
+**1.0.0+**: breaking manifest/API changes → **major**; new exports → **minor**; fixes → **patch**.
+Keep `kits/react/template/package.json` and `kits/angular/template/package.json`
+versions in sync with the manifest `semver` fields. Tag releases `vX.Y.Z` (e.g. `v1.0.0`).
 (A `release.yml` GitHub Action publishes on tag when `NPM_TOKEN` is set — see
 `.github/workflows/release.yml`.)

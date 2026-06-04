@@ -13,9 +13,10 @@ export interface TableColumn {
   template: `
     <div class="ou-table-wrap">
       <table class="ou-table">
+        <caption *ngIf="caption">{{ caption }}</caption>
         <thead *ngIf="columns.length">
           <tr>
-            <th *ngFor="let col of columns">{{ col.label }}</th>
+            <th *ngFor="let col of columns" scope="col">{{ col.label }}</th>
           </tr>
         </thead>
         <tbody>
@@ -27,4 +28,5 @@ export interface TableColumn {
 })
 export class TableComponent {
   @Input() columns: TableColumn[] = [];
+  @Input() caption = '';
 }

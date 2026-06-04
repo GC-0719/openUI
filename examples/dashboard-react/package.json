@@ -9,7 +9,7 @@
     "start": "npm run dev"
   },
   "dependencies": {
-    "@openedui/react": "^0.2.0",
+    "@openedui/react": "^1.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.0.0"

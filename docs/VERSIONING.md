@@ -6,9 +6,9 @@ openUI follows [Semantic Versioning](https://semver.org/) for published packages
 
 | Package | Path | Current |
 |---------|------|---------|
-| openUI (repo) | root `package.json` | `0.2.0` (studio app) |
-| `@openedui/react` | `kits/react/template` | `0.2.0` |
-| `@openedui/angular` | `kits/angular/template` | `0.2.0` |
+| openUI (repo) | root `package.json` | `1.0.0` (studio app) |
+| `@openedui/react` | `kits/react/template` | `1.0.0` |
+| `@openedui/angular` | `kits/angular/template` | `1.0.0` |
 
 ## Rules
 
@@ -30,15 +30,16 @@ Before tagging `1.0.0`:
 
 | Tag | `package.json` | npm `@openedui/*` |
 |-----|----------------|-------------------|
-| `v0.2.0` | `0.2.0` (repo + kit templates) | Publish **0.2.0** on tag push (needs `NPM_TOKEN`) |
-| `v0.1.1` | — | Kits **0.1.x** era (studio on main was behind) |
+| `v1.0.0` | `1.0.0` (repo + kit templates) | Publish **1.0.0** on tag push (needs `NPM_TOKEN`) |
+| `v0.2.0` | `0.2.0` | Studio milestone (superseded by 1.0 kits) |
+| `v0.1.1` | — | First npm kits only |
 
-Cut a release: update [CHANGELOG.md](../CHANGELOG.md), ensure versions match
+Cut a release: update [CHANGELOG.md](../CHANGELOG.md) and kit CHANGELOGs, ensure versions match
 `kits/public-api.manifest.json`, then:
 
 ```bash
-git tag -a v0.2.0 -m "openUI 0.2.0"
-git push origin v0.2.0
+git tag -a v1.0.0 -m "openUI 1.0.0 — stable @openedui kits"
+git push origin v1.0.0
 ```
 
 ## Hosted site

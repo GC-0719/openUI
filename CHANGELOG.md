@@ -8,6 +8,23 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 
 _Nothing yet._
 
+## [1.0.0] - 2026-06-04
+
+### Added
+
+- **`@openedui/react` and `@openedui/angular` 1.0.0** — stable semver; same 24-component public API with production-focused upgrades:
+  - **Button** — loading + `forwardRef` (React); `loading` + `outline` (Angular).
+  - **Input** — labels, hints, `aria-invalid` / describedby; Angular CVA unchanged.
+  - **Modal** — dialog ARIA, focus trap, Escape, portal (React), footer slot (Angular).
+  - **Dropdown** — menu roles, keyboard Escape, semantic menu items.
+  - **Table** — optional `caption`; header `scope` (Angular).
+- [docs/KIT_MIGRATION.md](docs/KIT_MIGRATION.md) — 0.x → 1.0 upgrade notes.
+
+### Changed
+
+- Root and kit versions aligned to **1.0.0**; manifest `semver` fields updated.
+- [KIT_STABILITY.md](kits/KIT_STABILITY.md) — post-1.0 major/minor rules.
+
 ## [0.2.0] - 2026-06-04
 
 Studio and kit release tagged as **v0.2.0** (GitHub tag + `@openedui/react` /

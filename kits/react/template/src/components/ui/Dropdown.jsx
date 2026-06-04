@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useId } from 'react';
 import { createPortal } from 'react-dom';
 
 export const Dropdown = ({
@@ -13,6 +13,7 @@ export const Dropdown = ({
   const [menuStyle, setMenuStyle] = useState({});
   const triggerRef = useRef(null);
   const menuRef = useRef(null);
+  const menuId = useId();
 
   const updatePosition = useCallback(() => {
     if (!triggerRef.current) return;
@@ -41,20 +42,27 @@ export const Dropdown = ({
   useEffect(() => {
     const close = (e) => {
       if (
-        menuRef.current && !menuRef.current.contains(e.target) &&
-        triggerRef.current && !triggerRef.current.contains(e.target)
+        menuRef.current &&
+        !menuRef.current.contains(e.target) &&
+        triggerRef.current &&
+        !triggerRef.current.contains(e.target)
       ) {
         setIsOpen(false);
       }
     };
     const onScroll = () => setIsOpen(false);
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setIsOpen(false);
+    };
     if (isOpen) {
       document.addEventListener('mousedown', close);
       window.addEventListener('scroll', onScroll, true);
+      document.addEventListener('keydown', onKeyDown);
     }
     return () => {
       document.removeEventListener('mousedown', close);
       window.removeEventListener('scroll', onScroll, true);
+      document.removeEventListener('keydown', onKeyDown);
     };
   }, [isOpen]);
 
@@ -62,6 +70,8 @@ export const Dropdown = ({
     ? createPortal(
         <div
           ref={menuRef}
+          id={menuId}
+          role="menu"
           className="ou-dropdown-menu animate-fade-in"
           style={{
             ...menuStyle,
@@ -80,13 +90,21 @@ export const Dropdown = ({
 
   return (
     <div
-      className={`ou-dropdown ${className}`}
+      className={`ou-dropdown ${className}`.trim()}
       style={{ position: 'relative', display: 'inline-block', ...style }}
       {...props}
     >
-      <div ref={triggerRef} onClick={() => setIsOpen(o => !o)} style={{ cursor: 'pointer' }}>
+      <div ref={triggerRef}>
         {trigger ?? (
-          <button className="ou-btn ou-btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button
+            type="button"
+            className="ou-btn ou-btn-outline"
+            aria-haspopup="menu"
+            aria-expanded={isOpen}
+            aria-controls={menuId}
+            onClick={() => setIsOpen((o) => !o)}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+          >
             Options
           </button>
         )}
@@ -96,24 +114,43 @@ export const Dropdown = ({
   );
 };
 
-export const DropdownItem = ({ children, icon: Icon, onClick, danger = false, ...props }) => (
-  <div
-    className={`ou-dropdown-item ${danger ? 'ou-dropdown-item-danger' : ''}`}
+export const DropdownItem = ({ children, icon: Icon, onClick, danger = false, disabled = false, ...props }) => (
+  <button
+    type="button"
+    role="menuitem"
+    disabled={disabled}
+    className={`ou-dropdown-item ${danger ? 'ou-dropdown-item-danger' : ''}`.trim()}
     onClick={onClick}
     style={{
-      padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '12px',
-      cursor: 'pointer', transition: 'all 0.2s', fontSize: '14px',
+      width: '100%',
+      border: 'none',
+      background: 'transparent',
+      padding: '10px 16px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      cursor: disabled ? 'not-allowed' : 'pointer',
+      transition: 'all 0.2s',
+      fontSize: '14px',
       color: danger ? 'var(--accent)' : 'var(--text)',
+      opacity: disabled ? 0.5 : 1,
+      textAlign: 'left',
+      fontFamily: 'inherit',
     }}
-    onMouseEnter={e => e.currentTarget.style.background = danger ? 'var(--accent-soft)' : 'var(--surface-raised)'}
-    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+    onMouseEnter={(e) => {
+      if (disabled) return;
+      e.currentTarget.style.background = danger ? 'var(--accent-soft)' : 'var(--surface-raised)';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.background = 'transparent';
+    }}
     {...props}
   >
-    {Icon && <Icon size={16} />}
+    {Icon && <Icon size={16} aria-hidden />}
     <span style={{ flex: 1 }}>{children}</span>
-  </div>
+  </button>
 );
 
 export const DropdownDivider = () => (
-  <div style={{ height: '1px', background: 'var(--border)', margin: '4px 0' }} />
+  <div role="separator" style={{ height: '1px', background: 'var(--border)', margin: '4px 0' }} />
 );

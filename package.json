@@ -1,7 +1,7 @@
 {
   "name": "openui",
   "private": true,
-  "version": "0.2.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "A local-first AI sandbox for building production-ready frontends, wired to your backend via MCP.",
   "license": "MIT",

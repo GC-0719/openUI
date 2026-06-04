@@ -6,42 +6,59 @@ Guide for apps consuming **`@openedui/react`** or **`@openedui/angular`** from n
 
 | Package | Version | Public API lock |
 |---------|---------|-----------------|
-| `@openedui/react` | 0.2.0 | 24 components — see [public-api.manifest.json](../kits/public-api.manifest.json) |
-| `@openedui/angular` | 0.2.0 | Standalone components + `ToastService` — same manifest |
+| `@openedui/react` | **1.0.0** | 24 components — [public-api.manifest.json](../kits/public-api.manifest.json) |
+| `@openedui/angular` | **1.0.0** | Standalone components + `ToastService` — same manifest |
 
-## Upgrading from 0.1.x
+At **1.0.0**, breaking API changes require a **major** bump (see [KIT_STABILITY.md](../kits/KIT_STABILITY.md)).
 
-### `@openedui/react` 0.1.1 → 0.2.0
+## Upgrading to 1.0.0
 
-- **No export renames** — the 24 component names are unchanged.
-- **Export map** is explicit: `import '@openedui/react/styles.css'` (unchanged path).
-- Pin in your app:
+### From 0.1.x or 0.2.0
 
 ```bash
-npm install @openedui/react@0.2.0
+npm install @openedui/react@1.0.0
+# or
+npm install @openedui/angular@1.0.0
 ```
 
-If you copied components into your repo instead of using the package, diff your barrel against `kits/react/template/src/components/ui/index.jsx` in the openUI repo.
+**Export names are unchanged** — no renames on the public barrel.
 
-### `@openedui/angular` 0.1.1 → 0.2.0
+#### React 1.0 — check these in your app
 
-- **No symbol renames** on the public barrel (`ButtonComponent`, etc.).
-- Styles: `import '@openedui/angular/styles.css'` after publish (postbuild adds the subpath).
+| Area | Action |
+|------|--------|
+| **Modal** | Still use `isOpen` + `onClose`. Optional: `closeOnOverlay={false}`; Escape now closes. |
+| **Input** | `error` can be a string (shows message + ARIA). Optional `label` / `hint` props. |
+| **Dropdown items** | Now `<button>` — custom `onClick` on `DropdownItem` unchanged. |
+| **Button** | Supports `ref` via `forwardRef`. Loading state sets `aria-busy`. |
 
-```bash
-npm install @openedui/angular@0.2.0
+#### Angular 1.0 — check these in your app
+
+| Area | Action |
+|------|--------|
+| **Modal** | `(close)` output unchanged. Optional `[footer]` slot: `<div footer>...</div>`. `isOpen` alias supported. |
+| **Dropdown item** | Prefer `(select)="handler()"` on `ou-dropdown-item`. |
+| **Button** | New `@Input() loading` and `outline` variant. |
+| **Input** | Label wired with `for` / `id`; use `error` string for messages. |
+
+### CSS
+
+Continue importing kit styles:
+
+```js
+import '@openedui/react/styles.css';
 ```
 
-Angular 18+ standalone `imports: [ButtonComponent, …]` continues to work.
+```ts
+import '@openedui/angular/styles.css';
+```
 
-## When we publish breaking changes (pre-1.0)
+Theme tokens (`--primary`, `--text`, …) are unchanged; 1.0 adds `.ou-sr-only`.
 
-We document every intentional break in:
+## Upgrading from 0.1.1 → 0.2.0 (historical)
 
-- `kits/react/CHANGELOG.md`
-- `kits/angular/CHANGELOG.md`
-
-and bump the **minor** version with a section in this file.
+- **No export renames** on either package.
+- Pin: `npm install @openedui/react@0.2.0` or `@openedui/angular@0.2.0`.
 
 ## Studio-exported kits
 
