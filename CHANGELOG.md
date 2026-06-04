@@ -14,6 +14,7 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 
 ### Changed
 - **README** — routes table, npm scripts, BYOK quick start, docs link, hosted vs dev studio, troubleshooting refresh.
+- **Banner** — `.github/banner.svg` and `public/banner.svg` use monochrome light theme (matches landing/studio).
 
 ### Added (earlier unreleased)
 - **Bring your own key (BYOK)** — `GET /api/ai-config`, env fallback for Claude on `/api/ai` and spec generate; Settings explainer; “Using key from environment” badge; docs/README alignment.
