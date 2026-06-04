@@ -64,10 +64,10 @@ openUI is a **local-first AI studio** that writes into a **real project tree**, 
 ### 1.0.0 — Stable
 
 - [x] **BYOK** — env + in-app keys documented; `/api/ai-config`; Claude env fallback on `/api/ai`
-- [ ] Studio + kits semver policy published
-- [ ] No breaking changes without major bump
-- [ ] CI: lint (0 errors), test, build, kit builds, optional audit
-- [ ] Hosted [openui.live](https://openui.live) = docs + download only (studio stays local)
+- [x] Studio + kits semver policy published — [docs/VERSIONING.md](docs/VERSIONING.md)
+- [ ] No breaking changes without major bump (enforced at 1.0 tag)
+- [x] CI: lint (0 errors), test, build, kit builds, security audit — [.github/workflows/ci.yml](.github/workflows/ci.yml)
+- [x] Hosted [openui.live](https://openui.live) = docs + download only (studio stays local; RunLocally + README)
 
 ---
 

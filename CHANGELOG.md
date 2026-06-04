@@ -7,6 +7,10 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 ## [Unreleased]
 
 ### Added
+- **Minimal B/W landing** — simplified [Home](src/pages/Home.jsx) and [home.css](src/styles/home.css); mono brand on marketing pages.
+- **Versioning policy** — [docs/VERSIONING.md](docs/VERSIONING.md).
+
+### Added (earlier unreleased)
 - **Bring your own key (BYOK)** — `GET /api/ai-config`, env fallback for Claude on `/api/ai` and spec generate; Settings explainer; “Using key from environment” badge; docs/README alignment.
 - **0.9.x RC** — [docs/GOOD_FIRST_ISSUES.md](docs/GOOD_FIRST_ISSUES.md) and [.github/labels.yml](.github/labels.yml); [examples/dashboard-react](examples/dashboard-react) and [examples/mcp-postgres](examples/mcp-postgres); virtualized file explorer for 120+ workspace paths.
 - **Studio run-mode clarity** — backend-offline banner, localhost studio shell on preview builds, README dev-only note.
