@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Zap, Save, Plus, Trash2, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { useAI } from '../../context/AIContext';
+import { buildAiRequestBody } from '../../utils/aiRequest.js';
 import { componentsMeta, angularComponentsMeta } from '../../data/components-meta.js';
 
 const EMPTY_SPEC = {
@@ -104,7 +105,7 @@ const PatternRow = ({ pattern, onChange, onRemove, index }) => {
 };
 
 const SpecEditor = ({ filePath, framework = 'react' }) => {
-  const { settings, specs, updateSpec } = useAI();
+  const { settings, specs, updateSpec, isConfigured, keySource } = useAI();
   const [form, setForm] = useState(EMPTY_SPEC);
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -166,13 +167,9 @@ const SpecEditor = ({ filePath, framework = 'react' }) => {
     }
   }, [compId, form, updateSpec]);
 
-  const isConfigured = settings.provider === 'local'
-    ? Boolean(settings.baseUrl?.trim() && settings.model?.trim())
-    : Boolean(settings.apiKey?.trim());
-
   const handleAIGenerate = useCallback(async () => {
     if (!compId || !isConfigured) {
-      setGenError('Configure an AI provider in Settings first.');
+      setGenError('Add an API key in Settings, set OPENUI_AI_KEY for Claude, or configure a local LLM.');
       return;
     }
     setGenerating(true);
@@ -187,10 +184,7 @@ const SpecEditor = ({ filePath, framework = 'react' }) => {
           description: meta?.description || '',
           classes: meta?.classes || [],
           variants: meta?.variants || [],
-          provider: settings.provider,
-          model: settings.model,
-          apiKey: settings.apiKey,
-          baseUrl: settings.baseUrl,
+          ...buildAiRequestBody(settings, {}),
         }),
       });
       const data = await res.json();

@@ -124,7 +124,7 @@ function trimForContext(history) {
 }
 
 const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSettings, activeFilePath, activeFileContent, onUndo, canUndo, workspaceRefreshKey = 0 }) => {
-  const { settings, kit, specs, mcpServers } = useAI();
+  const { settings, kit, specs, mcpServers, keySource, isConfigured } = useAI();
   const { cssVars, componentCSS } = useTheme();
   const [messages, setMessages] = useState([{ role: 'assistant', text: WELCOME, changes: null }]);
   const [input, setInput] = useState('');
@@ -299,6 +299,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
         setStreamingText('');
         const rawText = await callAI({
           ...settings,
+          keySource,
           systemPrompt,
           messages: conversationTail,
           stream: true,
@@ -437,6 +438,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
         .slice(0, 6000);
       const raw = await callAI({
         ...settings,
+        keySource,
         systemPrompt: buildMemoryExtractionPrompt({ kitName: kit.kitName }),
         messages: [{ role: 'user', content: `User request:\n${userMsg}\n\nFiles created/updated:\n${summary}` }],
       });
@@ -471,9 +473,6 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
   };
 
   const enabledMCP = (mcpServers || []).filter(s => s.enabled).length;
-  const isConfigured = settings.provider === 'local'
-    ? Boolean(settings.baseUrl?.trim() && settings.model?.trim())
-    : Boolean(settings.apiKey?.trim());
 
   return (
     <div className="ai-agent-panel">
@@ -582,7 +581,9 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
           <div className="ai-configure-prompt">
             <div className="ai-configure-icon"><Sparkles size={20} /></div>
             <p className="ai-configure-title">Connect an AI model</p>
-            <p className="ai-configure-desc">Add your API key to start building with openUI Agent.</p>
+            <p className="ai-configure-desc">
+              Bring your own key: paste in Settings, set <code>OPENUI_AI_KEY</code> for Claude, or configure a local LLM.
+            </p>
             <button className="ai-configure-btn" onClick={() => onOpenSettings?.('ai')}>
               <Settings size={14} /> Configure AI
             </button>

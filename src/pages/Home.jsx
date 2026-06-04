@@ -110,7 +110,7 @@ const FRAMEWORKS = [
 
 export default function Home() {
   const navigate = useNavigate();
-  const { kit, isConfigured, settings } = useAI();
+  const { kit, isConfigured, settings, keySource } = useAI();
 
   return (
     <div className="lp-root">
@@ -169,7 +169,11 @@ export default function Home() {
             <span className="lp-pill"><CheckCircle2 size={13} /> Workspace runs locally</span>
             <span className={`lp-pill ${isConfigured ? 'ready' : ''}`}>
               <Sparkles size={13} />
-              {isConfigured ? `${settings.provider} connected` : 'Bring your own AI key'}
+              {isConfigured
+                ? keySource === 'env'
+                  ? 'Claude · env key (BYOK)'
+                  : `${settings.provider} connected`
+                : 'Bring your own AI key'}
             </span>
             <span className="lp-pill"><Boxes size={13} /> Ships with the {kit.kitName} kit</span>
           </div>

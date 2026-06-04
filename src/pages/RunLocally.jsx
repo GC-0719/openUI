@@ -49,7 +49,8 @@ export default function RunLocally() {
           }}>
 {`git clone https://github.com/GC-0719/openUI.git
 cd openUI && npm install
-OPENUI_AI_KEY=sk-ant-... npm run dev
+OPENUI_AI_KEY=sk-ant-... npm run dev   # BYOK: Claude key in env, not the browser
+# or paste your key in Studio → Settings after npm run dev
 # open http://localhost:5173/studio/react`}
           </pre>
 

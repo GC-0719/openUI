@@ -46,8 +46,10 @@ Requires **Node 20+**.
 
 ```bash
 npm install
-OPENUI_AI_KEY=sk-ant-... npm run dev      # React studio
-# or open the studio and add your key in Settings
+npm run dev                              # React studio
+# BYOK — pick one:
+#   OPENUI_AI_KEY=sk-ant-... npm run dev   → Claude via env (key never in browser)
+#   or paste your key in Studio → Settings
 ```
 
 Open the printed URL (e.g. `http://localhost:5173/studio/react`), click **Open the Studio**, and start building.
@@ -61,20 +63,28 @@ Open the printed URL (e.g. `http://localhost:5173/studio/react`), click **Open t
 > `package.json` files exist only for **publishing** the packages — see
 > [RELEASING.md](RELEASING.md) — and aren't needed to develop or preview.)
 
-> `npm run dev:angular` launches the Angular workspace. `OPENUI_AI_KEY` is
-> optional — you can also paste a key into the in-app AI settings (stored only
-> in your browser's localStorage).
+> `npm run dev:angular` launches the Angular workspace.
+
+## Bring your own key (BYOK)
+
+openUI does **not** sell or host API access. Inference runs through the **local Vite dev server** (`/api/ai`) on your machine.
+
+| How | Best for |
+|-----|----------|
+| **`OPENUI_AI_KEY` or `ANTHROPIC_API_KEY`** in `.env` / shell | Claude without storing the key in the browser |
+| **Studio → Settings → API Key** | OpenAI, Gemini, Claude, or secured local servers (stored in `localStorage`) |
+| **Local LLM** (Ollama, LM Studio) | No cloud key — set base URL + model in Settings |
+
+See [.env.example](.env.example). `GET /api/ai-config` reports whether an env key is active (never returns the secret).
 
 ## AI providers
 
-openUI proxies your chosen provider through the local dev server (`/api/ai`):
-
-| Provider   | Key source                                   |
-|------------|----------------------------------------------|
-| Anthropic  | `OPENUI_AI_KEY` / `ANTHROPIC_API_KEY` or in-app settings |
-| OpenAI     | in-app settings                              |
-| Gemini     | in-app settings                              |
-| Local LLM  | Ollama / OpenAI-compatible base URL          |
+| Provider   | Key source |
+|------------|------------|
+| Anthropic (Claude) | Env (`OPENUI_AI_KEY` / `ANTHROPIC_API_KEY`) **or** in-app Settings |
+| OpenAI     | In-app Settings only |
+| Gemini     | In-app Settings only |
+| Local LLM  | Base URL + model in Settings (API key optional) |
 
 ## Examples
 

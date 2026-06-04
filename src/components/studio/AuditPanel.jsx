@@ -32,7 +32,7 @@ const SAMPLE_ANGULAR = `// Paste Angular template or component code
 export class ExampleComponent {}`;
 
 const AuditPanel = ({ framework = 'react', activeFilePath = null, activeFileContent = null }) => {
-  const { settings, kit, isConfigured, specs, specsError } = useAI();
+  const { settings, kit, isConfigured, keySource, specs, specsError } = useAI();
   const [code, setCode] = useState('');
   const [auditing, setAuditing] = useState(false);
   const [result, setResult] = useState(null);
@@ -54,7 +54,10 @@ const AuditPanel = ({ framework = 'react', activeFilePath = null, activeFileCont
 
   const runAudit = useCallback(async () => {
     if (!code.trim()) return;
-    if (!isConfigured) { setError('Configure an AI provider in Settings first.'); return; }
+    if (!isConfigured) {
+      setError('Add an API key in Settings, set OPENUI_AI_KEY for Claude, or configure a local LLM.');
+      return;
+    }
     setAuditing(true);
     setError('');
     setResult(null);
@@ -68,6 +71,7 @@ const AuditPanel = ({ framework = 'react', activeFilePath = null, activeFileCont
       });
       const text = await callAI({
         ...settings,
+        keySource,
         messages: [{ role: 'user', content: 'Audit the code provided in the system prompt.' }],
         systemPrompt,
       });
@@ -116,7 +120,7 @@ const AuditPanel = ({ framework = 'react', activeFilePath = null, activeFileCont
           <ShieldCheck size={14} style={{ color: '#34d399' }} />
           <span className="audit-title">Design System Audit</span>
           {!isConfigured && (
-            <span className="audit-no-key">Configure AI in Settings ↗</span>
+            <span className="audit-no-key">Bring your own key — Settings or OPENUI_AI_KEY ↗</span>
           )}
         </div>
         <div className="audit-meta-row">

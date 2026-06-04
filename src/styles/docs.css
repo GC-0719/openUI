@@ -935,6 +935,48 @@ pre {
 }
 .ai-key-toggle:hover { color: var(--text); }
 
+.ai-byok-callout {
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border-radius: 10px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.ai-byok-callout strong {
+  display: block;
+  color: var(--text);
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.ai-byok-callout p {
+  margin: 0 0 8px;
+}
+
+.ai-byok-callout code {
+  font-size: 11px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.ai-env-key-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  font-size: 12px;
+  color: #6ee7b7;
+}
+
 .ai-settings-hint {
   font-size: 11px;
   color: var(--text-dim);

@@ -31,6 +31,7 @@ import {
 } from './server/customComponent.js';
 import { validateMcpStdioCommand } from './server/mcpCommandSafety.js';
 import { isPathInsideRoot } from './server/securityAudit.js';
+import { getAiConfigPublic, resolveAiCredentials } from './server/aiEnvKey.js';
 
 function copyPath(src, dest) {
   if (!fs.existsSync(src)) return;
@@ -562,12 +563,27 @@ const openuiDevPlugin = {
     const cwd = process.cwd();
     const { resolveIn, resolveWs } = createPathResolver(cwd);
 
+    // ── AI env key status (BYOK — never returns the key) ─────────────────────
+    server.middlewares.use('/api/ai-config', (req, res) => {
+      if (req.method !== 'GET') { json(res, 405, { error: 'GET only' }); return; }
+      json(res, 200, getAiConfigPublic());
+    });
+
     // ── AI completions ────────────────────────────────────────────────────────
     server.middlewares.use('/api/ai', async (req, res) => {
       if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
       let body;
       try { body = JSON.parse(await readBody(req)); } catch { json(res, 400, { error: 'Invalid JSON body' }); return; }
-      const { provider, model, apiKey, baseUrl, messages, systemPrompt, stream } = body;
+      const resolved = resolveAiCredentials(body);
+      const { provider, model, apiKey, baseUrl, messages, systemPrompt, stream } = resolved;
+      if (!apiKey && provider !== 'local') {
+        json(res, 400, { error: 'No API key — add one in Settings or set OPENUI_AI_KEY for Claude' });
+        return;
+      }
+      if (provider === 'local' && !baseUrl?.trim()) {
+        json(res, 400, { error: 'Local LLM requires a server URL in Settings' });
+        return;
+      }
       const args = { provider, model, apiKey, baseUrl, systemPrompt, messages };
 
       // ── Streaming (Server-Sent Events) — opt-in via { stream: true } ──
@@ -1106,8 +1122,9 @@ const openuiDevPlugin = {
     server.middlewares.use('/api/ai-spec-generate', async (req, res) => {
       if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
       try {
-        const { componentId, componentName, description, classes, variants, provider, model, apiKey, baseUrl } =
-          JSON.parse(await readBody(req));
+        const raw = JSON.parse(await readBody(req));
+        const { componentId, componentName, description, classes, variants, provider, model, baseUrl } = raw;
+        const { apiKey } = resolveAiCredentials(raw);
 
         const systemPrompt = `You are a design system expert. Given a UI component's metadata, produce a structured AI intelligence spec in JSON.
 

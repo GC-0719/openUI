@@ -1,3 +1,5 @@
+import { buildAiRequestBody } from '../utils/aiRequest.js';
+
 // Call the local AI proxy. Pass { stream: true, onToken } to receive tokens live
 // (onToken(deltaText, fullTextSoFar)); the full text is still returned at the end.
 // Without `stream`, behaves exactly as before (single JSON response).
@@ -14,11 +16,26 @@ function formatThemeBlock(cssVars = {}, componentCSS = {}) {
   );
 }
 
-export async function callAI({ provider, model, apiKey, baseUrl, messages, systemPrompt, stream = false, onToken } = {}) {
+export async function callAI({
+  provider,
+  model,
+  apiKey,
+  baseUrl,
+  keySource,
+  messages,
+  systemPrompt,
+  stream = false,
+  onToken,
+} = {}) {
   const res = await fetch('/api/ai', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ provider, model, apiKey, baseUrl, messages, systemPrompt, stream }),
+    body: JSON.stringify(
+      buildAiRequestBody(
+        { provider, model, apiKey, baseUrl, keySource },
+        { messages, systemPrompt, stream }
+      )
+    ),
   });
 
   if (!stream) {

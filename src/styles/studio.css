@@ -2302,6 +2302,19 @@
   font-size: 13px;
 }
 
+/* ── BYOK env key indicator (studio top bar) ─────────────────────────────── */
+.studio-byok-env-pill {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(52, 211, 153, 0.12);
+  color: #6ee7b7;
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  white-space: nowrap;
+}
+
 /* ── File explorer filter + large-tree hints ─────────────────────────────── */
 .studio-explorer-count {
   font-size: 10px;

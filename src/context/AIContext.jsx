@@ -72,6 +72,17 @@ export const AIProvider = ({ children }) => {
     catch { return []; }
   });
 
+  const [envAiConfig, setEnvAiConfig] = useState({ hasServerKey: false });
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/ai-config')
+      .then(r => (r.ok ? r.json() : { hasServerKey: false }))
+      .then(d => { if (!cancelled) setEnvAiConfig(d); })
+      .catch(() => { if (!cancelled) setEnvAiConfig({ hasServerKey: false }); });
+    return () => { cancelled = true; };
+  }, []);
+
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); }, [settings]);
   useEffect(() => { localStorage.setItem(KIT_STORAGE_KEY, JSON.stringify(kit)); }, [kit]);
   useEffect(() => { localStorage.setItem(MCP_STORAGE_KEY, JSON.stringify(mcpServers)); }, [mcpServers]);
@@ -99,9 +110,16 @@ export const AIProvider = ({ children }) => {
   const updateSettings = (updates) => setSettings(prev => ({ ...prev, ...updates }));
   const updateKit = (updates) => setKit(prev => ({ ...prev, ...updates }));
 
+  const hasClientKey = Boolean(settings.apiKey?.trim());
+  const envKeyActive =
+    envAiConfig.hasServerKey &&
+    settings.provider === 'claude' &&
+    !hasClientKey;
+  const keySource = envKeyActive && !hasClientKey ? 'env' : hasClientKey ? 'client' : 'none';
+
   const isConfigured = settings.provider === 'local'
     ? Boolean(settings.baseUrl?.trim() && settings.model?.trim())
-    : Boolean(settings.apiKey?.trim());
+    : hasClientKey || envKeyActive;
 
   const updateSpec = useCallback(async (componentId, aiSpec, { kit = 'react', scope = 'workspace' } = {}) => {
     await fetch('/api/write-spec', {
@@ -113,7 +131,22 @@ export const AIProvider = ({ children }) => {
   }, []);
 
   return (
-    <AIContext.Provider value={{ settings, updateSettings, isConfigured, providers: AI_PROVIDERS, kit, updateKit, specs, specsError, retrySpecsLoad: loadSpecs, updateSpec, mcpServers, updateMcpServers }}>
+    <AIContext.Provider value={{
+      settings,
+      updateSettings,
+      isConfigured,
+      keySource,
+      envAiConfig,
+      providers: AI_PROVIDERS,
+      kit,
+      updateKit,
+      specs,
+      specsError,
+      retrySpecsLoad: loadSpecs,
+      updateSpec,
+      mcpServers,
+      updateMcpServers,
+    }}>
       {children}
     </AIContext.Provider>
   );

@@ -81,7 +81,9 @@ openUI is **not** a hosted multi-tenant service. The Vite dev server is a **loca
 
 | Check | How to verify |
 |-------|----------------|
-| API keys in localStorage only (studio) | No server-side key store |
+| API keys in localStorage (optional in-app BYOK) | User choice; not committed to git |
+| Optional env keys (`OPENUI_AI_KEY`, `ANTHROPIC_API_KEY`) | Dev server only; never exposed via `/api/ai-config` |
+| `/api/ai` merges env key only when body omits `apiKey` and provider is `claude` | See `server/aiEnvKey.js` |
 | AI proxy not authenticated for anonymous use | Dev server binds localhost by default |
 | `.env` gitignored | `.gitignore` |
 

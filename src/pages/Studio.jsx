@@ -27,7 +27,7 @@ const OpenWorkspaceModal = lazy(() => import('../components/studio/OpenWorkspace
 const angularPreviewEnabled = import.meta.env.VITE_OPENUI_ANGULAR === '1';
 
 const Studio = () => {
-  const { kit, specsError, retrySpecsLoad } = useAI();
+  const { kit, specsError, retrySpecsLoad, keySource } = useAI();
   const { addToast } = useToast();
   const [saveError, setSaveError] = useState('');
   const { framework: fwParam } = useParams();
@@ -690,6 +690,11 @@ const Studio = () => {
           >
             <Bot size={15} />
           </button>
+          {keySource === 'env' && (
+            <span className="studio-byok-env-pill" title="Claude API key loaded from OPENUI_AI_KEY or ANTHROPIC_API_KEY">
+              BYOK · env
+            </span>
+          )}
           <button className="studio-icon-btn" onClick={() => openSettings('ai')} title="AI Settings">
             <Settings size={15} />
           </button>
