@@ -4,6 +4,8 @@ import {
   Layers, Settings2, FilePlus, FolderPlus, Pencil, Trash2, RefreshCcw, Boxes, Search,
 } from 'lucide-react';
 import AddComponentModal from './AddComponentModal';
+import StudioConfirmModal from './StudioConfirmModal';
+import StudioPromptModal from './StudioPromptModal';
 import { apiPost } from '../../utils/api';
 import { useToast } from '../../../kits/react/workspace/src/components/ui/Toast';
 import {
@@ -34,6 +36,8 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
   const { addToast } = useToast();
   const [files, setFiles] = useState([]);
   const [showAddComponent, setShowAddComponent] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState(null);
+  const [promptDialog, setPromptDialog] = useState(null);
   const [gitFiles, setGitFiles] = useState({});
   const [gitAvailable, setGitAvailable] = useState(false);
   const [collapsed, setCollapsed] = useState(() => new Set());
@@ -122,57 +126,89 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
     });
   }, []);
 
-  const createFile = useCallback(async (parentDir) => {
-    const name = window.prompt(`New file name${parentDir ? ` in ${parentDir}/` : ''}:`, '');
-    if (!name) return;
-    const filePath = parentDir ? `${parentDir}/${name}` : name;
-    try {
-      await apiPost('/api/write-file', { path: filePath, content: '', kit: framework });
-      loadFiles();
-      onMutate?.({ type: 'create', path: filePath });
-      onSelect?.(filePath);
-    } catch (err) {
-      addToast({ title: 'Could not create file', message: err.message, variant: 'error' });
-    }
-  }, [framework, onMutate, onSelect, loadFiles, addToast]);
+  const createFile = useCallback((parentDir) => {
+    setPromptDialog({
+      kind: 'file',
+      parentDir,
+      title: 'New file',
+      label: parentDir ? `Name in ${parentDir}/` : 'File name',
+      placeholder: 'Component.jsx',
+      defaultValue: '',
+    });
+  }, []);
 
-  const createFolder = useCallback(async (parentDir) => {
-    const name = window.prompt(`New folder name${parentDir ? ` in ${parentDir}/` : ''}:`, '');
-    if (!name) return;
-    const dirPath = parentDir ? `${parentDir}/${name}` : name;
-    try {
-      await apiPost('/api/create-folder', { path: dirPath, kit: framework });
-      loadFiles();
-      onMutate?.({ type: 'create', path: dirPath });
-    } catch (err) {
-      addToast({ title: 'Could not create folder', message: err.message, variant: 'error' });
-    }
-  }, [framework, onMutate, loadFiles, addToast]);
+  const createFolder = useCallback((parentDir) => {
+    setPromptDialog({
+      kind: 'folder',
+      parentDir,
+      title: 'New folder',
+      label: parentDir ? `Name in ${parentDir}/` : 'Folder name',
+      placeholder: 'components',
+      defaultValue: '',
+    });
+  }, []);
 
-  const renamePath = useCallback(async (fromPath) => {
+  const renamePath = useCallback((fromPath) => {
     const segs = fromPath.split('/');
-    const next = window.prompt('Rename to:', segs[segs.length - 1]);
-    if (!next || next === segs[segs.length - 1]) return;
-    const toPath = [...segs.slice(0, -1), next].join('/');
-    try {
-      await apiPost('/api/rename-path', { from: fromPath, to: toPath, kit: framework });
-      loadFiles();
-      onMutate?.({ type: 'rename', path: fromPath, to: toPath });
-    } catch (err) {
-      addToast({ title: 'Could not rename', message: err.message, variant: 'error' });
-    }
+    setPromptDialog({
+      kind: 'rename',
+      fromPath,
+      title: 'Rename',
+      label: 'New name',
+      defaultValue: segs[segs.length - 1],
+      placeholder: segs[segs.length - 1],
+    });
+  }, []);
+
+  const deletePath = useCallback((targetPath, isDir) => {
+    setConfirmDialog({
+      title: isDir ? 'Delete folder' : 'Delete file',
+      message: `Delete ${isDir ? 'folder' : 'file'} "${targetPath}"?${isDir ? ' All contents will be removed.' : ''}`,
+      confirmLabel: 'Delete',
+      danger: true,
+      onConfirm: async () => {
+        try {
+          await apiPost('/api/delete-path', { path: targetPath, kit: framework });
+          loadFiles();
+          onMutate?.({ type: 'delete', path: targetPath });
+        } catch (err) {
+          addToast({ title: 'Could not delete', message: err.message, variant: 'error' });
+        } finally {
+          setConfirmDialog(null);
+        }
+      },
+    });
   }, [framework, onMutate, loadFiles, addToast]);
 
-  const deletePath = useCallback(async (targetPath, isDir) => {
-    if (!window.confirm(`Delete ${isDir ? 'folder' : 'file'} "${targetPath}"?${isDir ? ' All contents will be removed.' : ''}`)) return;
+  const handlePromptSubmit = useCallback(async (name) => {
+    if (!promptDialog) return;
+    const { kind, parentDir, fromPath } = promptDialog;
+    setPromptDialog(null);
     try {
-      await apiPost('/api/delete-path', { path: targetPath, kit: framework });
-      loadFiles();
-      onMutate?.({ type: 'delete', path: targetPath });
+      if (kind === 'file') {
+        const filePath = parentDir ? `${parentDir}/${name}` : name;
+        await apiPost('/api/write-file', { path: filePath, content: '', kit: framework });
+        loadFiles();
+        onMutate?.({ type: 'create', path: filePath });
+        onSelect?.(filePath);
+      } else if (kind === 'folder') {
+        const dirPath = parentDir ? `${parentDir}/${name}` : name;
+        await apiPost('/api/create-folder', { path: dirPath, kit: framework });
+        loadFiles();
+        onMutate?.({ type: 'create', path: dirPath });
+      } else if (kind === 'rename' && fromPath) {
+        const segs = fromPath.split('/');
+        if (name === segs[segs.length - 1]) return;
+        const toPath = [...segs.slice(0, -1), name].join('/');
+        await apiPost('/api/rename-path', { from: fromPath, to: toPath, kit: framework });
+        loadFiles();
+        onMutate?.({ type: 'rename', path: fromPath, to: toPath });
+      }
     } catch (err) {
-      addToast({ title: 'Could not delete', message: err.message, variant: 'error' });
+      const titles = { file: 'Could not create file', folder: 'Could not create folder', rename: 'Could not rename' };
+      addToast({ title: titles[kind] || 'Error', message: err.message, variant: 'error' });
     }
-  }, [framework, onMutate, loadFiles, addToast]);
+  }, [promptDialog, framework, onMutate, onSelect, loadFiles, addToast]);
 
   const renderDirRow = (node, depth) => {
     const isCollapsed = collapsed.has(node.path);
@@ -340,6 +376,27 @@ const FileExplorer = ({ selectedFile, onSelect, onKitSettings, width, framework 
           }}
         />
       )}
+
+      <StudioConfirmModal
+        open={!!confirmDialog}
+        title={confirmDialog?.title}
+        message={confirmDialog?.message}
+        confirmLabel={confirmDialog?.confirmLabel}
+        danger={confirmDialog?.danger}
+        onConfirm={confirmDialog?.onConfirm}
+        onCancel={() => setConfirmDialog(null)}
+      />
+
+      <StudioPromptModal
+        open={!!promptDialog}
+        title={promptDialog?.title}
+        label={promptDialog?.label}
+        defaultValue={promptDialog?.defaultValue ?? ''}
+        placeholder={promptDialog?.placeholder}
+        submitLabel={promptDialog?.kind === 'rename' ? 'Rename' : 'Create'}
+        onSubmit={handlePromptSubmit}
+        onCancel={() => setPromptDialog(null)}
+      />
     </aside>
   );
 };

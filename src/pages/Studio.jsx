@@ -10,6 +10,7 @@ import SpecEditor from '../components/studio/SpecEditor';
 import AuditPanel from '../components/studio/AuditPanel';
 import AgentDiffPreview from '../components/studio/AgentDiffPreview';
 import StudioBackendBanner from '../components/studio/StudioBackendBanner';
+import StudioConfirmModal from '../components/studio/StudioConfirmModal';
 import ErrorBoundary from '../components/studio/ErrorBoundary';
 import { pingStudioBackend } from '../utils/studioBackendCheck';
 import { BrandLogo, Wordmark } from '../components/BrandLogo';
@@ -52,6 +53,7 @@ const Studio = () => {
   const [backendBannerDismissed, setBackendBannerDismissed] = useState(false);
   const [previewKey, setPreviewKey] = useState(0);
   const [resetting, setResetting] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showExplorer, setShowExplorer] = useState(true);
   const [explorerWidth, setExplorerWidth] = useState(220);
   const [showAgent, setShowAgent] = useState(true);
@@ -258,8 +260,12 @@ const Studio = () => {
   };
 
   // ── Reset template ───────────────────────────────────────────────────────
-  const handleResetTemplate = async () => {
-    if (!window.confirm('Reset the workspace to the original template? All your edits will be lost.')) return;
+  const handleResetTemplate = () => {
+    setShowResetConfirm(true);
+  };
+
+  const confirmResetTemplate = async () => {
+    setShowResetConfirm(false);
     setResetting(true);
     setSaveError('');
     try {
@@ -958,6 +964,17 @@ const Studio = () => {
           />
         )}
       </Suspense>
+
+      <StudioConfirmModal
+        open={showResetConfirm}
+        title="Reset workspace"
+        message="Reset the workspace to the original template? All your edits will be lost."
+        confirmLabel="Reset"
+        danger
+        busy={resetting}
+        onConfirm={confirmResetTemplate}
+        onCancel={() => setShowResetConfirm(false)}
+      />
     </div>
   );
 };

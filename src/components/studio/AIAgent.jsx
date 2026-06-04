@@ -13,6 +13,7 @@ import {
   buildMemoryExtractionPrompt,
 } from '../../services/aiService';
 import PlanChecklist from './PlanChecklist';
+import StudioConfirmModal from './StudioConfirmModal';
 import AgentMemoryPanel from './AgentMemoryPanel';
 import StarterTemplates from './StarterTemplates';
 import { apiFetch, apiPost } from '../../utils/api';
@@ -142,6 +143,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
   const [memory, setMemory] = useState({ facts: [], updatedAt: null });
   const [showMemory, setShowMemory] = useState(false);
   const [contextWarning, setContextWarning] = useState('');
+  const [showForgetConfirm, setShowForgetConfirm] = useState(false);
   const endRef = useRef(null);
   const textareaRef = useRef(null);
   const historyKitRef = useRef(framework); // which framework the current `messages` belong to
@@ -454,8 +456,12 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
     } catch { /* best-effort; never disrupt the build */ }
   };
 
-  const forgetMemory = async () => {
-    if (!window.confirm('Forget all learned facts for this project?')) return;
+  const forgetMemory = () => {
+    setShowForgetConfirm(true);
+  };
+
+  const confirmForgetMemory = async () => {
+    setShowForgetConfirm(false);
     try {
       const data = await apiFetch(`/api/agent-memory?kit=${framework}`, { method: 'DELETE' });
       setMemory(data && Array.isArray(data.facts) ? data : { facts: [], updatedAt: null });
@@ -716,6 +722,16 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
           <div className="ai-composer-hint">⌘↵ to send · Shift+↵ for new line</div>
         </div>
       )}
+
+      <StudioConfirmModal
+        open={showForgetConfirm}
+        title="Forget project memory"
+        message="Remove all learned facts for this project? The agent will stop using them on future builds."
+        confirmLabel="Forget all"
+        danger
+        onConfirm={confirmForgetMemory}
+        onCancel={() => setShowForgetConfirm(false)}
+      />
     </div>
   );
 };

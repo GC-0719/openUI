@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { X, FolderOpen, Link2, Unlink } from 'lucide-react';
 import { apiPost } from '../../utils/api';
+import StudioConfirmModal from './StudioConfirmModal';
 
 const OpenWorkspaceModal = ({ framework, onClose, onBound }) => {
   const [status, setStatus] = useState(null);
@@ -8,6 +9,7 @@ const OpenWorkspaceModal = ({ framework, onClose, onBound }) => {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [showRestoreConfirm, setShowRestoreConfirm] = useState(false);
 
   const loadStatus = useCallback(async () => {
     setLoading(true);
@@ -51,9 +53,7 @@ const OpenWorkspaceModal = ({ framework, onClose, onBound }) => {
   };
 
   const restoreBuiltin = async () => {
-    if (!window.confirm(
-      'Restore the built-in template workspace? Your linked folder on disk is not deleted, but openUI will stop using it until you bind again.'
-    )) return;
+    setShowRestoreConfirm(false);
     setBusy(true);
     setError('');
     try {
@@ -136,7 +136,7 @@ const OpenWorkspaceModal = ({ framework, onClose, onBound }) => {
             <button
               type="button"
               className="ai-settings-btn secondary"
-              onClick={restoreBuiltin}
+              onClick={() => setShowRestoreConfirm(true)}
               disabled={busy || loading}
               style={{ marginRight: 'auto' }}
             >
@@ -157,6 +157,15 @@ const OpenWorkspaceModal = ({ framework, onClose, onBound }) => {
           </button>
         </div>
       </div>
+
+      <StudioConfirmModal
+        open={showRestoreConfirm}
+        title="Use template workspace"
+        message="Restore the built-in template workspace? Your linked folder on disk is not deleted, but openUI will stop using it until you bind again."
+        confirmLabel="Use template"
+        onConfirm={restoreBuiltin}
+        onCancel={() => setShowRestoreConfirm(false)}
+      />
     </div>
   );
 };

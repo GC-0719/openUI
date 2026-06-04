@@ -1076,6 +1076,54 @@ pre {
 .ai-settings-btn-primary:hover { opacity: 0.9; }
 .ai-settings-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
+/* Studio modals — footer buttons (class="ai-settings-btn secondary|primary") */
+.ai-settings-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ai-settings-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ai-settings-btn.secondary,
+.ai-settings-cancel {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+}
+.ai-settings-btn.secondary:hover:not(:disabled),
+.ai-settings-cancel:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  color: var(--text);
+  background: var(--surface-raised);
+}
+.ai-settings-btn.primary,
+.ai-settings-save {
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+.ai-settings-btn.primary:hover:not(:disabled),
+.ai-settings-save:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+.ai-settings-btn.primary.danger {
+  background: #b91c1c;
+}
+.ai-settings-btn.primary.danger:hover:not(:disabled) {
+  background: #991b1b;
+}
+
 /* AI Settings Modal — tabs */
 .ai-settings-modal {
   width: 500px;

@@ -422,3 +422,20 @@
 .workspace-mono .ai-configure-btn:hover {
   background: #262626 !important;
 }
+
+.workspace-mono .ai-settings-btn.secondary,
+.workspace-mono .ai-settings-cancel {
+  background: var(--wm-bg) !important;
+  border-color: var(--wm-border) !important;
+  color: var(--wm-muted) !important;
+}
+
+.workspace-mono .ai-settings-btn.primary,
+.workspace-mono .ai-settings-save {
+  background: var(--wm-active-bg) !important;
+  color: var(--wm-active-fg) !important;
+}
+
+.workspace-mono .ai-settings-btn.primary.danger {
+  background: #b91c1c !important;
+}

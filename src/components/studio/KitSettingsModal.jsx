@@ -77,7 +77,8 @@ const KitSettingsModal = ({ onClose }) => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <label className="ai-settings-label" style={{ marginBottom: 0 }}>CSS Prefix</label>
                 <button
-                  style={{ fontSize: '11px', color: 'var(--primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  type="button"
+                  className="kit-settings-auto-btn"
                   onClick={handleAutoPrefix}
                   title="Auto-derive from kit name"
                 >
