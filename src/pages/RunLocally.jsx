@@ -30,9 +30,15 @@ export default function RunLocally() {
           <h1 className="lp-title" style={{ fontSize: 'clamp(28px, 5vw, 44px)', margin: '18px 0 0' }}>
             The studio runs on <span className="lp-title-accent">your machine</span>
           </h1>
-          <p className="lp-subtitle" style={{ margin: '20px auto 28px' }}>
+          <p className="lp-subtitle" style={{ margin: '20px auto 20px' }}>
             openUI's AI agent creates files, runs a live preview, and connects to your backend over
             MCP — so the studio runs locally, not in this tab. Start it in three commands:
+          </p>
+
+          <p className="lp-subtitle" style={{ fontSize: 13, margin: '0 auto 20px', maxWidth: 520, textAlign: 'left' }}>
+            <strong style={{ color: '#e7e7ee' }}>Included in the dev studio</strong> (not on this hosted page):
+            Audit tab, agent diff preview, open existing repo, git file badges, starter templates,
+            MCP wizard (AI Settings → MCP), theme editor, and plan → build workflow.
           </p>
 
           <pre style={{
@@ -43,7 +49,9 @@ export default function RunLocally() {
           }}>
 {`git clone https://github.com/GC-0719/openUI.git
 cd openUI && npm install
-OPENUI_AI_KEY=sk-ant-... npm run dev`}
+OPENUI_AI_KEY=sk-ant-... npm run dev   # BYOK: Claude key in env, not the browser
+# or paste your key in Studio → Settings after npm run dev
+# open http://localhost:5173/studio/react`}
           </pre>
 
           <div className="lp-hero-actions" style={{ marginTop: 26 }}>

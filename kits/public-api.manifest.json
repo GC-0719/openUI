@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "react": {
+    "package": "@openedui/react",
+    "semver": "0.2.0",
+    "barrel": "src/components/ui/index.jsx",
+    "components": [
+      "Accordion",
+      "Alert",
+      "Avatar",
+      "Badge",
+      "Breadcrumbs",
+      "Button",
+      "Card",
+      "Checkbox",
+      "Chip",
+      "Drawer",
+      "Dropdown",
+      "Input",
+      "List",
+      "Modal",
+      "Navbar",
+      "NavItem",
+      "Progress",
+      "Radio",
+      "Skeleton",
+      "Switch",
+      "Table",
+      "Tabs",
+      "Toast",
+      "Tooltip"
+    ],
+    "exportMap": {
+      ".": "./dist/openui-react.js",
+      "./styles.css": "./dist/styles.css"
+    }
+  },
+  "angular": {
+    "package": "@openedui/angular",
+    "semver": "0.2.0",
+    "barrel": "src/components/ui/index.ts",
+    "symbols": [
+      "AccordionComponent",
+      "AccordionItem",
+      "AlertComponent",
+      "AvatarComponent",
+      "BadgeComponent",
+      "BreadcrumbsComponent",
+      "ButtonComponent",
+      "CardComponent",
+      "CheckboxComponent",
+      "ChipComponent",
+      "DrawerComponent",
+      "DropdownComponent",
+      "DropdownDividerComponent",
+      "DropdownItemComponent",
+      "InputComponent",
+      "ListComponent",
+      "ListItemComponent",
+      "ModalComponent",
+      "NavbarActionsComponent",
+      "NavbarBrandComponent",
+      "NavbarComponent",
+      "NavItemComponent",
+      "ProgressComponent",
+      "RadioComponent",
+      "SkeletonComponent",
+      "SwitchComponent",
+      "TableColumn",
+      "TableComponent",
+      "TabsComponent",
+      "ToastProviderComponent",
+      "ToastService",
+      "TooltipComponent"
+    ],
+    "exportMap": {
+      ".": "package entry (ng-packagr FESM)",
+      "./styles.css": "./styles.css"
+    }
+  }
+}

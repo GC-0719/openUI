@@ -3,288 +3,35 @@ import react from '@vitejs/plugin-react';
 import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
-
-// ── Constants ─────────────────────────────────────────────────────────────────
-const KITS_DIR          = 'kits';
-const REACT_WORKSPACE   = `${KITS_DIR}/react/workspace`;
-const REACT_TEMPLATE    = `${KITS_DIR}/react/template`;
-const ANGULAR_WORKSPACE = `${KITS_DIR}/angular/workspace`;
-const ANGULAR_TEMPLATE  = `${KITS_DIR}/angular/template`;
-// Backwards-compat alias used by all API handlers
-const WORKSPACE = REACT_WORKSPACE;
-const TEMPLATE  = REACT_TEMPLATE;
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-const json = (res, code, data) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.writeHead(code);
-  res.end(JSON.stringify(data));
-};
-
-const readBody = (req) => new Promise(resolve => {
-  let b = ''; req.on('data', c => { b += c; }); req.on('end', () => resolve(b));
-});
-
-// Parse local LLM response — handles OpenAI JSON, NDJSON, and SSE streaming formats
-function parseLocalLLMResponse(rawText) {
-  // First try standard single-object JSON
-  try {
-    const d = JSON.parse(rawText);
-    if (d.error) throw new Error(typeof d.error === 'string' ? d.error : d.error.message || JSON.stringify(d.error));
-    return d.choices?.[0]?.message?.content ?? d.message?.content ?? '';
-  } catch (e) {
-    if (!(e instanceof SyntaxError)) throw e; // only suppress JSON parse errors
-  }
-  // NDJSON / SSE: aggregate content deltas across lines
-  let content = '';
-  for (const line of rawText.split('\n')) {
-    const stripped = line.startsWith('data: ') ? line.slice(6) : line.trim();
-    if (!stripped || stripped === '[DONE]') continue;
-    try {
-      const chunk = JSON.parse(stripped);
-      if (chunk.error) throw new Error(typeof chunk.error === 'string' ? chunk.error : chunk.error.message || JSON.stringify(chunk.error));
-      content += chunk.choices?.[0]?.delta?.content ?? chunk.choices?.[0]?.message?.content ?? chunk.message?.content ?? '';
-    } catch (e) {
-      if (!(e instanceof SyntaxError)) throw e;
-    }
-  }
-  if (!content) throw new Error(`Local LLM returned unexpected format: ${rawText.slice(0, 300)}`);
-  return content;
-}
-
-// ── AI provider layer: high token limits, truncation-aware continuation, SSE streaming ──
-// A full multi-file build (page + components + hook + data) far exceeds a single
-// response budget, so we (a) request a large max_tokens and (b) auto-continue when
-// the model stops on a length limit, concatenating rounds into one complete answer.
-const AI_MAX_TOKENS = { claude: 16000, openai: 16384, gemini: 8192, local: 8192 };
-const AI_MAX_CONTINUATIONS = 4;
-const AI_CONTINUE_PROMPT =
-  'Continue the response from exactly where you stopped. Do NOT repeat any text you already wrote — resume mid-line/mid-token if needed. Keep the identical format (same fenced code blocks with file-path annotations).';
-
-// Read a fetch Response body (web ReadableStream) as a stream of trimmed text lines.
-async function* sseLines(body) {
-  const reader = body.getReader();
-  const decoder = new TextDecoder();
-  let buf = '';
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buf += decoder.decode(value, { stream: true });
-    let idx;
-    while ((idx = buf.indexOf('\n')) >= 0) {
-      const line = buf.slice(0, idx);
-      buf = buf.slice(idx + 1);
-      if (line.trim()) yield line.trim();
-    }
-  }
-  if (buf.trim()) yield buf.trim();
-}
-
-// ── Prompt caching (claude) ──────────────────────────────────────────────────
-// The agent sends a large, stable system prompt (component list, kit context,
-// workspace tree, memory) plus a growing message history. Mark the system block
-// and the last message as ephemeral cache breakpoints: repeated requests in a
-// session (continuation rounds, auto-fix retries, multi-turn) reuse the prefix
-// at ~0.1x cost. Render order is system → messages, so the system breakpoint
-// caches the whole preamble; the last-message breakpoint extends the cached
-// prefix incrementally each turn. (Anthropic caches a prefix — any byte change
-// invalidates everything after, but our system prompt has no timestamps/UUIDs.)
-function cacheSystem(systemPrompt) {
-  if (!systemPrompt) return undefined;
-  return [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }];
-}
-function cacheMessages(messages) {
-  if (!Array.isArray(messages) || messages.length === 0) return messages;
-  const out = messages.map(m => ({ ...m }));
-  const last = out[out.length - 1];
-  if (typeof last.content === 'string') {
-    last.content = [{ type: 'text', text: last.content, cache_control: { type: 'ephemeral' } }];
-  } else if (Array.isArray(last.content) && last.content.length) {
-    const blocks = last.content.map(b => ({ ...b }));
-    blocks[blocks.length - 1] = { ...blocks[blocks.length - 1], cache_control: { type: 'ephemeral' } };
-    last.content = blocks;
-  }
-  return out;
-}
-function logClaudeCache(usage) {
-  if (!usage) return;
-  const read = usage.cache_read_input_tokens || 0;
-  const write = usage.cache_creation_input_tokens || 0;
-  if (read || write) console.log(`[openui] claude cache → read ${read} · write ${write} · fresh ${usage.input_tokens || 0}`);
-}
-
-// One non-streaming completion. Returns { text, truncated }.
-async function aiProviderOnce({ provider, model, apiKey, baseUrl, systemPrompt, messages }) {
-  if (provider === 'claude') {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-      body: JSON.stringify({ model, system: cacheSystem(systemPrompt), messages: cacheMessages(messages), max_tokens: AI_MAX_TOKENS.claude }),
-    });
-    const d = await r.json();
-    if (d.error) throw new Error(d.error.message);
-    logClaudeCache(d.usage);
-    return { text: d.content?.[0]?.text || '', truncated: d.stop_reason === 'max_tokens' };
-  }
-  if (provider === 'openai') {
-    const r = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model, messages: [{ role: 'system', content: systemPrompt }, ...messages], max_tokens: AI_MAX_TOKENS.openai }),
-    });
-    const d = await r.json();
-    if (d.error) throw new Error(d.error.message);
-    return { text: d.choices?.[0]?.message?.content || '', truncated: d.choices?.[0]?.finish_reason === 'length' };
-  }
-  if (provider === 'gemini') {
-    const r = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: systemPrompt }] },
-          contents: messages.map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
-          generationConfig: { maxOutputTokens: AI_MAX_TOKENS.gemini },
-        }),
-      }
-    );
-    const d = await r.json();
-    if (d.error) throw new Error(d.error.message || d.error.status);
-    return {
-      text: d.candidates?.[0]?.content?.parts?.[0]?.text || '',
-      truncated: d.candidates?.[0]?.finishReason === 'MAX_TOKENS',
-    };
-  }
-  if (provider === 'local') {
-    const base = (baseUrl || 'http://localhost:11434/v1').replace(/\/$/, '');
-    const authHeaders = {};
-    if (apiKey && apiKey.toLowerCase() !== 'ollama') authHeaders['Authorization'] = `Bearer ${apiKey}`;
-    const allMessages = [{ role: 'system', content: systemPrompt }, ...messages];
-    let r = await fetch(`${base}/chat/completions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders },
-      body: JSON.stringify({ model, messages: allMessages, stream: false }),
-    });
-    if (r.status === 404) {
-      const ollamaBase = base.replace(/\/v1$/, '');
-      r = await fetch(`${ollamaBase}/api/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeaders },
-        body: JSON.stringify({ model, messages: allMessages, stream: false }),
-      });
-    }
-    if (!r.ok) {
-      const errBody = await r.text();
-      let errMsg = `Local LLM error ${r.status}`;
-      try { const d = JSON.parse(errBody); if (d.error) errMsg = typeof d.error === 'string' ? d.error : d.error.message || errMsg; } catch {}
-      throw new Error(errMsg);
-    }
-    return { text: parseLocalLLMResponse(await r.text()), truncated: false };
-  }
-  throw new Error(`Unknown provider: ${provider}`);
-}
-
-// Non-streaming completion with auto-continuation across length limits.
-async function aiComplete(args) {
-  let full = '';
-  let messages = [...args.messages];
-  for (let round = 0; round < AI_MAX_CONTINUATIONS; round++) {
-    const { text, truncated } = await aiProviderOnce({ ...args, messages });
-    full += text;
-    if (!truncated || !text) break;
-    messages = [...messages, { role: 'assistant', content: text }, { role: 'user', content: AI_CONTINUE_PROMPT }];
-  }
-  return full;
-}
-
-// One streamed completion. Calls onDelta(textChunk) as tokens arrive. Returns { truncated }.
-async function aiStreamOnce({ provider, model, apiKey, baseUrl, systemPrompt, messages }, onDelta) {
-  if (provider === 'claude') {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-      body: JSON.stringify({ model, system: cacheSystem(systemPrompt), messages: cacheMessages(messages), max_tokens: AI_MAX_TOKENS.claude, stream: true }),
-    });
-    if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(d.error?.message || `Claude error ${r.status}`); }
-    let truncated = false;
-    for await (const line of sseLines(r.body)) {
-      if (!line.startsWith('data:')) continue;
-      const payload = line.slice(5).trim();
-      let ev; try { ev = JSON.parse(payload); } catch { continue; }
-      if (ev.type === 'message_start') logClaudeCache(ev.message?.usage);
-      else if (ev.type === 'content_block_delta' && ev.delta?.text) onDelta(ev.delta.text);
-      else if (ev.type === 'message_delta' && ev.delta?.stop_reason === 'max_tokens') truncated = true;
-      else if (ev.type === 'error') throw new Error(ev.error?.message || 'Claude stream error');
-    }
-    return { truncated };
-  }
-  if (provider === 'openai' || provider === 'local') {
-    let url, headers;
-    const allMessages = [{ role: 'system', content: systemPrompt }, ...messages];
-    const body = { model, messages: allMessages, stream: true };
-    if (provider === 'openai') {
-      url = 'https://api.openai.com/v1/chat/completions';
-      headers = { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
-      body.max_tokens = AI_MAX_TOKENS.openai;
-    } else {
-      const base = (baseUrl || 'http://localhost:11434/v1').replace(/\/$/, '');
-      url = `${base}/chat/completions`;
-      headers = { 'Content-Type': 'application/json' };
-      if (apiKey && apiKey.toLowerCase() !== 'ollama') headers['Authorization'] = `Bearer ${apiKey}`;
-    }
-    const r = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
-    if (!r.ok) { const t = await r.text(); throw new Error(`${provider} error ${r.status}: ${t.slice(0, 200)}`); }
-    let truncated = false;
-    for await (const line of sseLines(r.body)) {
-      if (!line.startsWith('data:')) continue;
-      const payload = line.slice(5).trim();
-      if (payload === '[DONE]') break;
-      let ev; try { ev = JSON.parse(payload); } catch { continue; }
-      const delta = ev.choices?.[0]?.delta?.content;
-      if (delta) onDelta(delta);
-      if (ev.choices?.[0]?.finish_reason === 'length') truncated = true;
-    }
-    return { truncated };
-  }
-  if (provider === 'gemini') {
-    const r = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: systemPrompt }] },
-          contents: messages.map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
-          generationConfig: { maxOutputTokens: AI_MAX_TOKENS.gemini },
-        }),
-      }
-    );
-    if (!r.ok) { const t = await r.text(); throw new Error(`Gemini error ${r.status}: ${t.slice(0, 200)}`); }
-    let truncated = false;
-    for await (const line of sseLines(r.body)) {
-      if (!line.startsWith('data:')) continue;
-      const payload = line.slice(5).trim();
-      let ev; try { ev = JSON.parse(payload); } catch { continue; }
-      const parts = ev.candidates?.[0]?.content?.parts;
-      if (parts) for (const p of parts) if (p.text) onDelta(p.text);
-      if (ev.candidates?.[0]?.finishReason === 'MAX_TOKENS') truncated = true;
-    }
-    return { truncated };
-  }
-  throw new Error(`Unknown provider: ${provider}`);
-}
-
-// Streamed completion with auto-continuation. Calls onDelta as tokens arrive.
-async function aiStreamWithContinuation(args, onDelta) {
-  let messages = [...args.messages];
-  for (let round = 0; round < AI_MAX_CONTINUATIONS; round++) {
-    let roundText = '';
-    const { truncated } = await aiStreamOnce({ ...args, messages }, (d) => { roundText += d; onDelta(d); });
-    if (!truncated || !roundText) break;
-    messages = [...messages, { role: 'assistant', content: roundText }, { role: 'user', content: AI_CONTINUE_PROMPT }];
-  }
-}
+import {
+  KITS_DIR,
+  REACT_WORKSPACE,
+  REACT_TEMPLATE,
+  ANGULAR_WORKSPACE,
+  ANGULAR_TEMPLATE,
+  WORKSPACE,
+  TEMPLATE,
+} from './server/constants.js';
+import { json, readBody } from './server/http.js';
+import { createPathResolver, safeKit } from './server/pathSafety.js';
+import { aiComplete, aiStreamWithContinuation, parseLocalLLMResponse } from './server/ai.js';
+import { validateWorkspaceFiles } from './server/validateSource.js';
+import {
+  bindExternalWorkspace,
+  getWorkspaceBindStatus,
+  restoreBuiltinWorkspace,
+  validateExternalRoot,
+} from './server/workspaceBind.js';
+import { getGitStatusForKit } from './server/gitStatus.js';
+import { scaffoldMcpServer } from './server/mcpScaffold.js';
+import {
+  readMergedSpecs,
+  registerCustomComponent,
+  writeWorkspaceSpec,
+} from './server/customComponent.js';
+import { validateMcpStdioCommand } from './server/mcpCommandSafety.js';
+import { isPathInsideRoot } from './server/securityAudit.js';
+import { getAiConfigPublic, resolveAiCredentials } from './server/aiEnvKey.js';
 
 function copyPath(src, dest) {
   if (!fs.existsSync(src)) return;
@@ -814,27 +561,29 @@ const openuiDevPlugin = {
   name: 'openui-dev',
   configureServer(server) {
     const cwd = process.cwd();
+    const { resolveIn, resolveWs } = createPathResolver(cwd);
 
-    // ── Path safety ───────────────────────────────────────────────────────────
-    // `kit` must be a known workspace; resolved paths must stay inside
-    // kits/<kit>/<source> (blocks `..` path traversal outside the sandbox).
-    const safeKit = (k) => (k === 'react' || k === 'angular' ? k : null);
-    const resolveIn = (kit, source, relPath) => {
-      if (!safeKit(kit)) return null;
-      if (source !== 'workspace' && source !== 'template') return null;
-      const baseRoot = path.resolve(cwd, KITS_DIR, kit, source);
-      const full = path.resolve(baseRoot, relPath || '');
-      if (full !== baseRoot && !full.startsWith(baseRoot + path.sep)) return null;
-      return full;
-    };
-    const resolveWs = (kit, relPath) => resolveIn(kit, 'workspace', relPath);
+    // ── AI env key status (BYOK — never returns the key) ─────────────────────
+    server.middlewares.use('/api/ai-config', (req, res) => {
+      if (req.method !== 'GET') { json(res, 405, { error: 'GET only' }); return; }
+      json(res, 200, getAiConfigPublic());
+    });
 
     // ── AI completions ────────────────────────────────────────────────────────
     server.middlewares.use('/api/ai', async (req, res) => {
       if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
       let body;
       try { body = JSON.parse(await readBody(req)); } catch { json(res, 400, { error: 'Invalid JSON body' }); return; }
-      const { provider, model, apiKey, baseUrl, messages, systemPrompt, stream } = body;
+      const resolved = resolveAiCredentials(body);
+      const { provider, model, apiKey, baseUrl, messages, systemPrompt, stream } = resolved;
+      if (!apiKey && provider !== 'local') {
+        json(res, 400, { error: 'No API key — add one in Settings or set OPENUI_AI_KEY for Claude' });
+        return;
+      }
+      if (provider === 'local' && !baseUrl?.trim()) {
+        json(res, 400, { error: 'Local LLM requires a server URL in Settings' });
+        return;
+      }
       const args = { provider, model, apiKey, baseUrl, systemPrompt, messages };
 
       // ── Streaming (Server-Sent Events) — opt-in via { stream: true } ──
@@ -912,6 +661,19 @@ const openuiDevPlugin = {
       fs.mkdirSync(MEMORY_DIR, { recursive: true });
       fs.writeFileSync(memoryFile(kit), JSON.stringify(data, null, 2));
     };
+    server.middlewares.use('/api/validate-sources', async (req, res) => {
+      if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
+      try {
+        const body = JSON.parse(await readBody(req));
+        const kit = body.kit === 'angular' ? 'angular' : 'react';
+        const paths = Array.isArray(body.paths) ? body.paths : [];
+        const parseErrors = validateWorkspaceFiles(cwd, resolveWs, kit, paths);
+        json(res, 200, { parseErrors });
+      } catch (err) {
+        json(res, 500, { error: err.message });
+      }
+    });
+
     server.middlewares.use('/api/agent-memory', async (req, res) => {
       try {
         const url = new URL(req.url, 'http://localhost');
@@ -1073,17 +835,56 @@ const openuiDevPlugin = {
       }
     });
 
+    // ── Workspace bind (open existing repo on disk) ───────────────────────────
+    server.middlewares.use('/api/workspace-bind', async (req, res) => {
+      try {
+        const url = new URL(req.url, 'http://localhost');
+        const kit = url.searchParams.get('kit') || 'react';
+
+        if (req.method === 'GET') {
+          if (!safeKit(kit)) { json(res, 400, { error: 'Invalid kit' }); return; }
+          json(res, 200, getWorkspaceBindStatus(cwd, kit));
+          return;
+        }
+
+        if (req.method === 'POST') {
+          const body = JSON.parse(await readBody(req) || '{}');
+          const action = body.action || 'bind';
+          const kitPost = body.kit || kit;
+          if (!safeKit(kitPost)) { json(res, 400, { error: 'Invalid kit' }); return; }
+
+          if (action === 'unbind' || action === 'restore') {
+            const result = restoreBuiltinWorkspace(cwd, kitPost, copyPath);
+            if (!result.ok) { json(res, 400, result); return; }
+            json(res, 200, { ok: true, ...getWorkspaceBindStatus(cwd, kitPost) });
+            return;
+          }
+
+          if (action === 'validate') {
+            const check = validateExternalRoot(body.rootPath, cwd, kitPost);
+            json(res, check.ok ? 200 : 400, check);
+            return;
+          }
+
+          const bind = bindExternalWorkspace(cwd, kitPost, body.rootPath);
+          if (!bind.ok) { json(res, 400, bind); return; }
+          json(res, 200, { ok: true, ...getWorkspaceBindStatus(cwd, kitPost) });
+          return;
+        }
+
+        json(res, 405, { error: 'GET/POST only' });
+      } catch (err) {
+        json(res, 500, { error: err.message });
+      }
+    });
+
     // ── Reset workspace to template ───────────────────────────────────────────
     server.middlewares.use('/api/reset-template', async (req, res) => {
       if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
       try {
         const { kit = 'react' } = JSON.parse(await readBody(req) || '{}');
-        if (!safeKit(kit)) { json(res, 400, { error: 'Invalid kit' }); return; }
-        const wsPath = path.join(cwd, KITS_DIR, kit, 'workspace');
-        const tmplPath = path.join(cwd, KITS_DIR, kit, 'template');
-        if (!fs.existsSync(tmplPath)) { json(res, 404, { error: 'Template not found' }); return; }
-        fs.rmSync(wsPath, { recursive: true, force: true });
-        copyPath(tmplPath, wsPath);
+        const result = restoreBuiltinWorkspace(cwd, kit, copyPath);
+        if (!result.ok) { json(res, result.error === 'Template not found' ? 404 : 400, result); return; }
         json(res, 200, { ok: true });
       } catch (err) {
         json(res, 500, { error: err.message });
@@ -1209,6 +1010,37 @@ const openuiDevPlugin = {
       }
     });
 
+    // ── MCP wizard — scaffold server from OpenAPI or Prisma ───────────────────
+    server.middlewares.use('/api/mcp-wizard/scaffold', async (req, res) => {
+      if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
+      try {
+        const body = JSON.parse(await readBody(req) || '{}');
+        const result = scaffoldMcpServer({
+          source: body.source,
+          spec: body.spec,
+          serverName: body.serverName,
+          baseUrl: body.baseUrl,
+        });
+        if (!result.ok) { json(res, 400, result); return; }
+        json(res, 200, result);
+      } catch (err) {
+        json(res, 500, { error: err.message });
+      }
+    });
+
+    // ── Git status for workspace file tree badges ─────────────────────────────
+    server.middlewares.use('/api/git-status', (req, res) => {
+      if (req.method !== 'GET') { json(res, 405, { error: 'GET only' }); return; }
+      try {
+        const url = new URL(req.url, 'http://localhost');
+        const kit = url.searchParams.get('kit') || 'react';
+        if (!safeKit(kit)) { json(res, 400, { error: 'Invalid kit' }); return; }
+        json(res, 200, getGitStatusForKit(cwd, kit));
+      } catch (err) {
+        json(res, 500, { error: err.message });
+      }
+    });
+
     // ── List workspace file paths (no content) ────────────────────────────────
     server.middlewares.use('/api/workspace-files', (req, res) => {
       if (req.method !== 'GET') { json(res, 405, { error: 'GET only' }); return; }
@@ -1245,8 +1077,9 @@ const openuiDevPlugin = {
     server.middlewares.use('/api/read-specs', (req, res) => {
       if (req.method !== 'GET') { json(res, 405, { error: 'GET only' }); return; }
       try {
-        const specsPath = path.join(cwd, 'src/data/ai-specs.json');
-        const specs = fs.existsSync(specsPath) ? JSON.parse(fs.readFileSync(specsPath, 'utf-8')) : {};
+        const url = new URL(req.url, 'http://localhost');
+        const kit = url.searchParams.get('kit') || 'react';
+        const specs = readMergedSpecs(cwd, kit);
         json(res, 200, { specs });
       } catch (err) {
         json(res, 500, { error: err.message });
@@ -1257,12 +1090,29 @@ const openuiDevPlugin = {
     server.middlewares.use('/api/write-spec', async (req, res) => {
       if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
       try {
-        const { componentId, aiSpec } = JSON.parse(await readBody(req));
-        const specsPath = path.join(cwd, 'src/data/ai-specs.json');
-        const existing = fs.existsSync(specsPath) ? JSON.parse(fs.readFileSync(specsPath, 'utf-8')) : {};
-        existing[componentId] = aiSpec;
-        fs.writeFileSync(specsPath, JSON.stringify(existing, null, 2), 'utf-8');
+        const { componentId, aiSpec, kit, scope } = JSON.parse(await readBody(req));
+        if (scope === 'workspace' && safeKit(kit)) {
+          writeWorkspaceSpec(cwd, kit, componentId, aiSpec);
+        } else {
+          const specsPath = path.join(cwd, 'src/data/ai-specs.json');
+          const existing = fs.existsSync(specsPath) ? JSON.parse(fs.readFileSync(specsPath, 'utf-8')) : {};
+          existing[componentId] = aiSpec;
+          fs.writeFileSync(specsPath, JSON.stringify(existing, null, 2), 'utf-8');
+        }
         json(res, 200, { ok: true });
+      } catch (err) {
+        json(res, 500, { error: err.message });
+      }
+    });
+
+    // ── Register custom kit component (file + barrel + spec) ─────────────────
+    server.middlewares.use('/api/register-component', async (req, res) => {
+      if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
+      try {
+        const { name, kit = 'react' } = JSON.parse(await readBody(req));
+        const result = registerCustomComponent(cwd, kit, name);
+        if (!result.ok) { json(res, 400, result); return; }
+        json(res, 200, result);
       } catch (err) {
         json(res, 500, { error: err.message });
       }
@@ -1272,8 +1122,9 @@ const openuiDevPlugin = {
     server.middlewares.use('/api/ai-spec-generate', async (req, res) => {
       if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
       try {
-        const { componentId, componentName, description, classes, variants, provider, model, apiKey, baseUrl } =
-          JSON.parse(await readBody(req));
+        const raw = JSON.parse(await readBody(req));
+        const { componentId, componentName, description, classes, variants, provider, model, baseUrl } = raw;
+        const { apiKey } = resolveAiCredentials(raw);
 
         const systemPrompt = `You are a design system expert. Given a UI component's metadata, produce a structured AI intelligence spec in JSON.
 
@@ -1429,7 +1280,11 @@ Variants: ${(variants || []).join(', ')}`;
     }
 
     async function mcpRequest(transport, url, command, method, params) {
-      if (transport === 'stdio') return stdioMCPRequest(command, method, params);
+      if (transport === 'stdio') {
+        const check = validateMcpStdioCommand(command);
+        if (!check.ok) throw new Error(check.error);
+        return stdioMCPRequest(command, method, params);
+      }
       return httpMCPRequest(url, method, params);
     }
 
@@ -1470,6 +1325,7 @@ Variants: ${(variants || []).join(', ')}`;
         // Async + yields between I/O so a large export never blocks Vite's
         // event loop (and thus never freezes HMR / the studio UI).
         const readPath = async (wsRelPath) => {
+          if (!isPathInsideRoot(wsRoot, wsRelPath)) return;
           const full = path.join(wsRoot, wsRelPath);
           const bn = path.basename(full);
           if (bn.startsWith('._') || bn === '.DS_Store' || bn === 'node_modules') return;

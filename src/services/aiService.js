@@ -1,11 +1,41 @@
+import { buildAiRequestBody } from '../utils/aiRequest.js';
+
 // Call the local AI proxy. Pass { stream: true, onToken } to receive tokens live
 // (onToken(deltaText, fullTextSoFar)); the full text is still returned at the end.
 // Without `stream`, behaves exactly as before (single JSON response).
-export async function callAI({ provider, model, apiKey, baseUrl, messages, systemPrompt, stream = false, onToken } = {}) {
+function formatThemeBlock(cssVars = {}, componentCSS = {}) {
+  if (!Object.keys(cssVars).length && !Object.keys(componentCSS).length) return '';
+  return (
+    '\n## Active theme tokens (set in studio — honor these colors and radii; do not re-declare unless the user asks):\n' +
+    (Object.keys(cssVars).length
+      ? Object.entries(cssVars).map(([k, v]) => `- ${k}: ${v}`).join('\n') + '\n'
+      : '') +
+    (Object.keys(componentCSS).length
+      ? '### Component CSS overrides:\n' + Object.entries(componentCSS).map(([k, v]) => `- ${k}: ${v}`).join('\n') + '\n'
+      : '')
+  );
+}
+
+export async function callAI({
+  provider,
+  model,
+  apiKey,
+  baseUrl,
+  keySource,
+  messages,
+  systemPrompt,
+  stream = false,
+  onToken,
+} = {}) {
   const res = await fetch('/api/ai', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ provider, model, apiKey, baseUrl, messages, systemPrompt, stream }),
+    body: JSON.stringify(
+      buildAiRequestBody(
+        { provider, model, apiKey, baseUrl, keySource },
+        { messages, systemPrompt, stream }
+      )
+    ),
   });
 
   if (!stream) {
@@ -310,7 +340,7 @@ Rules:
 }
 
 // ── Ask mode: answer questions, no file changes ───────────────────────────────
-export function buildAskPrompt({ kitName, components = [], specs = {}, activeFilePath = null, activeFileContent = null, existingRoutes = [] }) {
+export function buildAskPrompt({ kitName, components = [], specs = {}, activeFilePath = null, activeFileContent = null, existingRoutes = [], cssVars = {}, componentCSS = {} }) {
   const compList = components.map(c => {
     const spec = specs[c.id] || {};
     return `- **${c.name}**${spec.purpose ? `: ${spec.purpose}` : ''}`;
@@ -330,36 +360,125 @@ Do NOT make any file changes or output code blocks with file paths. If you show 
 
 ## Available components:
 ${compList}
-${routeList}${openFileCtx}`;
+${routeList}${formatThemeBlock(cssVars, componentCSS)}${openFileCtx}`;
 }
 
 // ── Plan mode: produce an implementation plan, no file changes ────────────────
-export function buildPlanPrompt({ kitName, components = [], activeFilePath = null, existingRoutes = [] }) {
-  const compList = components.map(c => `- ${c.name}`).join(', ');
+export function buildPlanPrompt({
+  kitName,
+  components = [],
+  specs = {},
+  activeFilePath = null,
+  activeFileContent = null,
+  existingRoutes = [],
+  framework = 'react',
+  workspaceTree = [],
+  mcpContext = '',
+  cssVars = {},
+  componentCSS = {},
+} = {}) {
+  const compList = components.map(c => {
+    const spec = specs[c.id] || {};
+    return `- **${c.name}**${spec.purpose ? `: ${spec.purpose}` : ''}`;
+  }).join('\n');
 
   const existingPagesList = existingRoutes.length
-    ? `\nExisting pages: ${existingRoutes.map(r => `${r.name} → ${r.route}`).join(', ')}`
+    ? `\nExisting pages: ${existingRoutes.map(r => `${r.name} → ${r.route} (${r.file})`).join(', ')}`
     : '';
 
-  const openFileCtx = activeFilePath ? `\nCurrently open: \`${activeFilePath}\`` : '';
+  const treeCtx = workspaceTree.length > 0
+    ? `\n## Workspace files already present:\n${workspaceTree.map(f => `  - ${f}`).join('\n')}\n`
+    : '';
 
-  return `You are a ${kitName} UI architect. Create a clear implementation plan for the user's request.
+  const openFileCtx = activeFilePath && activeFileContent
+    ? `\nCurrently open: \`${activeFilePath}\`\n\`\`\`\n${activeFileContent.slice(0, 2000)}\n\`\`\``
+    : activeFilePath
+      ? `\nCurrently open: \`${activeFilePath}\``
+      : '';
 
-DO NOT write file code or use \`\`\`jsx:path\`\`\` blocks. Produce only a structured plan.
+  const routeHint = framework === 'angular'
+    ? 'Register new pages in `src/app/app.component.ts` imports + template.'
+    : 'New pages use `src/pages/<Name>.jsx` with default export; reachable at `#/ai/<Name>`.';
 
-Your plan must cover:
-1. **Files to create** — name, purpose, route (if a page)
-2. **Files to edit** — which existing file, what to change and why
-3. **Components to use** — from the kit: ${compList}
-4. **Routing** — how pages link together using hash routes (#/ai/PageName)
-5. **Data / state** — any shared state or props needed
+  return `You are a ${kitName} UI architect (${framework} kit). Create an implementation plan for the user's request.
 
-Available components: ${compList}${existingPagesList}${openFileCtx}
+DO NOT write file code or use path-annotated fenced blocks (\`\`\`jsx:path\`). No file contents.
 
-Format the plan as numbered sections with sub-bullets. Be specific about file paths and component names.`;
+Structure your response EXACTLY like this:
+
+## Overview
+One short paragraph: what we are building and why.
+
+## Files to create
+Bulleted list: \`path\` — purpose, route if applicable.
+
+## Files to edit
+Bulleted list: \`path\` — what to change.
+
+## Components & patterns
+Which kit components to use and how they compose.
+
+## Routing & navigation
+${routeHint}
+
+## Data / services
+State, hooks, or ${framework === 'angular' ? 'services' : 'lib/'} modules if needed.
+
+## Checklist
+A markdown task list the builder will follow — one checkbox per concrete step (8–15 items max):
+- [ ] Step one with exact file path
+- [ ] Step two
+(Use \`- [ ]\` syntax only in this section.)
+
+${mcpContext ? `\n## Backend (MCP)\nHonor connected backend fields and tools.\n` : ''}
+## Available kit components:
+${compList}${existingPagesList}${treeCtx}${formatThemeBlock(cssVars, componentCSS)}${openFileCtx}`;
 }
 
-export function buildAgentPrompt({ components, kitPrefix, kitName, specs = {}, mcpContext = '', activeFilePath = null, activeFileContent = null, framework = 'react', workspaceTree = [], barrelContent = '', existingRoutes = [], navFile = null, pageFiles = {}, memory = '' }) {
+/** Parse markdown checklist items from a plan response. */
+export function parsePlanChecklist(text) {
+  if (!text) return [];
+  const items = [];
+  for (const line of text.split('\n')) {
+    const m = line.match(/^\s*[-*]\s+\[([ xX])\]\s+(.+)$/);
+    if (m) items.push({ done: m[1].toLowerCase() === 'x', text: m[2].trim() });
+  }
+  return items;
+}
+
+/** Edit-mode prompt when implementing a prior plan. */
+export function buildImplementPlanPrompt({
+  planText,
+  kitName,
+  kitPrefix,
+  framework = 'react',
+  components = [],
+  specs = {},
+  mcpContext = '',
+  workspaceTree = [],
+  cssVars = {},
+  componentCSS = {},
+} = {}) {
+  const compList = components.map(c => `- ${c.name}`).join(', ');
+  const treeCtx = workspaceTree.length > 0
+    ? `\nWorkspace tree:\n${workspaceTree.map(f => `  ${f}`).join('\n')}\n`
+    : '';
+  return `You are openUI Agent implementing an approved plan for ${kitName} (${framework}, prefix ${kitPrefix}-).
+
+Follow the plan below step by step. Check off each checklist item by actually creating/editing the files described.
+
+## Approved plan
+${planText}
+
+## Rules
+- Output path-annotated code blocks for every file you create or change.
+- Use kit components only: ${compList}
+- No hardcoded hex colors — use CSS variables.
+${treeCtx}${formatThemeBlock(cssVars, componentCSS)}${mcpContext ? `\n## Backend context:\n${mcpContext}\n` : ''}
+Begin implementation now.`;
+}
+
+export function buildAgentPrompt({ components, kitPrefix, kitName, specs = {}, mcpContext = '', activeFilePath = null, activeFileContent = null, framework = 'react', workspaceTree = [], barrelContent = '', existingRoutes = [], navFile = null, pageFiles = {}, memory = '', cssVars = {}, componentCSS = {} }) {
   const isAngular = framework === 'angular';
 
   // Long-term memory: durable facts learned from past sessions (stable across
@@ -367,6 +486,8 @@ export function buildAgentPrompt({ components, kitPrefix, kitName, specs = {}, m
   const memoryCtx = memory && memory.trim()
     ? `\n## PROJECT MEMORY — what you've learned about this project across past sessions. Honor these conventions and preferences:\n${memory.trim()}\n`
     : '';
+
+  const themeCtx = formatThemeBlock(cssVars, componentCSS);
 
   const REACT_PROP_HINTS = {
     Button: 'variant="primary|secondary|outline|ghost|neon|danger|glass" size="sm|md|lg" loading={bool}',
@@ -447,7 +568,7 @@ ${routeList}
 
   if (isAngular) {
     return `You are openUI Agent — a UI builder for the ${kitName} Angular design system.
-${memoryCtx}
+${memoryCtx}${themeCtx}
 FORBIDDEN — never do any of these:
 - Import from @angular/material, ng-bootstrap, primeng, or any package other than @angular/core, @angular/common, @angular/forms, and ../../components/ui
 - Use raw <button>, <input>, <select>, <table> — always use the kit component instead
@@ -535,7 +656,7 @@ Write complete file content. Never truncate.`;
 
 YOUR JOB: Build complete React features end-to-end — pages, reusable components, hooks, context, and small data/service modules — creating and editing as many files across the project as the task needs. Wire everything together so it runs.
 NEVER explain at length, ask clarifying questions, or say "I cannot create files." Write the code immediately.
-${memoryCtx}
+${memoryCtx}${themeCtx}
 OUTPUT FORMAT — mandatory for every response. One fenced block per file (you may output several):
 \`\`\`jsx:src/pages/SignIn.jsx
 import React, { useState } from 'react';
@@ -787,22 +908,64 @@ Rules:
 Example: ["The app manages inventory items with fields name, price, category, and status.", "Data is persisted to localStorage via a useStore hook seeded from a JSON file."]`;
 }
 
-export function buildAuditPrompt(code, { components = [], kitPrefix = 'ou' }) {
-  const compList = components.map(c => `- ${c.name} (import: { ${c.name} } from './components/ui')`).join('\n');
+function formatSpecsForAudit(specs = {}) {
+  const entries = Object.entries(specs).filter(([, s]) => s && (s.purpose || (s.useWhen || []).length));
+  if (!entries.length) return '';
+  return '\n## Component intelligence specs (from project):\n' +
+    entries.map(([id, s]) => {
+      const useWhen = (s.useWhen || []).filter(Boolean).join('; ');
+      const avoid = (s.avoidWhen || []).filter(Boolean).join('; ');
+      return `- **${id}**: ${s.purpose || ''}${useWhen ? ` | Use when: ${useWhen}` : ''}${avoid ? ` | Avoid: ${avoid}` : ''}`;
+    }).join('\n') + '\n';
+}
 
-  return `You are a design system compliance auditor. Analyze the following code for violations of the design system rules.
+export function buildAuditPrompt(code, {
+  components = [],
+  kitPrefix = 'ou',
+  kitName = 'openUI',
+  framework = 'react',
+  specs = {},
+} = {}) {
+  const isAngular = framework === 'angular';
+  const prefix = kitPrefix || 'ou';
 
-## Available design system components:
+  const compList = components.map(c => {
+    const spec = specs[c.id] || specs[`${c.id}s`] || {};
+    const hint = spec.purpose ? ` — ${spec.purpose}` : '';
+    if (isAngular) {
+      const sel = c.name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+      return `- **${c.name}**: \`<${prefix}-${sel}>\` (import ${c.name}Component from components/ui)${hint}`;
+    }
+    return `- **${c.name}**: import \`{ ${c.name} }\` from components/ui${hint}`;
+  }).join('\n');
+
+  const specBlock = formatSpecsForAudit(specs);
+
+  const rules = isAngular
+    ? `1. Raw HTML (<button>, <input>, <select>, <table>) → kit selectors (\`<${prefix}-button>\`, \`<${prefix}-input>\`, etc.)
+2. Do NOT use @angular/material, ng-bootstrap, or third-party UI libraries
+3. Hardcoded colors (#hex, rgb()) → CSS variables (var(--primary), var(--text), …)
+4. Templates must use kit attribute bindings ([variant], (click), [(ngModel)] on kit components)
+5. Missing accessibility (aria-label, alt on avatars, labels on inputs)`
+    : `1. Raw HTML elements (<button>, <input>, <select>, etc.) → design system components (<Button>, <Input>, …)
+2. Hardcoded color values (#hex, rgb(), hsl()) → CSS variables (var(--primary), etc.)
+3. Hardcoded font sizes/weights → design tokens when available
+4. Missing accessibility attributes (aria-label, role, alt) on interactive elements
+5. Inline styles that duplicate existing component prop functionality`;
+
+  const lang = isAngular ? 'Angular template / component TypeScript' : 'React JSX';
+
+  return `You are a design system compliance auditor for **${kitName}** (${framework} kit, prefix \`${prefix}-\`).
+
+Analyze the following ${lang} for violations.
+
+## Available kit components:
 ${compList}
-
-## CSS prefix: ${kitPrefix}-
+${specBlock}
+## CSS prefix: ${prefix}-
 
 ## Audit rules:
-1. Raw HTML elements (<button>, <input>, <select>, etc.) should use the design system component equivalent
-2. Hardcoded color values (#hex, rgb(), hsl()) should use CSS variables (var(--primary), etc.)
-3. Hardcoded font sizes/weights should use design tokens when available
-4. Missing accessibility attributes (aria-label, role, alt) on interactive elements
-5. Inline styles that duplicate existing component prop functionality
+${rules}
 
 ## Code to audit:
 \`\`\`
@@ -815,8 +978,8 @@ Respond with ONLY a JSON object (no markdown fences):
     {
       "line": 12,
       "element": "<button>",
-      "message": "Use <Button> from the design system instead of raw <button>",
-      "suggestion": "<Button variant=\\"primary\\">Save</Button>",
+      "message": "Use kit component instead of raw HTML",
+      "suggestion": "${isAngular ? `<${prefix}-button variant=\\"primary\\">Save</${prefix}-button>` : '<Button variant=\\"primary\\">Save</Button>'}",
       "severity": "error"
     }
   ],
@@ -824,4 +987,11 @@ Respond with ONLY a JSON object (no markdown fences):
 }
 
 severity must be "error" | "warning" | "info". Return { "violations": [], "summary": "No violations found" } if clean.`;
+}
+
+/** Parse audit JSON from model output (tolerates markdown fences). */
+export function parseAuditResult(text) {
+  const clean = text.replace(/^```json\n?/, '').replace(/\n?```$/, '').trim();
+  const jsonMatch = clean.match(/\{[\s\S]*\}/);
+  return JSON.parse(jsonMatch ? jsonMatch[0] : clean);
 }

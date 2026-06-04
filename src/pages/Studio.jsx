@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { Eye, Code2, Download, Settings, RotateCcw, RefreshCcw, PanelLeft, X, Sparkles, ShieldCheck, Bot, Monitor, Laptop, Tablet, Smartphone } from 'lucide-react';
+import { Eye, Code2, Download, Settings, RotateCcw, RefreshCcw, PanelLeft, X, Sparkles, ShieldCheck, Bot, Monitor, Laptop, Tablet, Smartphone, Palette, FolderOpen } from 'lucide-react';
 import { useAI } from '../context/AIContext';
 import AIAgent from '../components/studio/AIAgent';
 import FileExplorer from '../components/studio/FileExplorer';
@@ -8,18 +8,28 @@ import CodeEditor from '../components/studio/CodeEditor';
 import ComponentPreview from '../components/studio/ComponentPreview';
 import SpecEditor from '../components/studio/SpecEditor';
 import AuditPanel from '../components/studio/AuditPanel';
+import AgentDiffPreview from '../components/studio/AgentDiffPreview';
+import StudioBackendBanner from '../components/studio/StudioBackendBanner';
 import ErrorBoundary from '../components/studio/ErrorBoundary';
+import { pingStudioBackend } from '../utils/studioBackendCheck';
 import { BrandLogo, Wordmark } from '../components/BrandLogo';
+import { apiFetch, apiPost } from '../utils/api';
+import { buildAgentFileDiffs } from '../utils/fileDiff';
+import { useToast } from '../../kits/react/workspace/src/components/ui/Toast';
 import '../styles/studio.css';
 import '../styles/docs.css';
 
 const KitSettingsModal = lazy(() => import('../components/studio/KitSettingsModal'));
 const AISettingsModal = lazy(() => import('../components/docs/AISettingsModal'));
 const ExportModal = lazy(() => import('../components/docs/ExportModal'));
+const ThemeEditorModal = lazy(() => import('../components/studio/ThemeEditorModal'));
+const OpenWorkspaceModal = lazy(() => import('../components/studio/OpenWorkspaceModal'));
 const angularPreviewEnabled = import.meta.env.VITE_OPENUI_ANGULAR === '1';
 
 const Studio = () => {
-  const { kit } = useAI();
+  const { kit, specsError, retrySpecsLoad, keySource } = useAI();
+  const { addToast } = useToast();
+  const [saveError, setSaveError] = useState('');
   const { framework: fwParam } = useParams();
   const navigate = useNavigate();
   const framework = fwParam === 'angular' ? 'angular' : 'react';
@@ -29,9 +39,16 @@ const Studio = () => {
 
   const [centerTab, setCenterTab] = useState('preview');
   const [showKitSettings, setShowKitSettings] = useState(false);
+  const [showThemeEditor, setShowThemeEditor] = useState(false);
   const [showAISettings, setShowAISettings] = useState(false);
   const [aiSettingsTab, setAiSettingsTab] = useState('ai');
   const [showExport, setShowExport] = useState(false);
+  const [showOpenWorkspace, setShowOpenWorkspace] = useState(false);
+  const [workspaceBind, setWorkspaceBind] = useState(null);
+  const [pendingAgentWrite, setPendingAgentWrite] = useState(null);
+  const [applyingAgentDiff, setApplyingAgentDiff] = useState(false);
+  const [backendOnline, setBackendOnline] = useState(true);
+  const [backendBannerDismissed, setBackendBannerDismissed] = useState(false);
   const [previewKey, setPreviewKey] = useState(0);
   const [resetting, setResetting] = useState(false);
   const [showExplorer, setShowExplorer] = useState(true);
@@ -56,6 +73,48 @@ const Studio = () => {
   const redoRef = useRef(redoStack);
   useEffect(() => { undoRef.current = undoStack; }, [undoStack]);
   useEffect(() => { redoRef.current = redoStack; }, [redoStack]);
+
+  const loadWorkspaceBind = useCallback(async () => {
+    try {
+      const data = await apiFetch(`/api/workspace-bind?kit=${framework}`);
+      setWorkspaceBind(data);
+    } catch {
+      setWorkspaceBind(null);
+    }
+  }, [framework]);
+
+  useEffect(() => {
+    loadWorkspaceBind();
+  }, [loadWorkspaceBind]);
+
+  useEffect(() => {
+    let cancelled = false;
+    pingStudioBackend(framework).then((ok) => {
+      if (!cancelled) setBackendOnline(ok);
+    });
+    return () => { cancelled = true; };
+  }, [framework, filesVersion]);
+
+  useEffect(() => {
+    retrySpecsLoad(framework);
+  }, [framework, retrySpecsLoad]);
+
+  const handleWorkspaceBound = useCallback(() => {
+    setOpenFiles([]);
+    setActiveFilePath(null);
+    setAgentPages([]);
+    setActiveAgentPage(null);
+    setUndoStack([]);
+    setRedoStack([]);
+    setFilesVersion(v => v + 1);
+    setPreviewKey(k => k + 1);
+    loadWorkspaceBind();
+    addToast({
+      title: 'Workspace updated',
+      message: 'File tree and preview will use the linked project folder.',
+      variant: 'success',
+    });
+  }, [loadWorkspaceBind, addToast]);
 
   const activeFile = openFiles.find(f => f.path === activeFilePath) ?? null;
   const anyDirty = openFiles.some(f => f.dirty);
@@ -84,12 +143,14 @@ const Studio = () => {
 
   // ── Reset open files when switching framework ────────────────────────────
   useEffect(() => {
-    setOpenFiles([]);
-    setActiveFilePath(null);
-    setCenterTab('preview');
-    setPreviewKey(k => k + 1);
-    setAgentPages([]);
-    setActiveAgentPage(null);
+    queueMicrotask(() => {
+      setOpenFiles([]);
+      setActiveFilePath(null);
+      setCenterTab('preview');
+      setPreviewKey(k => k + 1);
+      setAgentPages([]);
+      setActiveAgentPage(null);
+    });
   }, [framework]);
 
   // ── Open / switch file ───────────────────────────────────────────────────
@@ -97,16 +158,21 @@ const Studio = () => {
     setActiveFilePath(path);
     const isComponent = path.includes('/components/ui/') && !path.endsWith('index.jsx') && !path.endsWith('index.ts');
 
-    const isPageFile = framework === 'react' &&
-      path.startsWith('src/pages/') &&
-      path.endsWith('.jsx') &&
-      !path.includes('Dashboard') &&
-      !path.includes('ComponentShowcase');
+    const isPageFile = framework === 'angular'
+      ? (path.includes('/pages/') || path.includes('/app/')) &&
+        path.endsWith('.component.ts') &&
+        !path.includes('showcase')
+      : path.startsWith('src/pages/') &&
+        path.endsWith('.jsx') &&
+        !path.includes('Dashboard') &&
+        !path.includes('ComponentShowcase');
 
     if (isComponent) {
       setActiveAgentPage(null);
     } else if (isPageFile) {
-      const name = path.split('/').pop().replace(/\.jsx$/, '');
+      const name = path.split('/').pop()
+        .replace(/\.component\.ts$/, '')
+        .replace(/\.jsx$/, '');
       setAgentPages(prev => prev.includes(name) ? prev : [...prev, name]);
       setActiveAgentPage(name);
     }
@@ -147,30 +213,38 @@ const Studio = () => {
 
   // ── Save ─────────────────────────────────────────────────────────────────
   const handleFileSave = async (filePath, content) => {
-    await fetch('/api/write-file', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: filePath, content, kit: framework }),
-    });
-    setOpenFiles(prev => prev.map(f =>
-      f.path === filePath ? { ...f, content, dirty: false, pendingContent: null } : f
-    ));
-    setPreviewKey(k => k + 1);
+    try {
+      await apiPost('/api/write-file', { path: filePath, content, kit: framework });
+      setSaveError('');
+      setOpenFiles(prev => prev.map(f =>
+        f.path === filePath ? { ...f, content, dirty: false, pendingContent: null } : f
+      ));
+      setPreviewKey(k => k + 1);
+    } catch (err) {
+      setSaveError(err.message || 'Save failed');
+    }
   };
 
   const saveAllDirty = async () => {
     const dirty = openFiles.filter(f => f.dirty && f.pendingContent !== null);
-    await Promise.all(dirty.map(f =>
-      fetch('/api/write-file', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: f.path, content: f.pendingContent, kit: framework }),
-      }).then(() => {
+    if (!dirty.length) return true;
+    const failures = [];
+    await Promise.all(dirty.map(async (f) => {
+      try {
+        await apiPost('/api/write-file', { path: f.path, content: f.pendingContent, kit: framework });
         setOpenFiles(prev => prev.map(o =>
           o.path === f.path ? { ...o, content: f.pendingContent, dirty: false, pendingContent: null } : o
         ));
-      })
-    ));
+      } catch (err) {
+        failures.push(`${f.path.split('/').pop()}: ${err.message}`);
+      }
+    }));
+    if (failures.length) {
+      setSaveError(failures.join(' · '));
+      return false;
+    }
+    setSaveError('');
+    return true;
   };
 
   // ── Preview / Run ────────────────────────────────────────────────────────
@@ -186,17 +260,22 @@ const Studio = () => {
   const handleResetTemplate = async () => {
     if (!window.confirm('Reset the workspace to the original template? All your edits will be lost.')) return;
     setResetting(true);
+    setSaveError('');
     try {
-      await fetch('/api/reset-template', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kit: framework }),
-      });
+      await apiPost('/api/reset-template', { kit: framework });
       setOpenFiles([]);
       setActiveFilePath(null);
       setAgentPages([]);
       setActiveAgentPage(null);
+      setUndoStack([]);
+      setRedoStack([]);
+      setFilesVersion(v => v + 1);
       setPreviewKey(k => k + 1);
+      loadWorkspaceBind();
+      addToast({ title: 'Workspace reset', message: 'Restored from template.', variant: 'success' });
+    } catch (err) {
+      setSaveError(err.message);
+      addToast({ title: 'Reset failed', message: err.message, variant: 'error' });
     } finally {
       setResetting(false);
     }
@@ -204,8 +283,16 @@ const Studio = () => {
 
   // ── Guard: component files must keep their expected named export ─────────
   const guardExport = (path, content) => {
-    if (!path.includes('/components/ui/') || !path.endsWith('.jsx')) return content;
-    const expectedName = path.split('/').pop().replace(/\.jsx$/, '');
+    const isReactComp = path.includes('/components/ui/') && path.endsWith('.jsx');
+    const isAngularComp = path.includes('/components/ui/') && path.endsWith('.component.ts');
+    if (!isReactComp && !isAngularComp) return content;
+    const expectedName = path.split('/').pop()
+      .replace(/\.component\.ts$/, '')
+      .replace(/\.jsx$/, '');
+    if (isAngularComp) {
+      if (new RegExp(`export\\s+class\\s+${expectedName}\\b`).test(content)) return content;
+      return content.replace(/export\s+class\s+([A-Z]\w*)\b/, `export class ${expectedName}`);
+    }
     // Already correct — nothing to do
     if (new RegExp(`export\\s+(?:const|function)\\s+${expectedName}\\b`).test(content)) return content;
     // Find the first PascalCase component export and rename it to the expected name
@@ -233,16 +320,21 @@ const Studio = () => {
       )
     );
 
-    // Write all new content in parallel
+    const writeErrors = [];
     await Promise.all(
-      entries.map(([path, content]) =>
-        fetch('/api/write-file', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ path, content, kit: framework }),
-        })
-      )
+      entries.map(async ([path, content]) => {
+        try {
+          await apiPost('/api/write-file', { path, content, kit: framework });
+        } catch (err) {
+          writeErrors.push(`${path}: ${err.message}`);
+        }
+      })
     );
+    if (writeErrors.length) {
+      setSaveError(writeErrors.join(' · '));
+      throw new Error(writeErrors.join(' · '));
+    }
+    setSaveError('');
 
     setFilesVersion(v => v + 1);
 
@@ -264,54 +356,60 @@ const Studio = () => {
   }, [framework]);
 
   // ── Undo / Redo ──────────────────────────────────────────────────────────
+  const applyHistoryEntry = useCallback(async (entry, mode) => {
+    const failures = [];
+    for (const c of entry.changes) {
+      try {
+        if (mode === 'undo' && c.before === null) {
+          await apiPost('/api/delete-file', { path: c.path, kit: framework });
+          setOpenFiles(prev => prev.filter(f => f.path !== c.path));
+          if (activeFilePath === c.path) setActiveFilePath(null);
+        } else {
+          const content = mode === 'undo' ? c.before : c.after;
+          await apiPost('/api/write-file', { path: c.path, content, kit: framework });
+          setOpenFiles(prev => prev.map(f =>
+            f.path === c.path ? { ...f, content, dirty: false, pendingContent: null } : f
+          ));
+        }
+      } catch (err) {
+        failures.push(`${c.path.split('/').pop()}: ${err.message}`);
+      }
+    }
+    if (failures.length) {
+      const msg = failures.join(' · ');
+      setSaveError(msg);
+      addToast({
+        title: mode === 'undo' ? 'Undo failed' : 'Redo failed',
+        message: msg,
+        variant: 'error',
+      });
+      return false;
+    }
+    setSaveError('');
+    setFilesVersion(v => v + 1);
+    setPreviewKey(k => k + 1);
+    return true;
+  }, [framework, activeFilePath, addToast]);
+
   const undo = useCallback(async () => {
     const stack = undoRef.current;
     if (!stack.length) return;
     const entry = stack[stack.length - 1];
-    await Promise.all(
-      entry.changes.map(c => {
-        if (c.before === null) {
-          // File was newly created — delete it on undo
-          return fetch('/api/delete-file', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ path: c.path, kit: framework }),
-          }).then(() => setOpenFiles(prev => prev.filter(f => f.path !== c.path)));
-        }
-        return fetch('/api/write-file', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ path: c.path, content: c.before, kit: framework }),
-        }).then(() => setOpenFiles(prev => prev.map(f =>
-          f.path === c.path ? { ...f, content: c.before, dirty: false, pendingContent: null } : f
-        )));
-      })
-    );
+    const ok = await applyHistoryEntry(entry, 'undo');
+    if (!ok) return;
     setRedoStack(prev => [...prev, entry]);
     setUndoStack(prev => prev.slice(0, -1));
-    setFilesVersion(v => v + 1);
-    setPreviewKey(k => k + 1);
-  }, [framework]);
+  }, [applyHistoryEntry]);
 
   const redo = useCallback(async () => {
     const stack = redoRef.current;
     if (!stack.length) return;
     const entry = stack[stack.length - 1];
-    await Promise.all(
-      entry.changes.map(c =>
-        fetch('/api/write-file', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ path: c.path, content: c.after, kit: framework }),
-        }).then(() => setOpenFiles(prev => prev.map(f =>
-          f.path === c.path ? { ...f, content: c.after, dirty: false, pendingContent: null } : f
-        )))
-      )
-    );
+    const ok = await applyHistoryEntry(entry, 'redo');
+    if (!ok) return;
     setUndoStack(prev => [...prev, entry]);
     setRedoStack(prev => prev.slice(0, -1));
-    setPreviewKey(k => k + 1);
-  }, [framework]);
+  }, [applyHistoryEntry]);
 
   // Keyboard shortcuts: ⌘Z / ⌘⇧Z — skip when focus is in a text input
   useEffect(() => {
@@ -327,41 +425,60 @@ const Studio = () => {
   }, [undo, redo]);
 
   // ── Agent file writes ────────────────────────────────────────────────────
-  const handleFilesWritten = useCallback(async (files) => {
-    const BARREL = 'src/components/ui/index.jsx';
+  const augmentAgentBarrel = useCallback(async (files) => {
+    const BARREL = framework === 'angular'
+      ? 'src/components/ui/index.ts'
+      : 'src/components/ui/index.jsx';
+    const compExt = framework === 'angular' ? '.ts' : '.jsx';
+    const barrelIndex = framework === 'angular' ? 'index.ts' : 'index.jsx';
 
-    // Auto-add new components to the barrel if the agent didn't write it
-    if (framework === 'react' && !files[BARREL]) {
-      const newCompPaths = Object.keys(files).filter(p =>
-        p.startsWith('src/components/ui/') && p.endsWith('.jsx') && !p.endsWith('index.jsx')
+    if (files[BARREL]) return files;
+
+    const newCompPaths = Object.keys(files).filter(p =>
+      p.startsWith('src/components/ui/') && p.endsWith(compExt) && !p.endsWith(barrelIndex)
+    );
+    if (!newCompPaths.length) return files;
+
+    try {
+      const barrelData = await apiFetch(
+        `/api/read-file?path=${encodeURIComponent(BARREL)}&kit=${framework}`
       );
-      if (newCompPaths.length > 0) {
-        const barrelRes = await fetch(`/api/read-file?path=${encodeURIComponent(BARREL)}&kit=react`);
-        const barrelData = await barrelRes.json();
-        let barrel = barrelData.error ? '' : barrelData.content;
-        let updated = false;
-        for (const cp of newCompPaths) {
-          const name = cp.split('/').pop().replace(/\.jsx$/, '');
-          if (!barrel.includes(`'./${name}'`) && !barrel.includes(`"./${name}"`)) {
-            barrel = barrel.trimEnd() + `\nexport * from './${name}';`;
-            updated = true;
-          }
+      let barrel = barrelData.content || '';
+      let updated = false;
+      for (const cp of newCompPaths) {
+        const name = cp.split('/').pop().replace(compExt, '');
+        if (!barrel.includes(`'./${name}'`) && !barrel.includes(`"./${name}"`)) {
+          barrel = barrel.trimEnd() + `\nexport * from './${name}';`;
+          updated = true;
         }
-        if (updated) files = { ...files, [BARREL]: barrel };
       }
-    }
+      if (updated) return { ...files, [BARREL]: barrel };
+    } catch { /* barrel read failed */ }
+    return files;
+  }, [framework]);
 
+  const commitAgentFiles = useCallback(async (files) => {
     const paths = await writeFiles(files);
 
-    // Probe Vite's transform pipeline for each written JSX file.
-    // A 500 response means OXC rejected the file — extract the error and return it
-    // so the agent can auto-fix without user intervention. Cover the whole app
-    // (pages, components, hooks, lib…) so syntax errors anywhere are caught.
     const parseErrors = [];
-    const jsxPaths = paths.filter(p => p.endsWith('.jsx') || p.endsWith('.tsx'));
-    await Promise.all(jsxPaths.map(async (p) => {
+    const sourcePaths = paths.filter(p =>
+      p.endsWith('.jsx') || p.endsWith('.tsx') || p.endsWith('.ts')
+    );
+    const tsApiPaths = sourcePaths.filter(p =>
+      p.endsWith('.ts') || (framework === 'angular' && p.endsWith('.tsx'))
+    );
+    const viteProbePaths = sourcePaths.filter(p => !tsApiPaths.includes(p));
+
+    if (tsApiPaths.length) {
       try {
-        const r = await fetch(`/kits/react/workspace/${p}?t=${Date.now()}`);
+        const data = await apiPost('/api/validate-sources', { kit: framework, paths: tsApiPaths });
+        if (data.parseErrors?.length) parseErrors.push(...data.parseErrors);
+      } catch { /* validation API unavailable */ }
+    }
+
+    await Promise.all(viteProbePaths.map(async (p) => {
+      try {
+        const r = await fetch(`/kits/${framework}/workspace/${p}?t=${Date.now()}`);
         if (!r.ok) {
           const body = await r.text();
           const match = body.match(/(?:Error:|PARSE_ERROR[^\n]*\n?)([^\n<]{10,200})/);
@@ -372,8 +489,17 @@ const Studio = () => {
     }));
 
     const newPages = paths
-      .filter(p => p.includes('/pages/') && !p.includes('Dashboard') && !p.includes('BuilderOutput'))
-      .map(p => p.split('/').pop().replace(/\.jsx$/, ''));
+      .filter(p => {
+        if (p.includes('Dashboard') || p.includes('BuilderOutput') || p.includes('showcase')) return false;
+        if (framework === 'angular') {
+          return (p.includes('/pages/') || p.includes('/app/')) && p.endsWith('.component.ts');
+        }
+        return p.includes('/pages/') && p.endsWith('.jsx');
+      })
+      .map(p => {
+        const base = p.split('/').pop();
+        return base.replace(/\.component\.ts$/, '').replace(/\.jsx$/, '');
+      });
 
     if (newPages.length > 0) {
       setAgentPages(prev => {
@@ -387,6 +513,49 @@ const Studio = () => {
     setPreviewKey(k => k + 1);
     return { parseErrors };
   }, [writeFiles, framework]);
+
+  const handleFilesWritten = useCallback(async (files, options = {}) => {
+    const augmented = await augmentAgentBarrel(files);
+    const { files: normalized, diffs } = await buildAgentFileDiffs(
+      framework,
+      augmented,
+      guardExport
+    );
+
+    const hasVisibleDiffs = diffs.some((d) => d.status !== 'unchanged');
+    if (!options.skipDiffPreview && hasVisibleDiffs) {
+      return new Promise((resolve) => {
+        setPendingAgentWrite({
+          files: normalized,
+          diffs,
+          resolve,
+        });
+      });
+    }
+
+    return commitAgentFiles(normalized);
+  }, [augmentAgentBarrel, commitAgentFiles, framework, guardExport]);
+
+  const applyPendingAgentWrite = useCallback(async () => {
+    if (!pendingAgentWrite) return;
+    setApplyingAgentDiff(true);
+    try {
+      const result = await commitAgentFiles(pendingAgentWrite.files);
+      pendingAgentWrite.resolve(result);
+    } catch (err) {
+      pendingAgentWrite.resolve({ error: err.message });
+      addToast({ title: 'Apply failed', message: err.message, variant: 'error' });
+    } finally {
+      setApplyingAgentDiff(false);
+      setPendingAgentWrite(null);
+    }
+  }, [pendingAgentWrite, commitAgentFiles, addToast]);
+
+  const discardPendingAgentWrite = useCallback(() => {
+    if (!pendingAgentWrite || applyingAgentDiff) return;
+    pendingAgentWrite.resolve({ discarded: true });
+    setPendingAgentWrite(null);
+  }, [pendingAgentWrite, applyingAgentDiff]);
 
   const handleNavigatePage = useCallback((pageName) => {
     setActiveAgentPage(pageName);
@@ -470,9 +639,46 @@ const Studio = () => {
           <span style={{ fontSize: '10px', opacity: 0.6 }}>.{kit.kitPrefix}-</span>
         </button>
 
+        <button
+          className="studio-icon-btn"
+          onClick={() => setShowThemeEditor(true)}
+          title="Theme tokens"
+        >
+          <Palette size={15} />
+        </button>
+
+        <button
+          className={`studio-icon-btn${workspaceBind?.mode === 'external' ? ' panel-active' : ''}`}
+          onClick={() => setShowOpenWorkspace(true)}
+          title={
+            workspaceBind?.mode === 'external'
+              ? `Linked: ${workspaceBind.externalRoot}`
+              : 'Open existing project folder'
+          }
+        >
+          <FolderOpen size={15} />
+        </button>
+
+        {workspaceBind?.mode === 'external' && workspaceBind.externalRoot && (
+          <span className="studio-workspace-link" title={workspaceBind.externalRoot}>
+            {workspaceBind.externalRoot.replace(/^.*[/\\]/, '…/')}
+          </span>
+        )}
+
         <div className="studio-topbar-spacer" />
         <div className="studio-topbar-actions">
           {anyDirty && <span className="studio-unsaved-notice" title="Unsaved changes">● unsaved</span>}
+          {saveError && <span className="studio-save-error" title={saveError}>{saveError}</span>}
+          {specsError && (
+            <button
+              type="button"
+              className="studio-specs-warning"
+              title={specsError}
+              onClick={retrySpecsLoad}
+            >
+              Specs unavailable — retry
+            </button>
+          )}
 
           <button className="studio-icon-btn" onClick={handleResetTemplate} disabled={resetting} title="Reset workspace">
             <RefreshCcw size={15} />
@@ -484,6 +690,11 @@ const Studio = () => {
           >
             <Bot size={15} />
           </button>
+          {keySource === 'env' && (
+            <span className="studio-byok-env-pill" title="Claude API key loaded from OPENUI_AI_KEY or ANTHROPIC_API_KEY">
+              BYOK · env
+            </span>
+          )}
           <button className="studio-icon-btn" onClick={() => openSettings('ai')} title="AI Settings">
             <Settings size={15} />
           </button>
@@ -492,6 +703,10 @@ const Studio = () => {
           </button>
         </div>
       </div>
+
+      {!backendOnline && !backendBannerDismissed && (
+        <StudioBackendBanner onDismiss={() => setBackendBannerDismissed(true)} />
+      )}
 
       {/* ── Body ── */}
       <div className="studio-root" style={{ flex: 1, height: 0, cursor: isDragging ? 'col-resize' : undefined, userSelect: isDragging ? 'none' : undefined }}>
@@ -510,6 +725,7 @@ const Studio = () => {
               framework={framework}
               refreshKey={filesVersion}
               onMutate={handleTreeMutate}
+              onSpecsRefresh={() => retrySpecsLoad(framework)}
             />
             <div className={`studio-resize-handle${isDragging ? ' dragging' : ''}`} onMouseDown={startDrag} />
           </>
@@ -527,7 +743,7 @@ const Studio = () => {
                 <PanelLeft size={14} />
               </button>
               <div className="studio-topbar-sep" style={{ margin: '0 4px' }} />
-              <div className="studio-center-tabs">
+              <div className="studio-center-tabs" role="tablist" aria-label="Editor views">
                 <button className={`studio-center-tab ${centerTab === 'code' ? 'active' : ''}`} onClick={() => setCenterTab('code')}>
                   <Code2 size={13} /> Code
                 </button>
@@ -679,7 +895,13 @@ const Studio = () => {
             {centerTab === 'spec' && <SpecEditor filePath={activeFilePath} framework={framework} />}
 
             {/* Audit */}
-            {centerTab === 'audit' && <AuditPanel />}
+            {centerTab === 'audit' && (
+              <AuditPanel
+                framework={framework}
+                activeFilePath={activeFilePath}
+                activeFileContent={activeFile?.pendingContent ?? activeFile?.content ?? null}
+              />
+            )}
           </div>
           </ErrorBoundary>
         </div>
@@ -707,8 +929,30 @@ const Studio = () => {
 
       <Suspense fallback={null}>
         {showKitSettings && <KitSettingsModal onClose={() => setShowKitSettings(false)} />}
+        {showThemeEditor && (
+          <ThemeEditorModal
+            framework={framework}
+            onClose={() => setShowThemeEditor(false)}
+            onSynced={() => setPreviewKey(k => k + 1)}
+          />
+        )}
         {showAISettings && <AISettingsModal onClose={() => setShowAISettings(false)} defaultTab={aiSettingsTab} />}
         {showExport && <ExportModal onClose={() => setShowExport(false)} />}
+        {pendingAgentWrite && (
+          <AgentDiffPreview
+            diffs={pendingAgentWrite.diffs}
+            applying={applyingAgentDiff}
+            onApply={applyPendingAgentWrite}
+            onDiscard={discardPendingAgentWrite}
+          />
+        )}
+        {showOpenWorkspace && (
+          <OpenWorkspaceModal
+            framework={framework}
+            onClose={() => setShowOpenWorkspace(false)}
+            onBound={handleWorkspaceBound}
+          />
+        )}
       </Suspense>
     </div>
   );

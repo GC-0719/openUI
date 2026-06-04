@@ -37,3 +37,4 @@ kit-workspace/
 
 # Agent long-term memory (local, per-machine)
 .openui-agent/
+.openui/

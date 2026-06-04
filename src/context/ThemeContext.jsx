@@ -35,13 +35,21 @@ export const ThemeProvider = ({ children }) => {
     if (Object.keys(css).length) setComponentCSS(prev => ({ ...prev, ...css }));
   };
 
+  const removeCssVar = (key) => {
+    setCssVars(prev => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  };
+
   const resetTheme = () => {
     setCssVars({});
     setComponentCSS({});
   };
 
   return (
-    <ThemeContext.Provider value={{ cssVars, componentCSS, applyChanges, resetTheme }}>
+    <ThemeContext.Provider value={{ cssVars, componentCSS, applyChanges, removeCssVar, resetTheme }}>
       {children}
     </ThemeContext.Provider>
   );

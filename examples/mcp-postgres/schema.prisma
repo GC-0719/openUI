@@ -1,0 +1,29 @@
+// Minimal schema for MCP wizard (Prisma) demos.
+// Set DATABASE_URL before running migrations or a generated MCP server.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      String   @default("member")
+  createdAt DateTime @default(now())
+  orders    Order[]
+}
+
+model Order {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  amountCents Int
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+}

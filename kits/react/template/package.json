@@ -1,6 +1,6 @@
 {
   "name": "@openedui/react",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "openUI — a 24-component React design system kit (the kit bundled with the openUI studio).",
   "license": "MIT",
   "type": "module",
@@ -9,7 +9,8 @@
   "module": "./dist/openui-react.js",
   "exports": {
     ".": {
-      "import": "./dist/openui-react.js"
+      "import": "./dist/openui-react.js",
+      "default": "./dist/openui-react.js"
     },
     "./styles.css": "./dist/styles.css"
   },

@@ -65,11 +65,23 @@ export const AIProvider = ({ children }) => {
   });
 
   const [specs, setSpecs] = useState({});
+  const [specsError, setSpecsError] = useState('');
 
   const [mcpServers, setMcpServers] = useState(() => {
     try { return JSON.parse(localStorage.getItem(MCP_STORAGE_KEY)) || []; }
     catch { return []; }
   });
+
+  const [envAiConfig, setEnvAiConfig] = useState({ hasServerKey: false });
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/ai-config')
+      .then(r => (r.ok ? r.json() : { hasServerKey: false }))
+      .then(d => { if (!cancelled) setEnvAiConfig(d); })
+      .catch(() => { if (!cancelled) setEnvAiConfig({ hasServerKey: false }); });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); }, [settings]);
   useEffect(() => { localStorage.setItem(KIT_STORAGE_KEY, JSON.stringify(kit)); }, [kit]);
@@ -77,31 +89,64 @@ export const AIProvider = ({ children }) => {
 
   const updateMcpServers = useCallback((servers) => setMcpServers(servers), []);
 
-  useEffect(() => {
-    fetch('/api/read-specs')
-      .then(r => r.json())
-      .then(d => d.specs && setSpecs(d.specs))
-      .catch(() => {});
+  const loadSpecs = useCallback((kit = 'react') => {
+    setSpecsError('');
+    fetch(`/api/read-specs?kit=${kit}`)
+      .then(r => {
+        if (!r.ok) throw new Error(`Could not load AI specs (${r.status})`);
+        return r.json();
+      })
+      .then(d => {
+        if (d.error) throw new Error(d.error);
+        if (d.specs) setSpecs(d.specs);
+      })
+      .catch(err => setSpecsError(err.message || 'Could not load AI specs'));
   }, []);
+
+  useEffect(() => {
+    queueMicrotask(() => loadSpecs('react'));
+  }, [loadSpecs]);
 
   const updateSettings = (updates) => setSettings(prev => ({ ...prev, ...updates }));
   const updateKit = (updates) => setKit(prev => ({ ...prev, ...updates }));
 
+  const hasClientKey = Boolean(settings.apiKey?.trim());
+  const envKeyActive =
+    envAiConfig.hasServerKey &&
+    settings.provider === 'claude' &&
+    !hasClientKey;
+  const keySource = envKeyActive && !hasClientKey ? 'env' : hasClientKey ? 'client' : 'none';
+
   const isConfigured = settings.provider === 'local'
     ? Boolean(settings.baseUrl?.trim() && settings.model?.trim())
-    : Boolean(settings.apiKey?.trim());
+    : hasClientKey || envKeyActive;
 
-  const updateSpec = useCallback(async (componentId, aiSpec) => {
+  const updateSpec = useCallback(async (componentId, aiSpec, { kit = 'react', scope = 'workspace' } = {}) => {
     await fetch('/api/write-spec', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ componentId, aiSpec }),
+      body: JSON.stringify({ componentId, aiSpec, kit, scope }),
     });
     setSpecs(prev => ({ ...prev, [componentId]: aiSpec }));
   }, []);
 
   return (
-    <AIContext.Provider value={{ settings, updateSettings, isConfigured, providers: AI_PROVIDERS, kit, updateKit, specs, updateSpec, mcpServers, updateMcpServers }}>
+    <AIContext.Provider value={{
+      settings,
+      updateSettings,
+      isConfigured,
+      keySource,
+      envAiConfig,
+      providers: AI_PROVIDERS,
+      kit,
+      updateKit,
+      specs,
+      specsError,
+      retrySpecsLoad: loadSpecs,
+      updateSpec,
+      mcpServers,
+      updateMcpServers,
+    }}>
       {children}
     </AIContext.Provider>
   );

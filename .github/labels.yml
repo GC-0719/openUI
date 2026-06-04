@@ -1,0 +1,34 @@
+# Label definitions for maintainers (sync with a label-sync GitHub Action if desired).
+# See docs/GOOD_FIRST_ISSUES.md
+
+- name: good first issue
+  color: '7057ff'
+  description: Good for newcomers — scoped, documented, mentor-friendly
+
+- name: help wanted
+  color: '008672'
+  description: Extra attention needed — community contributions welcome
+
+- name: documentation
+  color: '0075ca'
+  description: Improvements or additions to documentation
+
+- name: area: studio
+  color: '1d76db'
+  description: Studio app UI (src/pages/Studio, src/components/studio)
+
+- name: area: kits
+  color: '5319e7'
+  description: React/Angular kits, gallery, publish manifests
+
+- name: area: mcp
+  color: '0e8a16'
+  description: MCP bridge, wizard, generated MCP servers
+
+- name: area: dev-server
+  color: 'fbca04'
+  description: Vite dev server APIs and server/ modules
+
+- name: area: security
+  color: 'd93f0b'
+  description: Security hardening, audits, path/MCP guards

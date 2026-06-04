@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { X, Check, AlertCircle, ExternalLink, Eye, EyeOff, Plus, Trash2, Wifi, WifiOff, Cpu, Server, Zap, RefreshCw } from 'lucide-react';
+import { X, Check, AlertCircle, ExternalLink, Eye, EyeOff, Plus, Trash2, Wifi, WifiOff, Cpu, Server, Zap, RefreshCw, Wand2 } from 'lucide-react';
 import { useAI, AI_PROVIDERS } from '../../context/AIContext';
+import { buildAiRequestBody } from '../../utils/aiRequest.js';
+import MCPWizardModal from '../studio/MCPWizardModal';
 
 const LOCAL_PRESETS = [
   { label: 'Ollama', url: 'http://localhost:11434/v1' },
@@ -16,7 +18,7 @@ const TRANSPORTS = [
 const blankServer = () => ({ id: Date.now(), label: '', transport: 'stdio', url: '', command: '', enabled: true });
 
 const AISettingsModal = ({ onClose, defaultTab = 'ai' }) => {
-  const { settings, updateSettings, mcpServers, updateMcpServers } = useAI();
+  const { settings, updateSettings, mcpServers, updateMcpServers, keySource, envAiConfig } = useAI();
   const [tab, setTab] = useState(defaultTab);
   const [local, setLocal] = useState({ ...settings });
   const [showKey, setShowKey] = useState(false);
@@ -27,6 +29,7 @@ const AISettingsModal = ({ onClose, defaultTab = 'ai' }) => {
   const [servers, setServers] = useState(() => (mcpServers || []).map(s => ({ ...s })));
   const [testingServer, setTestingServer] = useState(null);
   const [serverTestResults, setServerTestResults] = useState({});
+  const [showMcpWizard, setShowMcpWizard] = useState(false);
 
   useEffect(() => { updateMcpServers(servers); }, [servers]);
 
@@ -67,11 +70,21 @@ const AISettingsModal = ({ onClose, defaultTab = 'ai' }) => {
       const res = await fetch('/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          provider: local.provider, model: local.model, apiKey: local.apiKey,
-          systemPrompt: 'Reply with exactly: "Connection successful."',
-          messages: [{ role: 'user', content: 'Ping' }],
-        }),
+        body: JSON.stringify(
+          buildAiRequestBody(
+            {
+              provider: local.provider,
+              model: local.model,
+              apiKey: local.apiKey,
+              baseUrl: local.baseUrl,
+              keySource: !local.apiKey?.trim() && envAiConfig.hasServerKey && local.provider === 'claude' ? 'env' : 'client',
+            },
+            {
+              systemPrompt: 'Reply with exactly: "Connection successful."',
+              messages: [{ role: 'user', content: 'Ping' }],
+            }
+          )
+        ),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -130,6 +143,24 @@ const AISettingsModal = ({ onClose, defaultTab = 'ai' }) => {
         <div className="openui-modal-body">
           {tab === 'ai' && (
             <>
+              <div className="ai-byok-callout">
+                <strong>Bring your own key</strong>
+                <p>
+                  openUI does not host inference. Your key stays on your machine — in the browser
+                  (localStorage) or in <code>OPENUI_AI_KEY</code> / <code>ANTHROPIC_API_KEY</code> for
+                  the dev server only. Calls go from the local Vite proxy straight to your provider.
+                </p>
+                <a href="https://github.com/GC-0719/openUI/blob/main/.env.example" target="_blank" rel="noopener noreferrer" className="ai-settings-link">
+                  .env.example <ExternalLink size={11} />
+                </a>
+              </div>
+
+              {keySource === 'env' && (
+                <div className="ai-env-key-badge" role="status">
+                  <Check size={13} /> Using Claude key from environment ({envAiConfig.envKeyLabel || 'OPENUI_AI_KEY'}) — not stored in the browser
+                </div>
+              )}
+
               {/* Provider */}
               <div className="ai-settings-section">
                 <label className="ai-settings-label">Provider</label>
@@ -251,7 +282,11 @@ const AISettingsModal = ({ onClose, defaultTab = 'ai' }) => {
                         {showKey ? <EyeOff size={14} /> : <Eye size={14} />}
                       </button>
                     </div>
-                    <span className="ai-settings-hint">Stored in localStorage, never sent anywhere except the AI provider.</span>
+                    <span className="ai-settings-hint">
+                      {envAiConfig.hasServerKey && local.provider === 'claude'
+                        ? 'Optional while OPENUI_AI_KEY is set — leave empty to use the environment key only.'
+                        : 'Stored in localStorage; sent only to your provider via the local dev proxy.'}
+                    </span>
                   </div>
                 </>
               )}
@@ -275,6 +310,13 @@ const AISettingsModal = ({ onClose, defaultTab = 'ai' }) => {
                 <p className="ai-settings-hint" style={{ marginBottom: '12px' }}>
                   Connect backend MCP servers so the AI reads your API schemas and data models when generating UI.
                 </p>
+                <button
+                  type="button"
+                  className="mcp-wizard-launch-btn"
+                  onClick={() => setShowMcpWizard(true)}
+                >
+                  <Wand2 size={14} /> MCP wizard — scaffold from OpenAPI or Prisma
+                </button>
 
                 {servers.length === 0 && (
                   <div className="ai-mcp-empty">
@@ -378,6 +420,15 @@ const AISettingsModal = ({ onClose, defaultTab = 'ai' }) => {
           )}
         </div>
       </div>
+
+      {showMcpWizard && (
+        <MCPWizardModal
+          onClose={() => setShowMcpWizard(false)}
+          onAddServer={(entry) => {
+            setServers(prev => [...prev, { id: Date.now(), ...entry }]);
+          }}
+        />
+      )}
     </div>
   );
 };

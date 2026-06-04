@@ -1,7 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowUp, Settings, RotateCcw, FileCode, Layers, Sparkles, Undo2, Database, Brain, Trash2 } from 'lucide-react';
+import { ArrowUp, Settings, RotateCcw, FileCode, Layers, Sparkles, Undo2, Database, Brain } from 'lucide-react';
 import { useAI, AI_PROVIDERS } from '../../context/AIContext';
-import { callAI, buildAgentPrompt, buildAskPrompt, buildPlanPrompt, parseAgentResponse, buildMemoryExtractionPrompt } from '../../services/aiService';
+import { useTheme } from '../../context/ThemeContext';
+import {
+  callAI,
+  buildAgentPrompt,
+  buildAskPrompt,
+  buildPlanPrompt,
+  buildImplementPlanPrompt,
+  parseAgentResponse,
+  buildMemoryExtractionPrompt,
+} from '../../services/aiService';
+import PlanChecklist from './PlanChecklist';
+import AgentMemoryPanel from './AgentMemoryPanel';
+import StarterTemplates from './StarterTemplates';
+import { apiFetch, apiPost } from '../../utils/api';
 import { fetchMCPContext, formatMCPContext } from '../../services/mcpClientService';
 import { componentsMeta } from '../../data/components-meta.js';
 
@@ -111,7 +124,8 @@ function trimForContext(history) {
 }
 
 const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSettings, activeFilePath, activeFileContent, onUndo, canUndo, workspaceRefreshKey = 0 }) => {
-  const { settings, kit, specs, mcpServers } = useAI();
+  const { settings, kit, specs, mcpServers, keySource, isConfigured } = useAI();
+  const { cssVars, componentCSS } = useTheme();
   const [messages, setMessages] = useState([{ role: 'assistant', text: WELCOME, changes: null }]);
   const [input, setInput] = useState('');
   const [mode, setMode] = useState('edit'); // 'ask' | 'plan' | 'edit'
@@ -126,6 +140,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
   const [workspaceCtx, setWorkspaceCtx] = useState({ tree: [], barrel: '', routes: [], navFile: null, pageFiles: {} });
   const [memory, setMemory] = useState({ facts: [], updatedAt: null });
   const [showMemory, setShowMemory] = useState(false);
+  const [contextWarning, setContextWarning] = useState('');
   const endRef = useRef(null);
   const textareaRef = useRef(null);
   const historyKitRef = useRef(framework); // which framework the current `messages` belong to
@@ -137,8 +152,8 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
     if (!enabled.length) { setMcpContext(''); setMcpData([]); return; }
     setMcpLoading(true);
     fetchMCPContext(enabled)
-      .then(r => { setMcpData(r); setMcpContext(formatMCPContext(r)); })
-      .catch(() => {})
+      .then(r => { setMcpData(r); setMcpContext(formatMCPContext(r)); setContextWarning(''); })
+      .catch(() => setContextWarning('Could not reach one or more MCP servers'))
       .finally(() => setMcpLoading(false));
   }, [mcpServers]);
 
@@ -176,14 +191,21 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
     let saved = null;
     try { const s = localStorage.getItem(chatKey(framework)); if (s) saved = JSON.parse(s); } catch { /* ignore bad JSON */ }
     setMessages(saved && saved.length ? saved : [{ role: 'assistant', text: WELCOME, changes: null }]);
+    setContextWarning('');
     fetch(`/api/agent-memory?kit=${framework}`)
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error('memory');
+        return r.json();
+      })
       .then(d => setMemory(d && Array.isArray(d.facts) ? d : { facts: [], updatedAt: null }))
-      .catch(() => {});
+      .catch(() => setContextWarning(prev => prev || 'Could not load agent memory'));
     fetch(`/api/workspace-context?kit=${framework}`)
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error('workspace');
+        return r.json();
+      })
       .then(data => setWorkspaceCtx(parseWorkspaceData(data, framework)))
-      .catch(() => {});
+      .catch(() => setContextWarning(prev => prev || 'Could not load workspace context'));
   }, [framework]);
 
   // Re-fetch workspace context after any file write so the next message
@@ -191,22 +213,27 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
   useEffect(() => {
     if (workspaceRefreshKey === 0) return;
     fetch(`/api/workspace-context?kit=${framework}`)
-      .then(r => r.json())
-      .then(data => setWorkspaceCtx(parseWorkspaceData(data, framework)))
-      .catch(() => {});
+      .then(r => {
+        if (!r.ok) throw new Error('workspace');
+        return r.json();
+      })
+      .then(data => {
+        setWorkspaceCtx(parseWorkspaceData(data, framework));
+        setContextWarning(prev => (prev === 'Could not load workspace context' ? '' : prev));
+      })
+      .catch(() => setContextWarning(prev => prev || 'Could not load workspace context'));
   }, [workspaceRefreshKey, framework]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  const send = async () => {
+  const executeTurn = async (userMsg, { activeMode = mode, implementPlanText = null } = {}) => {
     const configured = settings.provider === 'local'
       ? Boolean(settings.baseUrl?.trim() && settings.model?.trim())
       : Boolean(settings.apiKey?.trim());
-    if (!input.trim() || loading || !configured) return;
-    const userMsg = input.trim();
-    setInput('');
+    if (!userMsg?.trim() || loading || !configured) return;
+
     setError('');
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setLoading(true);
@@ -238,14 +265,28 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
         existingRoutes: workspaceCtx.routes,
         navFile: workspaceCtx.navFile,
         pageFiles: workspaceCtx.pageFiles,
+        cssVars,
+        componentCSS,
       };
 
       const systemPrompt =
-        mode === 'ask'  ? buildAskPrompt(ctxArgs) :
-        mode === 'plan' ? buildPlanPrompt(ctxArgs) :
+        activeMode === 'ask' ? buildAskPrompt(ctxArgs) :
+        activeMode === 'plan' ? buildPlanPrompt(ctxArgs) :
+        implementPlanText ? buildImplementPlanPrompt({
+          planText: implementPlanText,
+          kitName: kit.kitName,
+          kitPrefix: kit.kitPrefix,
+          framework,
+          components: COMPONENTS_META,
+          specs,
+          mcpContext,
+          workspaceTree: workspaceCtx.tree,
+          cssVars,
+          componentCSS,
+        }) :
         buildAgentPrompt(ctxArgs);
 
-      const isEditMode = mode === 'edit';
+      const isEditMode = activeMode === 'edit';
       const MAX_AUTO_FIX = 2;
       let conversationTail = [...history, { role: 'user', content: userMsg }];
       let finalMessage = '';
@@ -258,6 +299,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
         setStreamingText('');
         const rawText = await callAI({
           ...settings,
+          keySource,
           systemPrompt,
           messages: conversationTail,
           stream: true,
@@ -285,7 +327,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
               role: 'assistant',
               text: `⟳ Fixing component usage (attempt ${autoFixCount})…`,
               changes: null,
-              mode,
+              mode: activeMode,
             }]);
             conversationTail = [
               ...conversationTail,
@@ -295,7 +337,19 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
             continue;
           }
 
-          const result = await onFilesWritten?.(files);
+          const result = await onFilesWritten?.(files, {
+            skipDiffPreview: autoFixCount > 0,
+          });
+
+          if (result?.discarded) {
+            finalMessage = 'Changes discarded — nothing was written to disk.';
+            break;
+          }
+          if (result?.error) {
+            finalMessage = `Could not apply files: ${result.error}`;
+            break;
+          }
+
           const parseErrors = result?.parseErrors ?? [];
 
           if (parseErrors.length > 0 && autoFixCount < MAX_AUTO_FIX) {
@@ -309,7 +363,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
               role: 'assistant',
               text: `⟳ Auto-fixing syntax error (attempt ${autoFixCount})…`,
               changes: null,
-              mode,
+              mode: activeMode,
             }]);
             conversationTail = [
               ...conversationTail,
@@ -338,7 +392,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       if (!finalMessage) finalMessage = '…';
       setStreamingText('');
       setAutoFixing(false);
-      setMessages(prev => [...prev, { role: 'assistant', text: finalMessage, changes: finalChanges, mode }]);
+      setMessages(prev => [...prev, { role: 'assistant', text: finalMessage, changes: finalChanges, mode: activeMode }]);
 
       // Learn from a successful build — fire-and-forget so it never blocks the UI.
       if (isEditMode && builtFiles) learnFromBuild(userMsg, builtFiles);
@@ -347,6 +401,31 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       setStreamingText('');
     }
     setLoading(false);
+  };
+
+  const send = async () => {
+    if (!input.trim()) return;
+    const userMsg = input.trim();
+    setInput('');
+    await executeTurn(userMsg);
+  };
+
+  const buildFromPlan = async (planText) => {
+    setMode('edit');
+    await executeTurn(
+      'Implement the approved plan above. Complete every checklist item.',
+      { activeMode: 'edit', implementPlanText: planText },
+    );
+  };
+
+  const runStarterPlan = async (template) => {
+    setMode('plan');
+    await executeTurn(`[${template.name} starter]\n\n${template.prompt}`, { activeMode: 'plan' });
+  };
+
+  const runStarterBuild = async (template) => {
+    setMode('edit');
+    await executeTurn(`[${template.name} starter]\n\n${template.prompt}`, { activeMode: 'edit' });
   };
 
   // The "training" loop: after a successful build, ask the model for up to 3
@@ -359,6 +438,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
         .slice(0, 6000);
       const raw = await callAI({
         ...settings,
+        keySource,
         systemPrompt: buildMemoryExtractionPrompt({ kitName: kit.kitName }),
         messages: [{ role: 'user', content: `User request:\n${userMsg}\n\nFiles created/updated:\n${summary}` }],
       });
@@ -368,22 +448,19 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       try { facts = JSON.parse(arr[0]); } catch { return; }
       const clean = (Array.isArray(facts) ? facts : []).filter(f => typeof f === 'string' && f.trim()).slice(0, 3);
       if (!clean.length) return;
-      const res = await fetch('/api/agent-memory', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kit: framework, add: clean }),
-      });
-      const data = await res.json();
+      const data = await apiPost('/api/agent-memory', { kit: framework, add: clean });
       if (data && Array.isArray(data.facts)) setMemory(data);
     } catch { /* best-effort; never disrupt the build */ }
   };
 
   const forgetMemory = async () => {
+    if (!window.confirm('Forget all learned facts for this project?')) return;
     try {
-      const res = await fetch(`/api/agent-memory?kit=${framework}`, { method: 'DELETE' });
-      const data = await res.json();
+      const data = await apiFetch(`/api/agent-memory?kit=${framework}`, { method: 'DELETE' });
       setMemory(data && Array.isArray(data.facts) ? data : { facts: [], updatedAt: null });
-    } catch { /* ignore */ }
+    } catch {
+      setContextWarning(prev => prev || 'Could not clear agent memory');
+    }
   };
 
   const handleKey = (e) => {
@@ -396,9 +473,6 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
   };
 
   const enabledMCP = (mcpServers || []).filter(s => s.enabled).length;
-  const isConfigured = settings.provider === 'local'
-    ? Boolean(settings.baseUrl?.trim() && settings.model?.trim())
-    : Boolean(settings.apiKey?.trim());
 
   return (
     <div className="ai-agent-panel">
@@ -417,14 +491,14 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
               {enabledMCP} MCP
             </button>
           )}
-          {memory.facts.length > 0 && (
+          {isConfigured && (
             <button
               className={`ai-mem-indicator${showMemory ? ' active' : ''}`}
               onClick={() => setShowMemory(v => !v)}
-              title="What the agent has learned about this project"
+              title="Project memory — facts the agent remembers"
             >
               <Brain size={11} />
-              {memory.facts.length} learned
+              {memory.facts.length > 0 ? `${memory.facts.length} learned` : 'Memory'}
             </button>
           )}
         </div>
@@ -439,6 +513,12 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
           </button>
         </div>
       </div>
+
+      {contextWarning && (
+        <div className="ai-context-warning" title={contextWarning}>
+          {contextWarning}
+        </div>
+      )}
 
       {/* Provider badge */}
       {isConfigured && (
@@ -486,21 +566,13 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       )}
 
       {/* Long-term memory — what the agent has learned and applies to every build */}
-      {showMemory && memory.facts.length > 0 && (
-        <div className="ai-backend-panel">
-          <div className="ai-backend-title">
-            <Brain size={12} /> Project memory
-            <button className="ai-mem-forget" onClick={forgetMemory} title="Forget everything learned">
-              <Trash2 size={11} /> Forget all
-            </button>
-          </div>
-          <ul className="ai-mem-list">
-            {memory.facts.map((f, i) => (
-              <li key={i}>{f.text}</li>
-            ))}
-          </ul>
-          <div className="ai-backend-hint">Learned automatically from your builds. Injected into every request so the agent improves over time.</div>
-        </div>
+      {showMemory && isConfigured && (
+        <AgentMemoryPanel
+          framework={framework}
+          memory={memory}
+          onMemoryChange={setMemory}
+          onForgetAll={forgetMemory}
+        />
       )}
 
       {/* Messages */}
@@ -509,7 +581,9 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
           <div className="ai-configure-prompt">
             <div className="ai-configure-icon"><Sparkles size={20} /></div>
             <p className="ai-configure-title">Connect an AI model</p>
-            <p className="ai-configure-desc">Add your API key to start building with openUI Agent.</p>
+            <p className="ai-configure-desc">
+              Bring your own key: paste in Settings, set <code>OPENUI_AI_KEY</code> for Claude, or configure a local LLM.
+            </p>
             <button className="ai-configure-btn" onClick={() => onOpenSettings?.('ai')}>
               <Settings size={14} /> Configure AI
             </button>
@@ -527,6 +601,13 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
                       <span className="ai-msg-label-name">openUI Agent</span>
                     </div>
                     <div className="ai-msg-body">{renderMessage(msg.text)}</div>
+                    {msg.mode === 'plan' && !loading && (
+                      <PlanChecklist
+                        planText={msg.text}
+                        onBuild={() => buildFromPlan(msg.text)}
+                        building={loading}
+                      />
+                    )}
                     <FileChangeBadge changes={msg.changes} onNavigate={onNavigatePage} />
                     {msg.changes && i === lastChangedIdx && canUndo && (
                       <button className="agent-undo-btn" onClick={onUndo} title="Undo these changes">
@@ -542,12 +623,20 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
             );
             })()}
 
-            {messages.length === 1 && !input && (
-              <div className="ai-quick-actions">
-                {SUGGESTIONS.map(s => (
-                  <button key={s} className="ai-quick-action" onClick={() => setInput(s)}>{s}</button>
-                ))}
-              </div>
+            {messages.length === 1 && !input && !loading && (
+              <>
+                <StarterTemplates
+                  framework={framework}
+                  onPlan={runStarterPlan}
+                  onBuild={runStarterBuild}
+                  disabled={loading}
+                />
+                <div className="ai-quick-actions">
+                  {SUGGESTIONS.map(s => (
+                    <button key={s} className="ai-quick-action" onClick={() => setInput(s)}>{s}</button>
+                  ))}
+                </div>
+              </>
             )}
 
             {loading && streamingText && (

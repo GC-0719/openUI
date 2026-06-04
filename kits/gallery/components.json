@@ -1,0 +1,29 @@
+{
+  "components": [
+    "Accordion",
+    "Alert",
+    "Avatar",
+    "Badge",
+    "Breadcrumbs",
+    "Button",
+    "Card",
+    "Checkbox",
+    "Chip",
+    "Drawer",
+    "Dropdown",
+    "Input",
+    "List",
+    "Modal",
+    "Navbar",
+    "NavItem",
+    "Progress",
+    "Radio",
+    "Skeleton",
+    "Switch",
+    "Table",
+    "Tabs",
+    "Toast",
+    "Tooltip"
+  ],
+  "generatedAt": "2026-06-04T04:04:43.418Z"
+}

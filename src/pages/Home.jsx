@@ -110,7 +110,7 @@ const FRAMEWORKS = [
 
 export default function Home() {
   const navigate = useNavigate();
-  const { kit, isConfigured, settings } = useAI();
+  const { kit, isConfigured, settings, keySource } = useAI();
 
   return (
     <div className="lp-root">
@@ -151,6 +151,12 @@ export default function Home() {
             system, connected to your backend through MCP. Edit files, preview live, then export or
             publish — all on your machine, with your own API key.
           </p>
+          {import.meta.env.PROD && (
+            <p className="lp-subtitle" style={{ fontSize: 13, margin: '0 0 8px', opacity: 0.85 }}>
+              The hosted site links to setup instructions. For Audit, diff preview, workspace bind, and the
+              full agent, clone the repo and run <code style={{ fontSize: '0.92em' }}>npm run dev</code>.
+            </p>
+          )}
           <div className="lp-hero-actions">
             <button className="lp-primary-btn lp-lg" onClick={() => navigate('/studio/react')}>
               Open the Studio <ArrowRight size={16} />
@@ -163,7 +169,11 @@ export default function Home() {
             <span className="lp-pill"><CheckCircle2 size={13} /> Workspace runs locally</span>
             <span className={`lp-pill ${isConfigured ? 'ready' : ''}`}>
               <Sparkles size={13} />
-              {isConfigured ? `${settings.provider} connected` : 'Bring your own AI key'}
+              {isConfigured
+                ? keySource === 'env'
+                  ? 'Claude · env key (BYOK)'
+                  : `${settings.provider} connected`
+                : 'Bring your own AI key'}
             </span>
             <span className="lp-pill"><Boxes size={13} /> Ships with the {kit.kitName} kit</span>
           </div>

@@ -46,11 +46,15 @@ Requires **Node 20+**.
 
 ```bash
 npm install
-OPENUI_AI_KEY=sk-ant-... npm run dev      # React studio
-# or open the studio and add your key in Settings
+npm run dev                              # React studio
+# BYOK — pick one:
+#   OPENUI_AI_KEY=sk-ant-... npm run dev   → Claude via env (key never in browser)
+#   or paste your key in Studio → Settings
 ```
 
-Open the printed URL, click **Open the Studio**, and start building.
+Open the printed URL (e.g. `http://localhost:5173/studio/react`), click **Open the Studio**, and start building.
+
+> **Use `npm run dev` for the full studio.** `npm start` and [openui.live](https://openui.live) serve the marketing site only — no Audit tab backend, agent file writes, diff preview, workspace bind, or MCP APIs. If you see a “run locally” page or a yellow **Studio backend is offline** banner, switch to `npm run dev`.
 
 > **One install is enough.** A single root `npm install` is all you need to run
 > the studio and preview **both** kits — the React and Angular kits compile from
@@ -59,20 +63,37 @@ Open the printed URL, click **Open the Studio**, and start building.
 > `package.json` files exist only for **publishing** the packages — see
 > [RELEASING.md](RELEASING.md) — and aren't needed to develop or preview.)
 
-> `npm run dev:angular` launches the Angular workspace. `OPENUI_AI_KEY` is
-> optional — you can also paste a key into the in-app AI settings (stored only
-> in your browser's localStorage).
+> `npm run dev:angular` launches the Angular workspace.
+
+## Bring your own key (BYOK)
+
+openUI does **not** sell or host API access. Inference runs through the **local Vite dev server** (`/api/ai`) on your machine.
+
+| How | Best for |
+|-----|----------|
+| **`OPENUI_AI_KEY` or `ANTHROPIC_API_KEY`** in `.env` / shell | Claude without storing the key in the browser |
+| **Studio → Settings → API Key** | OpenAI, Gemini, Claude, or secured local servers (stored in `localStorage`) |
+| **Local LLM** (Ollama, LM Studio) | No cloud key — set base URL + model in Settings |
+
+See [.env.example](.env.example). `GET /api/ai-config` reports whether an env key is active (never returns the secret).
 
 ## AI providers
 
-openUI proxies your chosen provider through the local dev server (`/api/ai`):
+| Provider   | Key source |
+|------------|------------|
+| Anthropic (Claude) | Env (`OPENUI_AI_KEY` / `ANTHROPIC_API_KEY`) **or** in-app Settings |
+| OpenAI     | In-app Settings only |
+| Gemini     | In-app Settings only |
+| Local LLM  | Base URL + model in Settings (API key optional) |
 
-| Provider   | Key source                                   |
-|------------|----------------------------------------------|
-| Anthropic  | `OPENUI_AI_KEY` / `ANTHROPIC_API_KEY` or in-app settings |
-| OpenAI     | in-app settings                              |
-| Gemini     | in-app settings                              |
-| Local LLM  | Ollama / OpenAI-compatible base URL          |
+## Examples
+
+| Example | Description |
+|---------|-------------|
+| [examples/dashboard-react](examples/dashboard-react) | Dashboard starter in the studio or `@openedui/react` in your app |
+| [examples/mcp-postgres](examples/mcp-postgres) | Prisma schema + MCP wizard flow for Postgres-backed agents |
+
+Contributing? See [docs/GOOD_FIRST_ISSUES.md](docs/GOOD_FIRST_ISSUES.md).
 
 ## Architecture
 
@@ -118,6 +139,22 @@ In the studio, **Export** lets you download a full project ZIP (with a
 publishable `package/` named after your kit + optional npm scope), push to
 GitHub, or generate an MCP server. See [RELEASING.md](RELEASING.md).
 
+## Troubleshooting
+
+| Issue | What to do |
+|-------|------------|
+| **Studio on openui.live only shows “run locally”** | The hosted site is the landing page. Run `npm run dev` on your machine and open `/studio/react` or `/studio/angular`. |
+| **Angular preview is blank** | Use `npm run dev` or `npm run dev:angular` (not `dev:react`). Both set `VITE_OPENUI_ANGULAR=1`. |
+| **Save or file tree errors** | Ensure the Vite dev server is running. Failed writes keep your editor marked unsaved. |
+| **Use your own repo in the studio** | Studio → folder icon → enter an **absolute path** to your project. openUI symlinks `kits/<framework>/workspace` after validating the path (see [SECURITY.md](SECURITY.md)). |
+| **Git badges in the file tree** | When the workspace is inside a git repo, changed files show **M** (modified), **U** (untracked), or **S** (staged). Requires `git` on your PATH. |
+| **MCP wizard** | AI Settings → MCP → **MCP wizard** — paste OpenAPI JSON or a Prisma schema, download the generated server, `npm install`, add the stdio command to MCP settings. |
+| **Custom components** | File explorer → boxes icon — creates UI file, barrel export, and AI spec. [docs/CUSTOM_COMPONENTS.md](docs/CUSTOM_COMPONENTS.md) |
+| **Local LLM (Ollama)** | Set base URL + model in AI Settings. API key is optional. Audit and Spec tools use the same settings. |
+| **MCP servers** | Only connect commands you trust. See [SECURITY.md](SECURITY.md). |
+
+Copy [.env.example](.env.example) to `.env` if you want env vars documented locally.
+
 ## Deployment
 
 [**openui.live**](https://openui.live) hosts the **landing site** (static build,
@@ -126,6 +163,12 @@ its file/AI/MCP backend lives in the dev server and is intentionally never
 exposed publicly — so the `/studio` route on the hosted site links you back here
 to run it. `server.js` serves the production build (`npm run build:react` →
 `npm start`).
+
+## Roadmap
+
+We're shipping toward **1.0** in small releases — real filesystem, MCP-aware
+agents, and ownable kits. See [ROADMAP.md](ROADMAP.md) for milestones and how to
+help.
 
 ## Contributing
 

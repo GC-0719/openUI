@@ -1,0 +1,17 @@
+{
+  "name": "openui-example-dashboard-react",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Reference package.json for using @openedui/react in a standalone dashboard app (see README.md)",
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'Copy the README snippet into your Vite app, or use openUI studio: npm run dev in repo root'",
+    "start": "npm run dev"
+  },
+  "dependencies": {
+    "@openedui/react": "^0.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.0.0"
+  }
+}
