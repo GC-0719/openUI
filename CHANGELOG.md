@@ -9,6 +9,11 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 ### Added
 - **Minimal B/W landing** — simplified [Home](src/pages/Home.jsx) and [home.css](src/styles/home.css); mono brand on marketing pages.
 - **Versioning policy** — [docs/VERSIONING.md](docs/VERSIONING.md).
+- **Studio light theme** — monochrome studio/docs shell; provider icons in AI Settings and agent header.
+- **Studio dialogs** — `StudioConfirmModal` / `StudioPromptModal` replace `confirm`/`prompt` for reset, file tree, memory, workspace unlink; modal footer button CSS (`.ai-settings-btn`).
+
+### Changed
+- **README** — routes table, npm scripts, BYOK quick start, docs link, hosted vs dev studio, troubleshooting refresh.
 
 ### Added (earlier unreleased)
 - **Bring your own key (BYOK)** — `GET /api/ai-config`, env fallback for Claude on `/api/ai` and spec generate; Settings explainer; “Using key from environment” badge; docs/README alignment.
