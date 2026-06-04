@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowUp, Settings, RotateCcw, FileCode, Layers, Sparkles, Undo2, Database, Brain } from 'lucide-react';
+import { ArrowUp, Settings, RotateCcw, FileCode, Layers, Undo2, Database, Brain } from 'lucide-react';
 import { useAI, AI_PROVIDERS } from '../../context/AIContext';
+import { ProviderIcon, OpenUIAgentIcon } from '../ai/ProviderIcons';
 import { useTheme } from '../../context/ThemeContext';
 import {
   callAI,
@@ -479,7 +480,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       {/* Header */}
       <div className="ai-agent-header">
         <div className="ai-agent-title">
-          <span className="ai-prism-logo">◆</span>
+          <OpenUIAgentIcon size={18} className="ai-agent-mark" />
           <span>openUI Agent</span>
           {enabledMCP > 0 && (
             <button
@@ -523,9 +524,11 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       {/* Provider badge */}
       {isConfigured && (
         <div className="ai-provider-badge">
-          <span className="ai-provider-dot" />
-          {AI_PROVIDERS[settings.provider]?.logo ?? '◆'}{' '}
-          {settings.model.split('-').slice(0, 3).join(' ')}
+          <ProviderIcon provider={settings.provider} size={14} />
+          <span className="ai-provider-badge-label">
+            {AI_PROVIDERS[settings.provider]?.name ?? 'AI'}{' '}
+            · {settings.model.split('-').slice(0, 3).join(' ')}
+          </span>
         </div>
       )}
 
@@ -579,7 +582,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
       <div className="ai-agent-messages">
         {!isConfigured ? (
           <div className="ai-configure-prompt">
-            <div className="ai-configure-icon"><Sparkles size={20} /></div>
+            <div className="ai-configure-icon"><OpenUIAgentIcon size={28} /></div>
             <p className="ai-configure-title">Connect an AI model</p>
             <p className="ai-configure-desc">
               Bring your own key: paste in Settings, set <code>OPENUI_AI_KEY</code> for Claude, or configure a local LLM.
@@ -597,7 +600,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
                 msg.role === 'assistant' ? (
                   <div key={i} className="ai-msg ai-msg-assistant">
                     <div className="ai-msg-label">
-                      <span className="ai-msg-label-prism">◆</span>
+                      <OpenUIAgentIcon size={14} className="ai-msg-agent-icon" />
                       <span className="ai-msg-label-name">openUI Agent</span>
                     </div>
                     <div className="ai-msg-body">{renderMessage(msg.text)}</div>
@@ -642,7 +645,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
             {loading && streamingText && (
               <div className="ai-msg ai-msg-assistant ai-msg-streaming">
                 <div className="ai-msg-label">
-                  <span className="ai-msg-label-prism">◆</span>
+                  <OpenUIAgentIcon size={14} className="ai-msg-agent-icon" />
                   <span className="ai-msg-label-name">openUI Agent</span>
                   <span className="ai-streaming-cursor" />
                 </div>
@@ -653,7 +656,7 @@ const AIAgent = ({ framework = 'react', onFilesWritten, onNavigatePage, onOpenSe
             {loading && !streamingText && (
               <div className="ai-msg ai-msg-thinking">
                 <div className="ai-msg-label">
-                  <span className="ai-msg-label-prism">◆</span>
+                  <OpenUIAgentIcon size={14} className="ai-msg-agent-icon" />
                   <span className="ai-msg-label-name">openUI Agent</span>
                 </div>
                 <div className="ai-thinking-row">

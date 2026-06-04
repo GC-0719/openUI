@@ -86,6 +86,10 @@ See [.env.example](.env.example). `GET /api/ai-config` reports whether an env ke
 | Gemini     | In-app Settings only |
 | Local LLM  | Base URL + model in Settings (API key optional) |
 
+## Versioning
+
+Pre-1.0 semver rules for the studio and `@openedui/*` kits: [docs/VERSIONING.md](docs/VERSIONING.md).
+
 ## Examples
 
 | Example | Description |

@@ -18,6 +18,7 @@ import { buildAgentFileDiffs } from '../utils/fileDiff';
 import { useToast } from '../../kits/react/workspace/src/components/ui/Toast';
 import '../styles/studio.css';
 import '../styles/docs.css';
+import '../styles/workspace-mono.css';
 
 const KitSettingsModal = lazy(() => import('../components/studio/KitSettingsModal'));
 const AISettingsModal = lazy(() => import('../components/docs/AISettingsModal'));
@@ -612,13 +613,16 @@ const Studio = () => {
   }, []);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+    <div
+      className="workspace-mono"
+      style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}
+    >
 
       {/* ── Top Bar ── */}
       <div className="studio-topbar">
         <Link to="/" className="studio-topbar-brand">
-          <BrandLogo size={24} />
-          <Wordmark size={15} />
+          <BrandLogo size={24} mono />
+          <Wordmark size={15} mono openColor="#0a0a0a" />
         </Link>
         <div className="studio-topbar-sep" />
 

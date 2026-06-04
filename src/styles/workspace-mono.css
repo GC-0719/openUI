@@ -1,0 +1,424 @@
+/**
+ * Monochrome studio + docs theme (matches landing).
+ * Scope with .workspace-mono on the app shell root.
+ */
+
+.workspace-mono {
+  --wm-bg: #ffffff;
+  --wm-surface: #fafafa;
+  --wm-border: #e5e5e5;
+  --wm-text: #0a0a0a;
+  --wm-muted: #525252;
+  --wm-dim: #a3a3a3;
+  --wm-active-bg: #0a0a0a;
+  --wm-active-fg: #ffffff;
+}
+
+/* ── Studio shell ── */
+.workspace-mono .studio-root,
+.workspace-mono.studio-root {
+  background: var(--wm-bg) !important;
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .studio-explorer,
+.workspace-mono .studio-topbar,
+.workspace-mono .studio-center,
+.workspace-mono .studio-center-header,
+.workspace-mono .studio-ai-panel,
+.workspace-mono .ai-agent-panel {
+  background: var(--wm-bg) !important;
+  color: var(--wm-text) !important;
+  border-color: var(--wm-border) !important;
+}
+
+.workspace-mono .studio-explorer {
+  background: var(--wm-surface) !important;
+}
+
+.workspace-mono .studio-file-item:hover {
+  background: #f0f0f0 !important;
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .studio-file-item.active {
+  background: var(--wm-active-bg) !important;
+  color: var(--wm-active-fg) !important;
+  border-left-color: var(--wm-active-bg) !important;
+}
+
+.workspace-mono .studio-center-tab.active,
+.workspace-mono .studio-tab.active,
+.workspace-mono .studio-page-tab.active {
+  background: var(--wm-surface) !important;
+  color: var(--wm-text) !important;
+  border-bottom-color: var(--wm-active-bg) !important;
+}
+
+.workspace-mono .studio-center-tab,
+.workspace-mono .studio-tab,
+.workspace-mono .studio-icon-btn,
+.workspace-mono .studio-topbar-kit-badge,
+.workspace-mono .studio-fw-badge {
+  color: var(--wm-muted) !important;
+}
+
+.workspace-mono .studio-center-tab:hover,
+.workspace-mono .studio-icon-btn:hover {
+  background: #f0f0f0 !important;
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .studio-icon-btn.panel-active {
+  background: var(--wm-active-bg) !important;
+  color: var(--wm-active-fg) !important;
+}
+
+.workspace-mono .studio-resize-handle:hover,
+.workspace-mono .studio-resize-handle.dragging {
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+.workspace-mono .studio-center-body,
+.workspace-mono .studio-code-empty,
+.workspace-mono .studio-preview-stage {
+  background: var(--wm-bg) !important;
+}
+
+.workspace-mono .studio-byok-env-pill {
+  background: var(--wm-surface) !important;
+  color: var(--wm-text) !important;
+  border-color: var(--wm-active-bg) !important;
+}
+
+.workspace-mono .studio-backend-banner {
+  background: #fafafa !important;
+  border-color: var(--wm-border) !important;
+  color: var(--wm-text) !important;
+}
+
+/* ── Agent panel ── */
+.workspace-mono .ai-agent-header,
+.workspace-mono .ai-composer,
+.workspace-mono .ai-mode-bar,
+.workspace-mono .ai-agent-messages {
+  background: var(--wm-bg) !important;
+  border-color: var(--wm-border) !important;
+}
+
+.workspace-mono .ai-agent-title,
+.workspace-mono .ai-msg-label-name {
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .ai-prism-logo {
+  display: none !important;
+}
+
+.workspace-mono .ai-user-bubble {
+  background: var(--wm-active-bg) !important;
+  color: var(--wm-active-fg) !important;
+}
+
+.workspace-mono .ai-msg-body {
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .ai-provider-badge,
+.workspace-mono .ai-backend-panel,
+.workspace-mono .ai-memory-panel {
+  background: var(--wm-surface) !important;
+  border-color: var(--wm-border) !important;
+  color: var(--wm-muted) !important;
+}
+
+.workspace-mono .ai-provider-dot {
+  background: var(--wm-active-bg) !important;
+}
+
+.workspace-mono .ai-mode-btn.active {
+  background: var(--wm-active-bg) !important;
+  color: var(--wm-active-fg) !important;
+  border-color: var(--wm-active-bg) !important;
+}
+
+.workspace-mono .ai-quick-action,
+.workspace-mono .ai-starter-card {
+  border-color: var(--wm-border) !important;
+  color: var(--wm-muted) !important;
+}
+
+.workspace-mono .ai-quick-action:hover,
+.workspace-mono .ai-starter-card:hover {
+  border-color: var(--wm-active-bg) !important;
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .ai-starter-btn.primary {
+  background: var(--wm-active-bg) !important;
+  color: var(--wm-active-fg) !important;
+}
+
+/* ── Modals (settings, export, etc.) ── */
+.workspace-mono .openui-modal-overlay {
+  background: rgba(0, 0, 0, 0.35) !important;
+}
+
+.workspace-mono .openui-modal,
+.workspace-mono .ai-settings-modal {
+  background: var(--wm-bg) !important;
+  color: var(--wm-text) !important;
+  border: 1px solid var(--wm-active-bg) !important;
+}
+
+.workspace-mono .openui-modal-header,
+.workspace-mono .ai-settings-tabs {
+  border-color: var(--wm-border) !important;
+}
+
+.workspace-mono .ai-settings-tab.active,
+.workspace-mono .ai-provider-tab.active {
+  background: var(--wm-active-bg) !important;
+  color: var(--wm-active-fg) !important;
+  border-color: var(--wm-active-bg) !important;
+}
+
+.workspace-mono .ai-provider-tab,
+.workspace-mono .ai-settings-input,
+.workspace-mono .ai-settings-select {
+  background: var(--wm-bg) !important;
+  border-color: var(--wm-border) !important;
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .ai-byok-callout {
+  background: var(--wm-surface) !important;
+  border-color: var(--wm-border) !important;
+  color: var(--wm-muted) !important;
+}
+
+.workspace-mono .ai-byok-callout strong {
+  color: var(--wm-text) !important;
+}
+
+/* Code editor chrome stays readable on light bg */
+.workspace-mono .cm-editor,
+.workspace-mono .studio-code-empty {
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .ai-env-key-badge {
+  background: var(--wm-surface) !important;
+  border-color: var(--wm-active-bg) !important;
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .ai-test-result.ok {
+  background: var(--wm-surface) !important;
+  color: var(--wm-text) !important;
+  border: 1px solid var(--wm-active-bg) !important;
+}
+
+/* ── Audit / spec (studio center) ── */
+.workspace-mono .audit-layout,
+.workspace-mono .audit-left,
+.workspace-mono .audit-right {
+  background: var(--wm-bg) !important;
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .audit-textarea-full {
+  background: var(--wm-surface) !important;
+  color: var(--wm-text) !important;
+  border: 1px solid var(--wm-border) !important;
+}
+
+.workspace-mono .audit-run-btn {
+  background: var(--wm-active-bg) !important;
+  color: var(--wm-active-fg) !important;
+}
+
+/* ── Docs ── */
+.workspace-mono.docs-root {
+  background: var(--wm-bg) !important;
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .docs-search,
+.workspace-mono .docs-nav-item,
+.workspace-mono .docs-code {
+  border-color: var(--wm-border) !important;
+}
+
+.workspace-mono .docs-nav-item.active {
+  background: var(--wm-active-bg) !important;
+  color: var(--wm-active-fg) !important;
+}
+
+.workspace-mono .docs-nav-item:hover {
+  background: #f0f0f0 !important;
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .docs-classes code {
+  color: var(--wm-text) !important;
+  background: var(--wm-surface) !important;
+  border-color: var(--wm-border) !important;
+}
+
+.workspace-mono .docs-preview {
+  background: var(--wm-bg) !important;
+  border-color: var(--wm-border) !important;
+}
+
+.workspace-mono .docs-fw-toggle button.active {
+  background: var(--wm-active-bg) !important;
+  color: var(--wm-active-fg) !important;
+}
+
+.workspace-mono .docs-code-pre {
+  color: var(--wm-text) !important;
+  background: var(--wm-surface) !important;
+}
+
+/* ── Studio: agent backend / memory / starters / quick actions ── */
+.workspace-mono .ai-backend-server-head,
+.workspace-mono .ai-backend-tools code,
+.workspace-mono .ai-starter-head,
+.workspace-mono .ai-starter-hint,
+.workspace-mono .ai-starter-card-name,
+.workspace-mono .ai-starter-card-tagline,
+.workspace-mono .mcp-wizard-intro,
+.workspace-mono .mcp-wizard-label,
+.workspace-mono .mcp-wizard-result-summary,
+.workspace-mono .mcp-wizard-file-list,
+.workspace-mono .export-mcp-step-title,
+.workspace-mono .export-mcp-code {
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .ai-backend-tools code {
+  background: var(--wm-surface) !important;
+  border: 1px solid var(--wm-border) !important;
+}
+
+.workspace-mono .ai-starter-card,
+.workspace-mono .ai-quick-action,
+.workspace-mono .mcp-wizard-tab,
+.workspace-mono .ai-starter-btn {
+  background: var(--wm-bg) !important;
+  border-color: var(--wm-border) !important;
+  color: var(--wm-muted) !important;
+}
+
+.workspace-mono .ai-starter-card:hover,
+.workspace-mono .mcp-wizard-tab:hover,
+.workspace-mono .ai-starter-btn:hover:not(:disabled) {
+  border-color: var(--wm-active-bg) !important;
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .mcp-wizard-tab.active,
+.workspace-mono .ai-starter-card-icon {
+  background: var(--wm-surface) !important;
+  border-color: var(--wm-border) !important;
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .mcp-wizard-launch-btn,
+.workspace-mono .export-mcp-hero,
+.workspace-mono .export-mcp-num,
+.workspace-mono .export-mcp-copy {
+  background: var(--wm-surface) !important;
+  border-color: var(--wm-border) !important;
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .mcp-wizard-input,
+.workspace-mono .mcp-wizard-textarea,
+.workspace-mono .export-mcp-code {
+  background: var(--wm-surface) !important;
+  color: var(--wm-text) !important;
+  border-color: var(--wm-border) !important;
+}
+
+.workspace-mono .ai-configure-prompt,
+.workspace-mono .ai-configure-title,
+.workspace-mono .ai-configure-desc {
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .ai-mode-btn {
+  color: var(--wm-muted) !important;
+  border-color: var(--wm-border) !important;
+}
+
+.workspace-mono .ai-composer-card {
+  background: var(--wm-bg) !important;
+  border-color: var(--wm-border) !important;
+}
+
+.workspace-mono .ai-composer-send {
+  background: var(--wm-active-bg) !important;
+  color: var(--wm-active-fg) !important;
+}
+
+.workspace-mono .ai-code-block,
+.workspace-mono .ai-code-block-pre {
+  background: var(--wm-surface) !important;
+  color: var(--wm-text) !important;
+  border-color: var(--wm-border) !important;
+}
+
+.workspace-mono .export-tab.active,
+.workspace-mono .ai-mcp-transport-tab.active {
+  color: var(--wm-active-fg) !important;
+  background: var(--wm-active-bg) !important;
+  border-color: var(--wm-active-bg) !important;
+}
+
+.workspace-mono .agent-diff-file-btn.active,
+.workspace-mono .agent-diff-file-btn:hover {
+  background: var(--wm-surface) !important;
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .studio-editor-gutter,
+.workspace-mono .studio-editor-textarea {
+  background: var(--wm-surface) !important;
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .studio-editor-gutter {
+  color: var(--wm-muted) !important;
+  border-color: var(--wm-border) !important;
+}
+
+.workspace-mono .agent-diff-modal,
+.workspace-mono .agent-diff-intro,
+.workspace-mono .agent-diff-viewer-header,
+.workspace-mono .agent-diff-line--same code {
+  color: var(--wm-text) !important;
+}
+
+.workspace-mono .agent-diff-line--add .agent-diff-gutter { color: #166534 !important; }
+.workspace-mono .agent-diff-line--remove .agent-diff-gutter { color: #b91c1c !important; }
+
+.workspace-mono .builder-suggestion,
+.workspace-mono .audit-violation-card {
+  background: var(--wm-bg) !important;
+  color: var(--wm-text) !important;
+  border-color: var(--wm-border) !important;
+}
+
+.workspace-mono .ai-plan-build-btn,
+.workspace-mono .ai-configure-btn,
+.workspace-mono .export-download-btn {
+  background: var(--wm-active-bg) !important;
+  color: var(--wm-active-fg) !important;
+}
+
+.workspace-mono .ai-plan-build-btn:hover:not(:disabled),
+.workspace-mono .ai-configure-btn:hover {
+  background: #262626 !important;
+}
