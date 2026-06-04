@@ -6,6 +6,7 @@ import { angularSnippets } from '../data/angularSnippets.js';
 import { BrandLogo, Wordmark } from '../components/BrandLogo';
 import '../styles/home.css';
 import '../styles/docs-site.css';
+import '../styles/workspace-mono.css';
 
 const GITHUB_URL = 'https://github.com/GC-0719/openUI';
 
@@ -69,11 +70,11 @@ export default function Docs() {
   const filtered = componentsData.filter(c => c.name.toLowerCase().includes(q.trim().toLowerCase()));
 
   return (
-    <div className="docs-root">
+    <div className="docs-root workspace-mono">
       <header className="lp-nav">
         <Link to="/" className="lp-brand" style={{ textDecoration: 'none' }}>
-          <BrandLogo size={28} />
-          <Wordmark size={18} />
+          <BrandLogo size={28} mono />
+          <Wordmark size={18} mono />
         </Link>
         <nav className="lp-nav-links">
           <Link to="/">Home</Link>

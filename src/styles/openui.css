@@ -1,33 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Default Dark Theme */
-  --bg: #090909;
-  --surface: #18181B;
-  --surface-raised: #27272A;
-  --border: rgba(255, 255, 255, 0.1);
-  --border-strong: rgba(255, 255, 255, 0.2);
-  
-  --primary: #6366F1;
-  --primary-hover: #4F46E5;
-  --primary-soft: rgba(99, 102, 241, 0.15);
-  --primary-glow: rgba(99, 102, 241, 0.5);
-  
-  --secondary: #10B981;
-  --secondary-soft: rgba(16, 185, 129, 0.15);
-  
-  --accent: #F43F5E;
-  --accent-soft: rgba(244, 63, 94, 0.15);
-  
-  --info: #0EA5E9;
-  --warning: #F59E0B;
-  
-  --text: #FAFAFA;
-  --text-muted: #A1A1AA;
-  --text-dim: #71717A;
+  /* Default theme — monochrome (studio, docs, kit previews in app shell) */
+  --bg: #ffffff;
+  --surface: #fafafa;
+  --surface-raised: #f5f5f5;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.15);
 
-  --glass-bg: rgba(24, 24, 27, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --primary: #0a0a0a;
+  --primary-hover: #262626;
+  --primary-soft: rgba(0, 0, 0, 0.06);
+  --primary-glow: rgba(0, 0, 0, 0.12);
+
+  --secondary: #525252;
+  --secondary-soft: rgba(0, 0, 0, 0.04);
+
+  --accent: #0a0a0a;
+  --accent-soft: rgba(0, 0, 0, 0.06);
+
+  --info: #525252;
+  --warning: #525252;
+
+  --text: #0a0a0a;
+  --text-muted: #525252;
+  --text-dim: #a3a3a3;
+
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(0, 0, 0, 0.08);
 
   --radius-xs: 4px;
   --radius-sm: 8px;

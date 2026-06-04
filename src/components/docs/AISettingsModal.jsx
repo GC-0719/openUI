@@ -3,6 +3,7 @@ import { X, Check, AlertCircle, ExternalLink, Eye, EyeOff, Plus, Trash2, Wifi, W
 import { useAI, AI_PROVIDERS } from '../../context/AIContext';
 import { buildAiRequestBody } from '../../utils/aiRequest.js';
 import MCPWizardModal from '../studio/MCPWizardModal';
+import { ProviderIcon } from '../ai/ProviderIcons';
 
 const LOCAL_PRESETS = [
   { label: 'Ollama', url: 'http://localhost:11434/v1' },
@@ -168,10 +169,13 @@ const AISettingsModal = ({ onClose, defaultTab = 'ai' }) => {
                   {Object.entries(AI_PROVIDERS).map(([key, p]) => (
                     <button
                       key={key}
+                      type="button"
                       className={`ai-provider-tab ${local.provider === key ? 'active' : ''}`}
                       onClick={() => handleProviderChange(key)}
                     >
-                      <span className="ai-provider-logo">{p.logo}</span>
+                      <span className="ai-provider-logo">
+                        <ProviderIcon provider={key} size={18} />
+                      </span>
                       {p.name}
                     </button>
                   ))}

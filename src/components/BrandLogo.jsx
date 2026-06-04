@@ -3,11 +3,11 @@ import { useId } from 'react';
 // openUI mark — a UI panel (sidebar + content) inside an Aurora gradient tile,
 // with an AI spark. Scales cleanly from favicon to hero sizes.
 /** @param {{ size?: number, style?: object, mono?: boolean }} */
-export function BrandLogo({ size = 30, style, mono = false }) {
+export function BrandLogo({ size = 30, style, className, mono = false }) {
   const raw = useId();
   const gid = `ou-${raw.replace(/[^a-zA-Z0-9]/g, '')}`;
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true" style={{ display: 'block', flexShrink: 0, ...style }}>
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true" className={className} style={{ display: 'block', flexShrink: 0, ...style }}>
       <defs>
         <linearGradient id={gid} x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse">
           <stop stopColor="#2DD4BF" />

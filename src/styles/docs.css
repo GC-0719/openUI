@@ -900,7 +900,39 @@ pre {
   color: var(--primary);
   font-weight: 600;
 }
-.ai-provider-logo { font-size: 14px; }
+.ai-provider-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ai-agent-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-agent-mark,
+.ai-msg-agent-icon {
+  flex-shrink: 0;
+}
+
+.ai-provider-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-provider-badge-label {
+  font-size: 11px;
+}
+
+.ai-msg-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
 .ai-settings-select,
 .ai-settings-input {
