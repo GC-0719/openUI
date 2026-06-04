@@ -11,10 +11,50 @@ Authenticate locally:
 npm login          # opens a browser to your npm account
 ```
 
-For automated releases via GitHub Actions, add an **`NPM_TOKEN`** repo secret
-(npmjs.com → *Access Tokens* → *Generate* → "Automation"; then GitHub repo →
-*Settings → Secrets and variables → Actions → New repository secret*). The
-tag-triggered `.github/workflows/release.yml` publishes both packages.
+For automated releases via GitHub Actions, add an **`NPM_TOKEN`** repo secret on
+**GC-0719/openUI** (Settings → Secrets and variables → Actions).
+
+The token must belong to an npm user that can **publish** packages under
+**`@openedui`** (the account that published `0.1.1`, or an org member with
+read-write access).
+
+### Create `NPM_TOKEN` (granular — recommended)
+
+1. Log in at [npmjs.com](https://www.npmjs.com) as the **@openedui org owner** (or a member with publish rights).
+2. Avatar → **Access Tokens** → **Generate New Token** → **Granular Access Token**.
+3. Set:
+   - **Packages and scopes** → **Read and write**
+   - **Select packages** → choose `@openedui/react` and `@openedui/angular`, or the whole **`@openedui`** scope
+   - Enable **Bypass 2FA for publish** if your account uses 2FA (required for CI)
+4. Copy the token → GitHub repo → **Settings → Secrets → Actions** → `NPM_TOKEN`.
+
+### Verify before tagging
+
+```bash
+npm login   # same account as the token
+npm whoami
+npm view @openedui/react version   # should show 0.1.1 (or latest)
+cd kits/react/template
+npm publish --dry-run --access public
+```
+
+If dry-run succeeds locally but CI fails, the **GitHub secret is wrong or expired** — rotate `NPM_TOKEN`.
+
+### CI: `404 Not Found` on `PUT @openedui/react`
+
+npm often returns **404** (not 403) when the token **cannot publish** to a scope:
+
+| Cause | Fix |
+|-------|-----|
+| `NPM_TOKEN` missing or empty | Add secret; re-run workflow |
+| Token from a different npm user | Use the publisher of `0.1.1`, or run `npm access grant read-write @openedui <npm-username>` as org owner |
+| Granular token read-only | Regenerate with **read and write** on `@openedui/*` |
+| 2FA without bypass | Enable **Bypass 2FA for publish** on the automation token |
+| Not in @openedui org | npmjs.com → org **openedui** → Members → invite your user as maintainer |
+
+After fixing the token, re-run: **Actions → Release @openedui packages → Run workflow**, or push a patch tag.
+
+The tag-triggered [`.github/workflows/release.yml`](.github/workflows/release.yml) runs a **dry-run publish** first so failures are obvious in the log.
 
 ## Publish the bundled `@openedui/react`
 From `kits/react/template/`:
@@ -22,8 +62,10 @@ From `kits/react/template/`:
 ```bash
 cd kits/react/template
 npm install          # pulls vite + @vitejs/plugin-react (build-time only)
-npm publish          # `prepack` runs the Vite library build automatically
+npm publish --access public   # `prepack` runs the Vite library build automatically
 ```
+
+Use the same npm account that owns **@openedui** (provenance optional locally; CI uses `--provenance`).
 
 This builds `dist/openui-react.js` (ESM) + `dist/styles.css` and publishes
 `@openedui/react`. Bump `version` in `kits/react/template/package.json` first.

@@ -1,38 +1,60 @@
 name: Release @openedui packages
 
-# Publishes the kit packages to npm WITH PROVENANCE when a version tag (v*) is
-# pushed. Provenance adds a verified "Built and signed on GitHub Actions" badge
-# on npm that links each package back to this repo + commit.
+# Publishes @openedui/react and @openedui/angular when a v* tag is pushed (or manual run).
+# Provenance requires id-token: write and a valid NPM_TOKEN with publish rights on @openedui.
 #
-# Requires an NPM_TOKEN repo secret = a granular token with read-write on the
-# @openedui scope and "bypass 2FA for publish" enabled.
+# If publish fails with "404 Not Found" on PUT @openedui/react — the token cannot publish
+# to that scope (wrong account, not an org member, or missing read-write). See RELEASING.md.
 on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: read
-  id-token: write # required for npm provenance (OIDC)
+  id-token: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
+          always-auth: true
+
+      - name: Verify npm publish access
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${NODE_AUTH_TOKEN:-}" ]; then
+            echo "::error::NPM_TOKEN is not set. Add a repo secret — see RELEASING.md § GitHub Actions."
+            exit 1
+          fi
+          echo "Logged in as: $(npm whoami)"
+          echo "Registry @openedui/react: $(npm view @openedui/react version 2>/dev/null || echo 'not visible')"
+          echo "Registry @openedui/angular: $(npm view @openedui/angular version 2>/dev/null || echo 'not visible')"
+          cd kits/react/template
+          npm publish --dry-run --access public
+          echo "Dry-run publish OK — token can publish @openedui/react"
+
       - run: npm ci
+
       - name: Publish @openedui/react
         working-directory: kits/react/template
-        run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --provenance --access public
+
       - name: Build @openedui/angular
         run: npm run build --prefix kits/angular/template
+
       - name: Publish @openedui/angular
-        run: npm publish kits/angular/template/dist --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish kits/angular/template/dist --provenance --access public

@@ -23,7 +23,8 @@
     "typescript": "5.9"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "keywords": ["angular", "ui", "components", "design-system", "openui"],
   "repository": {

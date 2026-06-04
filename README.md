@@ -131,7 +131,7 @@ Pre-1.0 semver for the studio and `@openedui/*` kits:
 
 | Git tag | What it marks |
 |---------|----------------|
-| **v1.0.0** | **Stable kits** — `@openedui/react` and `@openedui/angular` **1.0.0** (a11y, forms, modals, menus). Studio app on main matches. Tag publishes to npm when `NPM_TOKEN` is set. |
+| **v1.0.0** | **Stable kits** on GitHub; npm still shows **0.1.1** until `NPM_TOKEN` can publish to `@openedui` ([RELEASING.md](RELEASING.md) if CI returns 404). |
 | **v0.2.0** | Studio milestone (pre–kit-1.0). |
 | **v0.1.1** | First npm publish (0.1.x kits only). |
 
