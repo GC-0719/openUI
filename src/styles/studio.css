@@ -2550,3 +2550,87 @@
   font-size: 12px;
   color: #fca5a5;
 }
+
+/* ── Studio confirm / prompt dialogs ─────────────────────────────────────── */
+.studio-dialog-overlay {
+  z-index: 100002;
+}
+
+.studio-confirm-modal,
+.studio-prompt-modal {
+  width: min(420px, 94vw);
+}
+
+.studio-confirm-message,
+.studio-prompt-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(10, 10, 10, 0.85);
+}
+
+.studio-confirm-icon-danger {
+  color: #b91c1c;
+  flex-shrink: 0;
+}
+
+.studio-prompt-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(10, 10, 10, 0.85);
+  margin-bottom: 6px;
+}
+
+.studio-prompt-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  background: #fafafa;
+  color: #0a0a0a;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.studio-prompt-input:focus {
+  outline: none;
+  border-color: #0a0a0a;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
+}
+
+.kit-settings-auto-btn {
+  font-size: 11px;
+  color: #0a0a0a;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px 6px;
+  font-family: inherit;
+}
+
+.kit-settings-auto-btn:hover {
+  border-color: #e5e5e5;
+  background: #f5f5f5;
+}
+
+.studio-error-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid #e5e5e5;
+  background: #fafafa;
+  color: #0a0a0a;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.studio-error-retry-btn:hover {
+  background: #f0f0f0;
+  border-color: #0a0a0a;
+}

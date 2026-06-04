@@ -52,13 +52,9 @@ export default class ErrorBoundary extends Component {
           {msg}
         </pre>
         <button
+          type="button"
+          className="studio-error-retry-btn"
           onClick={() => this.setState({ error: null })}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '6px 14px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.12)',
-            background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.7)',
-            fontSize: 12, cursor: 'pointer', fontFamily: 'inherit',
-          }}
         >
           <RotateCcw size={12} /> Try again
         </button>
