@@ -129,6 +129,13 @@ key is active (never returns the secret). In-app keys take precedence over env.
 Pre-1.0 semver for the studio and `@openedui/*` kits:
 [docs/VERSIONING.md](docs/VERSIONING.md).
 
+| Git tag | What it marks |
+|---------|----------------|
+| **v0.2.0** | Current **main** — full studio (BYOK, MCP wizard, diff preview, B/W UI, 84 tests). Publishes `@openedui/*` **0.2.0** when `NPM_TOKEN` is set ([release workflow](.github/workflows/release.yml)). |
+| **v0.1.1** | Earlier **kits-only** npm release (provenance); no 0.2.x studio features. |
+
+See [CHANGELOG.md](CHANGELOG.md) and [GitHub Releases](https://github.com/GC-0719/openUI/releases).
+
 ## Examples
 
 | Example | Description |

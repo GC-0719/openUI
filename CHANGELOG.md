@@ -6,82 +6,71 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 
 ## [Unreleased]
 
-### Added
-- **Minimal B/W landing** — simplified [Home](src/pages/Home.jsx) and [home.css](src/styles/home.css); mono brand on marketing pages.
-- **Versioning policy** — [docs/VERSIONING.md](docs/VERSIONING.md).
-- **Studio light theme** — monochrome studio/docs shell; provider icons in AI Settings and agent header.
-- **Studio dialogs** — `StudioConfirmModal` / `StudioPromptModal` replace `confirm`/`prompt` for reset, file tree, memory, workspace unlink; modal footer button CSS (`.ai-settings-btn`).
+_Nothing yet._
 
-### Changed
-- **README** — routes table, npm scripts, BYOK quick start, docs link, hosted vs dev studio, troubleshooting refresh.
-- **Banner** — `.github/banner.svg` and `public/banner.svg` use monochrome light theme (matches landing/studio).
+## [0.2.0] - 2026-06-04
 
-### Added (earlier unreleased)
-- **Bring your own key (BYOK)** — `GET /api/ai-config`, env fallback for Claude on `/api/ai` and spec generate; Settings explainer; “Using key from environment” badge; docs/README alignment.
-- **0.9.x RC** — [docs/GOOD_FIRST_ISSUES.md](docs/GOOD_FIRST_ISSUES.md) and [.github/labels.yml](.github/labels.yml); [examples/dashboard-react](examples/dashboard-react) and [examples/mcp-postgres](examples/mcp-postgres); virtualized file explorer for 120+ workspace paths.
-- **Studio run-mode clarity** — backend-offline banner, localhost studio shell on preview builds, README dev-only note.
-- **Security RC checklist** — [docs/SECURITY_CHECKLIST.md](docs/SECURITY_CHECKLIST.md) and `npm run security:audit` (CI); MCP stdio command allowlist; export walk path containment.
-- **Custom kit components** — studio **New kit component** flow (`POST /api/register-component`), workspace `.openui/specs.json`, merged specs for the agent; see [docs/CUSTOM_COMPONENTS.md](docs/CUSTOM_COMPONENTS.md).
-- **Kit gallery** — `kits/gallery/` index (24 components), `npm run gallery:sync`, CI coverage tests for React/Angular showcase previews.
-- **Kit public API manifest** (`kits/public-api.manifest.json`) + CI tests — template/workspace barrels must match frozen `@openedui/react` / `@openedui/angular` exports (0.2.0).
-- **Kit stability & migration docs** — `kits/KIT_STABILITY.md`, `docs/KIT_MIGRATION.md`, per-kit CHANGELOGs.
-- **MCP wizard** (AI Settings → MCP) — scaffold a stdio MCP server from **OpenAPI JSON** (HTTP proxy tools) or **Prisma schema** (model introspection); download ZIP, copy Claude config, add to studio MCP list.
-- **Starter templates** in the agent panel — Dashboard, Auth, and Settings seeds with **Plan** (checklist first) or **Build** (Edit mode) for React and Angular workspaces.
-- **Git status in file tree** — `M` / `U` / `S` badges for modified, untracked, and staged files when the workspace is inside a git repo (`/api/git-status`).
-- **Open existing project** — link `kits/<framework>/workspace` to an absolute folder on disk (symlink + path validation); studio folder button and `/api/workspace-bind`.
-- **Agent diff preview** — review per-file line diffs before applying an Edit-mode file batch; auto-fix retries skip the modal.
-- **`/api/validate-sources`** — TypeScript compiler checks for `.ts` files (Angular auto-fix); JSX still uses Vite probe.
-- **`buildAgentPrompt` regression tests** for React and Angular prompts.
-- **Agent memory panel** — edit, remove, or manually add individual facts; Memory toggle always available when AI is configured.
-- **Audit panel** — React/Angular-aware rules, AI specs from disk, load open file, `parseAuditResult` helper.
-- **Plan mode checklist** — structured plan with `- [ ]` tasks and **Build this plan** to run Edit mode against the approved plan.
-- **Theme token editor** in the studio (palette button) — live CSS variable overrides, sync to `src/styles/theme-overrides.css`, agent sees active tokens.
-- Unit tests for `buildThemeOverridesCss`.
-
-### Added (earlier unreleased)
-- [ROADMAP.md](ROADMAP.md) — path to 1.0, differentiation vs other AI UI tools, milestone checklist.
-
-### Changed
-- File explorer errors use in-app toasts instead of browser `alert()`.
-- Studio top bar: clickable **Specs unavailable — retry** when AI specs fail to load.
-- Undo, redo, and workspace reset use `apiPost` with toasts; history stacks only advance on success.
-
-## [0.2.0] - 2026-06-03
+Studio and kit release tagged as **v0.2.0** (GitHub tag + `@openedui/react` /
+`@openedui/angular` publish via [RELEASING.md](RELEASING.md)). Supersedes the
+earlier **v0.1.1** npm tag for kits only.
 
 ### Added
-- **`apiFetch` helper** and studio error surfacing for failed saves, writes, and file-tree loads.
-- **Vitest** unit tests for `parseAgentResponse`, `parseAIChanges`, `stripJsonBlock`, and workspace path guards.
-- **`.env.example`** and README troubleshooting section.
-- **Dependabot** for npm dependencies.
-- **`server/` modules** — HTTP helpers, path safety, and AI providers extracted from `vite.config.js`.
+
+- **Minimal B/W landing** — monochrome [Home](src/pages/Home.jsx) and docs/studio shell.
+- **Bring your own key (BYOK)** — `GET /api/ai-config`, env Claude fallback on `/api/ai`, Settings UI, env badge in studio.
+- **Studio run-mode clarity** — backend-offline banner; full studio only on `npm run dev` (hosted `/studio` → RunLocally).
+- **Security** — [docs/SECURITY_CHECKLIST.md](docs/SECURITY_CHECKLIST.md), `npm run security:audit`, MCP command allowlist, export path containment.
+- **Examples** — [examples/dashboard-react](examples/dashboard-react), [examples/mcp-postgres](examples/mcp-postgres); [docs/GOOD_FIRST_ISSUES.md](docs/GOOD_FIRST_ISSUES.md).
+- **Custom kit components** — `POST /api/register-component`, `.openui/specs.json` ([docs/CUSTOM_COMPONENTS.md](docs/CUSTOM_COMPONENTS.md)).
+- **Kit gallery** — `kits/gallery/`, `npm run gallery:sync`, CI preview coverage tests.
+- **Kit public API manifest** — `kits/public-api.manifest.json` + CI barrel lock at 0.2.0.
+- **MCP wizard** — OpenAPI / Prisma scaffold, ZIP download, studio MCP list integration.
+- **Starter templates** — Dashboard, Auth, Settings (Plan or Build) for React and Angular.
+- **Git status in file tree** — `M` / `U` / `S` badges via `/api/git-status`.
+- **Open existing project** — workspace bind/symlink to an absolute folder (`/api/workspace-bind`).
+- **Agent diff preview** — review line diffs before applying Edit-mode writes.
+- **`/api/validate-sources`** — TypeScript checks for Angular auto-fix.
+- **Agent memory panel** — edit, add, remove, forget-all (in-app confirm modal).
+- **Audit panel** — React/Angular rules, specs from disk, load open file.
+- **Plan mode checklist** — `- [ ]` tasks and **Build this plan**.
+- **Theme token editor** — live CSS variables synced to `theme-overrides.css`.
+- **Studio dialogs** — `StudioConfirmModal` / `StudioPromptModal` (no browser `confirm`/`prompt`).
+- **Provider icons** — Claude, OpenAI, Gemini, local, OpenUI agent mark.
+- **`apiFetch`**, Vitest suite (84 tests), `server/` modules split from Vite config.
+- **`.env.example`**, [docs/VERSIONING.md](docs/VERSIONING.md), [ROADMAP.md](ROADMAP.md), Dependabot.
+- Virtualized file explorer for large workspaces (120+ paths).
+
+### Changed
+
+- **README** — routes, npm scripts, BYOK, dev vs hosted studio, troubleshooting.
+- **Banner** — monochrome `.github/banner.svg` and `public/banner.svg`.
+- Modal footer buttons — `.ai-settings-btn` secondary/primary styles across studio modals.
+- File explorer errors → toasts; specs retry in top bar; undo/redo/reset via `apiPost`.
+- CI runs `npm test` and `npm run security:audit` after lint.
 
 ### Fixed
-- **Audit panel** supports local LLM (uses `isConfigured` like the agent).
-- **Angular agent parity** — barrel `index.ts` auto-export, framework-aware parse probe, `.component.ts` page detection.
-- **Silent failures** — specs load, MCP/memory/workspace context, and file explorer show warnings or retry.
 
-### Changed
-- CI runs `npm test` after lint.
+- **Studio light theme** — contrast across agent, audit, export, MCP wizard, code editor.
+- **Audit panel** — local LLM via `isConfigured`.
+- **Angular agent parity** — barrel auto-export, framework-aware probe, `.component.ts` pages.
+- **Silent failures** — specs, MCP/memory/workspace context, file tree load/retry.
+
+## [0.1.1] - 2025 (npm)
+
+First provenance-signed publish of `@openedui/react` and `@openedui/angular` to npm
+(Git tag `v0.1.1` only — no studio features from 0.2.0).
 
 ## [0.1.0] - initial release
 
 ### Added
-- **Sandbox IDE** — recursive project file tree with create/rename/delete,
-  backed by new dev-server endpoints (`/api/create-folder`, `/api/rename-path`,
-  `/api/delete-path`) with a workspace-root traversal guard.
-- **Full-build agent** — the AI agent now builds whole-app structure (pages,
-  components, hooks, context, `lib/`/`services/`), not just kit pages.
-- **MCP backend context** in the chat panel; the agent builds a data layer
-  matching a connected backend's schema.
-- **Landing page** for the studio.
-- **`@openedui/react`** publishable component package (Vite library build).
-- **`@openedui/angular`** publishable component package (ng-packagr / Angular
-  Package Format), plus Angular agent parity (full-app builds + MCP service
-  generation).
-- **Publish-by-name export** — `/api/export` emits a publishable `package/`
-  named from your kit name + optional npm scope, and bundles the whole `src/`.
-- MIT license, README, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT, CI.
+
+- **Sandbox IDE** — file tree with create/rename/delete and workspace guards.
+- **Full-build agent** — pages, components, hooks, `lib/` across the project.
+- **MCP backend context** in the agent panel.
+- **Landing page** and **`@openedui/react`** / **`@openedui/angular`** packages.
+- **Publish-by-name export** — ZIP + npm scope from kit name.
+- MIT license, README, CONTRIBUTING, SECURITY, CI.
 
 ### Changed
-- **Rebranded** from "Lumina Studio" to **openUI**, including the CSS prefix
-  `l-` → `ou-` and env vars `LUMINA_*` → `OPENUI_*`. **(breaking)**
+
+- **Rebranded** from "Lumina Studio" to **openUI** (`l-` → `ou-`, `LUMINA_*` → `OPENUI_*`). **(breaking)**

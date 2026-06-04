@@ -26,6 +26,21 @@ Before tagging `1.0.0`:
 2. [ROADMAP.md](../ROADMAP.md) 1.0 checkboxes complete.
 3. Kit manifests match barrels (`npm test` / `kitPublicApi`).
 
+## Git tags & npm
+
+| Tag | `package.json` | npm `@openedui/*` |
+|-----|----------------|-------------------|
+| `v0.2.0` | `0.2.0` (repo + kit templates) | Publish **0.2.0** on tag push (needs `NPM_TOKEN`) |
+| `v0.1.1` | — | Kits **0.1.x** era (studio on main was behind) |
+
+Cut a release: update [CHANGELOG.md](../CHANGELOG.md), ensure versions match
+`kits/public-api.manifest.json`, then:
+
+```bash
+git tag -a v0.2.0 -m "openUI 0.2.0"
+git push origin v0.2.0
+```
+
 ## Hosted site
 
 [openui.live](https://openui.live) ships the **marketing build** only (`npm run build` + `server.js`). Studio features require `npm run dev` locally.
