@@ -20,7 +20,7 @@
     "@angular/compiler": "^22.0.0",
     "@angular/compiler-cli": "^21.2.12",
     "ng-packagr": "^22.0.0",
-    "typescript": "5.9"
+    "typescript": "6.0"
   },
   "publishConfig": {
     "access": "public",
