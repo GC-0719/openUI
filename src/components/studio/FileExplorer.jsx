@@ -7,7 +7,7 @@ import AddComponentModal from './AddComponentModal';
 import StudioConfirmModal from './StudioConfirmModal';
 import StudioPromptModal from './StudioPromptModal';
 import { apiPost } from '../../utils/api';
-import { useToast } from '../../../kits/react/workspace/src/components/ui/Toast';
+import { useToast } from '../ui/Toast';
 import {
   buildTree,
   filterPaths,
