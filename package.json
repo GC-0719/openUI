@@ -59,7 +59,7 @@
     "@angular/compiler": "^21.2.12",
     "@angular/compiler-cli": "^21.2.12",
     "@angular/core": "^21.2.12",
-    "@angular/forms": "^21.2.12",
+    "@angular/forms": "^22.0.0",
     "@angular/platform-browser": "^21.2.12",
     "@angular/platform-browser-dynamic": "^21.2.12",
     "@eslint/js": "^10.0.1",
