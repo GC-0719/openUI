@@ -6,7 +6,9 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 
 ## [Unreleased]
 
-_Nothing yet._
+### Fixed
+
+- **CI** — Re-align all `@angular/*` packages to **21.2.x** after Dependabot merged partial Angular 22 bumps (`npm ci` ERESOLVE). Group Angular updates in Dependabot config.
 
 ## [1.0.0] - 2026-06-04
 

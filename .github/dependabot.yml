@@ -5,6 +5,13 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      angular:
+        patterns:
+          - "@angular/*"
+        update-types:
+          - minor
+          - patch
   - package-ecosystem: npm
     directory: /kits/react/template
     schedule:
@@ -15,3 +22,12 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 3
+    groups:
+      angular-kit:
+        patterns:
+          - "@angular/*"
+          - "ng-packagr"
+          - "typescript"
+        update-types:
+          - minor
+          - patch
