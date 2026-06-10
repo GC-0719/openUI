@@ -84,6 +84,33 @@ describe('buildAgentPrompt', () => {
     expect(prompt).toContain('@angular/material');
     expect(prompt).toContain('```ts:');
   });
+
+  it('omits the memory section when there is none', () => {
+    const base = { components: [], kitPrefix: 'ou', kitName: 'openUI' };
+    expect(buildAgentPrompt(base)).not.toContain('PROJECT MEMORY');
+    expect(buildAgentPrompt({ ...base, memory: '   ' })).not.toContain('PROJECT MEMORY');
+  });
+
+  it('injects project memory into the angular prompt too', () => {
+    const prompt = buildAgentPrompt({
+      components: [], kitPrefix: 'ou', kitName: 'openUI',
+      framework: 'angular', memory: '- Tabs are capitalized.',
+    });
+    expect(prompt).toContain('PROJECT MEMORY');
+    expect(prompt).toContain('Tabs are capitalized.');
+  });
+
+  it('teaches the localStorage-over-seed-JSON storage pattern (react)', () => {
+    const prompt = buildAgentPrompt({ components: [], kitPrefix: 'ou', kitName: 'openUI' });
+    expect(prompt).toContain('localStorage');
+    expect(prompt).toContain('src/hooks/useStore.js');
+  });
+
+  it('requires emitting every referenced file in one response (react)', () => {
+    const prompt = buildAgentPrompt({ components: [], kitPrefix: 'ou', kitName: 'openUI' });
+    expect(prompt).toContain('MULTI-FILE BUILDS');
+    expect(prompt).toMatch(/NEVER import a file you do not also create/i);
+  });
 });
 
 describe('parseAuditResult', () => {
@@ -131,5 +158,38 @@ describe('parseAgentResponse', () => {
     const text = '```jsx:src/pages/Bad.jsx\n<script>alert(1)</script>\nexport default function Bad() { return null; }\n```';
     const { files } = parseAgentResponse(text);
     expect(files['src/pages/Bad.jsx']).not.toContain('<script');
+  });
+
+  // Regression: template-literal backticks inside fences were once mangled by
+  // the chat renderer; the parser must hand them through byte-for-byte.
+  it('preserves template-literal backticks inside code', () => {
+    const code = 'const msg = `"${name}" added successfully!`;';
+    const text = `\`\`\`jsx:src/pages/Toasty.jsx\n${code}\nexport default function Toasty() { return null; }\n\`\`\``;
+    const { files } = parseAgentResponse(text);
+    expect(files['src/pages/Toasty.jsx']).toContain(code);
+  });
+
+  // Regression: a truncated response leaves an unclosed trailing fence; the
+  // partial code must not leak into the chat message as prose.
+  it('strips an unclosed trailing fence from the message', () => {
+    const text = 'Building it.\n```jsx:src/pages/Done.jsx\nexport default function Done() { return null; }\n```\nNow the modal.\n```jsx:src/components/Modal.jsx\nimport React from';
+    const { files, message } = parseAgentResponse(text);
+    expect(files['src/pages/Done.jsx']).toBeDefined();
+    expect(files['src/components/Modal.jsx']).toBeUndefined();
+    expect(message).not.toContain('import React from');
+  });
+
+  it('parses several path-annotated files from one response', () => {
+    const text = [
+      '```js:src/hooks/useStore.js', 'export default function useStore() {}', '```',
+      '```jsx:src/components/StatsBar.jsx', 'export const StatsBar = () => null;', '```',
+      '```jsx:src/pages/Dashboard.jsx', 'export default function Dashboard() { return null; }', '```',
+    ].join('\n');
+    const { files } = parseAgentResponse(text);
+    expect(Object.keys(files)).toEqual([
+      'src/hooks/useStore.js',
+      'src/components/StatsBar.jsx',
+      'src/pages/Dashboard.jsx',
+    ]);
   });
 });

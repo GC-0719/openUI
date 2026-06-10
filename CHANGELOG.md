@@ -9,6 +9,12 @@ semantic versioning (pre-1.0: minor = features, patch = fixes).
 ### Fixed
 
 - **CI** — Re-align all `@angular/*` packages to **21.2.x** after Dependabot merged partial Angular 22 bumps (`npm ci` ERESOLVE). Group Angular updates in Dependabot config.
+- **Light theme: outline/secondary kit buttons were white-on-white** (invisible). Base `.ou-btn` now uses `var(--text)` instead of hardcoded `#fff` — identical in dark, legible in light (applied to all 5 stylesheet copies).
+- Vitest no longer matches macOS AppleDouble (`._*.test.js`) resource forks on exFAT volumes — these are binary, not tests, and failed the run.
+
+### Added
+
+- Regression tests for `parseAgentResponse` (template-literal backticks survive, truncated-fence code never leaks into chat, multi-file order) and `buildAgentPrompt` (memory omitted when empty, Angular memory injection, storage guidance, multi-file completeness rules).
 
 ## [1.0.0] - 2026-06-04
 
