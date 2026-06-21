@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
-import { ToastProvider } from '../kits/react/workspace/src/components/ui/Toast';
+import { ToastProvider } from './components/ui/Toast';
 import { ThemeProvider } from './context/ThemeContext';
 import { AIProvider } from './context/AIContext';
 import RunLocally from './pages/RunLocally';

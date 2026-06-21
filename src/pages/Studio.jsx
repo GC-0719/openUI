@@ -16,7 +16,7 @@ import { pingStudioBackend } from '../utils/studioBackendCheck';
 import { BrandLogo, Wordmark } from '../components/BrandLogo';
 import { apiFetch, apiPost } from '../utils/api';
 import { buildAgentFileDiffs } from '../utils/fileDiff';
-import { useToast } from '../../kits/react/workspace/src/components/ui/Toast';
+import { useToast } from '../components/ui/Toast';
 import '../styles/studio.css';
 import '../styles/docs.css';
 import '../styles/workspace-mono.css';
