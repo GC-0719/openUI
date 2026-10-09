@@ -15,20 +15,21 @@
 
 # openUI
 
-openUI is a studio you run on your own machine where an AI agent builds complete
-frontends from a design-system kit — creating pages, components, hooks, and
-services across a real project tree, wired to *your* backend through
-[MCP](https://modelcontextprotocol.io). Edit files in a built-in IDE, preview
-the running app live, then export or publish your kit under your own name.
+openUI is a local-first AI studio where an agent builds complete frontends
+from a design-system kit — pages, components, hooks, and services across a
+real project tree. **Schema-grounded generation by default:** point it at your
+live backend and it generates typed, real-endpoint code from your actual schema —
+no backend hallucination, no manual spec-pasting. What it produces is
+**production-ready output**: code you can ship, not a prototype you rebuild.
 
 > Bring your own AI key (Anthropic, OpenAI, Gemini, or a local LLM). Nothing
 > leaves your machine except the AI calls you make.
 
 ## Demo
 
-> 🎬 60-second demo video — *in progress*. It will show the agent building a
-> small page against a **live MCP backend**, so you can watch generated code
-> match real backend fields instead of guessing them.
+> 🎬 60-second demo video — *in progress*. Watch the agent build a page
+> against a **live backend**: generated code matches real API fields —
+> no hallucinated endpoints, no manual spec-pasting.
 
 ---
 
@@ -39,8 +40,9 @@ the running app live, then export or publish your kit under your own name.
   running app.
 - **AI agent (Ask · Plan · Edit)** — explain, plan with a checklist, or write
   files across the workspace; review line diffs before applying batch edits.
-- **Backend-aware via MCP** — connect a backend MCP server; the agent sees its
-  tools and live data and builds a data layer + UI that match your fields.
+- **Schema-grounded by default** — point it at your live backend (via MCP);
+  the agent reads your actual schema and generates typed, real-endpoint code.
+  Grounding is the default loop, not an integration you wire up.
 - **Design-system kit** — 24 polished React components (Angular kit included),
   with a kit name and CSS prefix you can rename in one click.
 - **Spec & Audit** — per-component AI specs on disk; audit pasted or open-file
