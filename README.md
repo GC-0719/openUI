@@ -24,6 +24,12 @@ the running app live, then export or publish your kit under your own name.
 > Bring your own AI key (Anthropic, OpenAI, Gemini, or a local LLM). Nothing
 > leaves your machine except the AI calls you make.
 
+## Demo
+
+> 🎬 60-second demo video — *in progress*. It will show the agent building a
+> small page against a **live MCP backend**, so you can watch generated code
+> match real backend fields instead of guessing them.
+
 ---
 
 ## Features
@@ -51,7 +57,7 @@ Requires **Node 20+**.
 git clone https://github.com/GC-0719/openUI.git
 cd openUI
 npm install
-cp .env.example .env    # optional — document BYOK env vars
+cp .env.example .env    # optional — only needed for env-based keys (e.g. Claude via OPENUI_AI_KEY)
 npm run dev             # React + Angular kits; full studio backend
 ```
 
@@ -131,7 +137,7 @@ Pre-1.0 semver for the studio and `@openedui/*` kits:
 
 | Git tag | What it marks |
 |---------|----------------|
-| **v1.0.0** | **Stable kits** on GitHub; npm still shows **0.1.1** until `NPM_TOKEN` can publish to `@openedui` ([RELEASING.md](RELEASING.md) if CI returns 404). |
+| **v1.0.0** | **Stable kits** on GitHub; add the `NPM_TOKEN` repo secret (Settings → Secrets → Actions — see [RELEASING.md](RELEASING.md)), then push a `v*` tag or run the `Release @openedui packages` workflow manually. |
 | **v0.2.0** | Studio milestone (pre–kit-1.0). |
 | **v0.1.1** | First npm publish (0.1.x kits only). |
 
