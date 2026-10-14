@@ -107,6 +107,11 @@ const MCPWizardModal = ({ onClose, onAddServer }) => {
       label: serverName.trim() || 'Backend MCP',
       transport: 'stdio',
       command: `node /absolute/path/to/${folder}/index.js`,
+      // OpenAPI scaffolds know their API base URL — pass it to the child
+      // process so the bridge doesn't rely on the baked-in default.
+      ...(result.meta.kind === 'openapi' && result.meta.baseUrl
+        ? { env: { API_BASE_URL: result.meta.baseUrl } }
+        : {}),
       enabled: true,
     });
     onClose();

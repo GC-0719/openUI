@@ -4,7 +4,7 @@ export async function discoverTools(server) {
   const res = await fetch(`${MCP_BRIDGE}/tools`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ transport: server.transport, url: server.url, command: server.command }),
+    body: JSON.stringify({ transport: server.transport, url: server.url, command: server.command, env: server.env }),
   });
   const data = await res.json();
   if (data.error) throw new Error(data.error);
@@ -15,7 +15,7 @@ export async function callMCPTool(server, toolName, toolArgs = {}) {
   const res = await fetch(`${MCP_BRIDGE}/call`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ transport: server.transport, url: server.url, command: server.command, tool: toolName, toolArgs }),
+    body: JSON.stringify({ transport: server.transport, url: server.url, command: server.command, env: server.env, tool: toolName, toolArgs }),
   });
   const data = await res.json();
   if (data.error) throw new Error(data.error);

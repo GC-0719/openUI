@@ -15,14 +15,21 @@
 
 # openUI
 
-openUI is a studio you run on your own machine where an AI agent builds complete
-frontends from a design-system kit — creating pages, components, hooks, and
-services across a real project tree, wired to *your* backend through
-[MCP](https://modelcontextprotocol.io). Edit files in a built-in IDE, preview
-the running app live, then export or publish your kit under your own name.
+openUI is a local-first AI studio where an agent builds complete frontends
+from a design-system kit — pages, components, hooks, and services across a
+real project tree. **Schema-grounded generation by default:** point it at your
+live backend and it generates typed, real-endpoint code from your actual schema —
+no backend hallucination, no manual spec-pasting. What it produces is
+**production-ready output**: code you can ship, not a prototype you rebuild.
 
 > Bring your own AI key (Anthropic, OpenAI, Gemini, or a local LLM). Nothing
 > leaves your machine except the AI calls you make.
+
+## Demo
+
+> 🎬 60-second demo video — *in progress*. Watch the agent build a page
+> against a **live backend**: generated code matches real API fields —
+> no hallucinated endpoints, no manual spec-pasting.
 
 ---
 
@@ -33,8 +40,9 @@ the running app live, then export or publish your kit under your own name.
   running app.
 - **AI agent (Ask · Plan · Edit)** — explain, plan with a checklist, or write
   files across the workspace; review line diffs before applying batch edits.
-- **Backend-aware via MCP** — connect a backend MCP server; the agent sees its
-  tools and live data and builds a data layer + UI that match your fields.
+- **Schema-grounded by default** — point it at your live backend (via MCP);
+  the agent reads your actual schema and generates typed, real-endpoint code.
+  Grounding is the default loop, not an integration you wire up.
 - **Design-system kit** — 24 polished React components (Angular kit included),
   with a kit name and CSS prefix you can rename in one click.
 - **Spec & Audit** — per-component AI specs on disk; audit pasted or open-file
@@ -51,7 +59,7 @@ Requires **Node 20+**.
 git clone https://github.com/GC-0719/openUI.git
 cd openUI
 npm install
-cp .env.example .env    # optional — document BYOK env vars
+cp .env.example .env    # optional — only needed for env-based keys (e.g. Claude via OPENUI_AI_KEY)
 npm run dev             # React + Angular kits; full studio backend
 ```
 
@@ -131,7 +139,7 @@ Pre-1.0 semver for the studio and `@openedui/*` kits:
 
 | Git tag | What it marks |
 |---------|----------------|
-| **v1.0.0** | **Stable kits** on GitHub; npm still shows **0.1.1** until `NPM_TOKEN` can publish to `@openedui` ([RELEASING.md](RELEASING.md) if CI returns 404). |
+| **v1.0.0** | **Stable kits** on GitHub; add the `NPM_TOKEN` repo secret (Settings → Secrets → Actions — see [RELEASING.md](RELEASING.md)), then push a `v*` tag or run the `Release @openedui packages` workflow manually. |
 | **v0.2.0** | Studio milestone (pre–kit-1.0). |
 | **v0.1.1** | First npm publish (0.1.x kits only). |
 
