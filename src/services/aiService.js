@@ -817,9 +817,11 @@ function checkJSXStructure(content, filePath) {
   if (braces !== 0) return `Unbalanced { } in ${name} (${braces > 0 ? `${braces} unclosed` : `${-braces} extra closing`})`;
   if (parens !== 0) return `Unbalanced ( ) in ${name} (${parens > 0 ? `${parens} unclosed` : `${-parens} extra closing`})`;
 
-  // Check <div> balance — the most common agent truncation symptom
-  const divOpen = (content.match(/<div[\s>]/g) || []).length;
-  const divClose = (content.match(/<\/div>/g) || []).length;
+  // Check <div> balance — the most common agent truncation symptom.
+  // Self-closing <div ... /> tags are valid JSX and must not count as unclosed.
+  const divContent = content.replace(/<div\b[^>]*\/>/g, '');
+  const divOpen = (divContent.match(/<div[\s>]/g) || []).length;
+  const divClose = (divContent.match(/<\/div>/g) || []).length;
   if (divOpen !== divClose) return `Unclosed <div> in ${name} (${divOpen} open, ${divClose} closed) — likely truncated`;
 
   // Pages are loaded by the dynamic router via their default export, so they must

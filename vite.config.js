@@ -750,8 +750,12 @@ const openuiDevPlugin = {
         fs.writeFileSync(full, content, 'utf-8');
         // Invalidate Vite's transform cache immediately so the next iframe load
         // always gets the freshly-written file instead of a stale compiled version.
-        const mods = server.moduleGraph.getModulesByFile(full);
-        if (mods) mods.forEach(mod => server.moduleGraph.invalidateModule(mod));
+        // Best-effort: the write above already succeeded, so a cache failure
+        // must not turn this into a 500.
+        try {
+          const mods = server.moduleGraph.getModulesByFile(full);
+          if (mods) mods.forEach(mod => server.moduleGraph.invalidateModule(mod));
+        } catch { /* stale cache is harmless — the file is on disk */ }
         json(res, 200, { ok: true });
       } catch (err) {
         json(res, 500, { error: err.message });
@@ -1249,10 +1253,22 @@ Variants: ${(variants || []).join(', ')}`;
     }
 
     // Shared: send one JSON-RPC call to a stdio MCP server, return result
-    function stdioMCPRequest(command, method, params = {}) {
+    // Only flat string env entries are forwarded to the child process.
+    function sanitizeEnv(env) {
+      if (!env || typeof env !== 'object' || Array.isArray(env)) return {};
+      const out = {};
+      for (const [k, v] of Object.entries(env)) {
+        if (typeof k === 'string' && typeof v === 'string' && k.length <= 128 && v.length <= 4096) out[k] = v;
+      }
+      return out;
+    }
+    function stdioMCPRequest(command, method, params = {}, env = {}) {
       return new Promise((resolve, reject) => {
         const parts = command.trim().split(/\s+/);
-        const proc = spawn(parts[0], parts.slice(1), { stdio: ['pipe', 'pipe', 'pipe'] });
+        // Per-server env (e.g. API_BASE_URL from the MCP wizard) is merged over
+        // the dev server's own environment — never replaces it outright.
+        const childEnv = { ...process.env, ...sanitizeEnv(env) };
+        const proc = spawn(parts[0], parts.slice(1), { stdio: ['pipe', 'pipe', 'pipe'], env: childEnv });
         let buf = ''; let initialized = false;
         proc.stdout.on('data', d => {
           buf += d.toString();
@@ -1279,11 +1295,11 @@ Variants: ${(variants || []).join(', ')}`;
       });
     }
 
-    async function mcpRequest(transport, url, command, method, params) {
+    async function mcpRequest(transport, url, command, method, params, env) {
       if (transport === 'stdio') {
         const check = validateMcpStdioCommand(command);
         if (!check.ok) throw new Error(check.error);
-        return stdioMCPRequest(command, method, params);
+        return stdioMCPRequest(command, method, params, env);
       }
       return httpMCPRequest(url, method, params);
     }
@@ -1291,8 +1307,8 @@ Variants: ${(variants || []).join(', ')}`;
     server.middlewares.use('/api/mcp-bridge/tools', async (req, res) => {
       if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
       try {
-        const { transport = 'http', url, command } = JSON.parse(await readBody(req) || '{}');
-        const result = await mcpRequest(transport, url, command, 'tools/list', {});
+        const { transport = 'http', url, command, env } = JSON.parse(await readBody(req) || '{}');
+        const result = await mcpRequest(transport, url, command, 'tools/list', {}, env);
         json(res, 200, { tools: result?.tools || [] });
       } catch (err) {
         json(res, 500, { error: err.message });
@@ -1302,8 +1318,8 @@ Variants: ${(variants || []).join(', ')}`;
     server.middlewares.use('/api/mcp-bridge/call', async (req, res) => {
       if (req.method !== 'POST') { json(res, 405, { error: 'POST only' }); return; }
       try {
-        const { transport = 'http', url, command, tool, toolArgs = {} } = JSON.parse(await readBody(req) || '{}');
-        const result = await mcpRequest(transport, url, command, 'tools/call', { name: tool, arguments: toolArgs });
+        const { transport = 'http', url, command, env, tool, toolArgs = {} } = JSON.parse(await readBody(req) || '{}');
+        const result = await mcpRequest(transport, url, command, 'tools/call', { name: tool, arguments: toolArgs }, env);
         const text = result?.content?.[0]?.text ?? (typeof result === 'string' ? result : JSON.stringify(result));
         json(res, 200, { result: text });
       } catch (err) {
